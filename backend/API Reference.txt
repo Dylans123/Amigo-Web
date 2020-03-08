@@ -1,15 +1,42 @@
 --------------------------------------------------------------
-Add a new user
+Sign up
 --------------------------------------------------------------
+
 Route:
-/api/addUser
+/api/signup
 
 Example request body:
 {
-	"UserName": "test",
+	"Username": "Username",
 	"Password": "12345",
 	"FirstName": "First",
 	"LastName": "Last",
 	"Email": "email@test.com",
 	"PhoneNumber": "111-111-1111"
+}
+
+Example response:
+{
+    "success": true,
+    "message": "Sign up successful!"
+}
+
+--------------------------------------------------------------
+Login
+--------------------------------------------------------------
+
+Route:
+/api/login
+
+Example request body:
+{
+	"Username": "Username",
+	"Password": "12345",
+}
+
+Example response:
+{
+    "success": true,
+    "message": "Login successful!",
+    "token": "xxx.yyy.zzz"
 }
