@@ -91,14 +91,16 @@ const login = (request, response) => {
 
         // Check verification status.
         if (active == true) {
+          const userID = result.rows[0].UserID;
+          
           query = `
             UPDATE "Users" SET "LastLoggedIn" = NOW() WHERE "UserID" = $1
           `;
 
           client
-            .query(query, [result.rows[0].UserID])
+            .query(query, [userID])
             .then(result => {
-              const payload = {'Username': body.Username};
+              const payload = {'UserID': userID};
               const token = jwt.sign(payload, key, {expiresIn: "7d"});
               response.json({'success': true, 'message': 'Login successful!', 'token': token, 'verified': active});
             })
@@ -198,15 +200,16 @@ verifyEmail = (request, response) => {
 };
 
 // Dispay user information
-const displayUserInfo = (request, response) => {
+const userInfo = (request, response) => {
   const body = request.body;
+  const payload = jwt.decode(request.headers['x-access-token']);
 
   const query = `
     SELECT * FROM "Users" WHERE "UserID" = $1
   `;
   
   client
-    .query(query, [body.UserID])
+    .query(query, [payload.UserID])
     .then(result => {
         const user = result.rows[0];
         response.json({
@@ -228,5 +231,5 @@ module.exports = {
   validateUser,
   sendVerificationEmail,
   verifyEmail,
-  displayUserInfo
+  userInfo
 };
