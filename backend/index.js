@@ -14,7 +14,7 @@ app.get('/', (request, response) => {
 app.post('/api/signup', db.signup);
 app.post('/api/login', db.login);
 app.get('/verify', db.verifyEmail);
-app.post('/api/displayUserInfo', db.validateUser, db.displayUserInfo);
+app.post('/api/userInfo', db.validateUser, db.userInfo);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`)
