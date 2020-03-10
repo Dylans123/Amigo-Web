@@ -288,7 +288,7 @@ userInfo = (request, response) => {
     });
 };
 
-// Dispay user information controller
+// Dispay user's groups controller
 groups = (request, response) => {
   const payload = jwt.decode(request.headers['x-access-token']);
 
