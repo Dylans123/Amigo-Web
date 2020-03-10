@@ -288,6 +288,26 @@ userInfo = (request, response) => {
     });
 };
 
+// Dispay user information controller
+groups = (request, response) => {
+  const payload = jwt.decode(request.headers['x-access-token']);
+
+  const query = `
+    SELECT "Groups"."Name", "Groups"."Description", "Groups"."Location"
+    FROM "UsersGroups", "Groups" 
+    WHERE "UsersGroups"."UserID" = $1 AND "UsersGroups"."GroupID" = "Groups"."GroupID"
+  `;
+  
+  client
+    .query(query, [payload.UserID])
+    .then(result => {
+        response.json(result.rows);
+    })
+    .catch(error => {
+      response.json({'success': false, 'message': error.toString()});
+    });
+};
+
 module.exports = {
   signup,
   checkUsername,
@@ -296,5 +316,6 @@ module.exports = {
   validateUser,
   sendVerificationEmail,
   verifyEmail,
-  userInfo
+  userInfo,
+  groups
 };

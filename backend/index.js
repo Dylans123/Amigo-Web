@@ -63,6 +63,7 @@ app.post(
 app.get('/verify', db.verifyEmail);
 app.post('/api/sendVerificationEmail', db.sendVerificationEmail);
 app.get('/api/userInfo', db.validateUser, db.userInfo);
+app.get('/api/groups', db.groups)
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`)
