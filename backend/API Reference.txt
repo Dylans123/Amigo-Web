@@ -77,7 +77,7 @@ Example success response:
 {
     "success": true,
     "message": "Login successful!",
-    "token": "xxx.yyy.zzz",
+    "x-access-token": "xxx.yyy.zzz",
     "verified": true
 }
 
@@ -115,13 +115,8 @@ Send verification email endpoint
 --------------------------------------------------------------
 
 Route:
-POST
-/api/sendVerificationEmail
-
-Example request body:
-{
-	"Email": "eutjbidq@sharklasers.com"
-}
+GET
+/api/sendverification?Email=email.to.be.verified@email.com
 
 Example success response:
 {
@@ -141,9 +136,9 @@ Get user info endpoint
 
 Route:
 GET
-/api/userInfo
+/api/user
 
-Exampler header:
+Example request header:
 {
 	"x-access-token": "xxx.yyy.zzz"
 }
@@ -154,7 +149,8 @@ Example success response:
     "FirstName": "First",
     "LastName": "Last",
     "Email": "eutjbidq@sharklasers.com",
-    "PhoneNumber": "111-111-1111"
+    "PhoneNumber": "111-111-1111",
+    "LastLoggedIn": "2020-03-10T16:34:42.665Z"
 }
 
 Example fail response:
@@ -164,26 +160,31 @@ Example fail response:
 }
 
 --------------------------------------------------------------
-Get groups endpoint
+Get user groups endpoint
 --------------------------------------------------------------
 
 Route:
 GET
 /api/groups
 
-Exampler header:
+Example request header:
 {
 	"x-access-token": "xxx.yyy.zzz"
 }
 
 Example success response:
-{
-    "Username": "User",
-    "FirstName": "First",
-    "LastName": "Last",
-    "Email": "eutjbidq@sharklasers.com",
-    "PhoneNumber": "111-111-1111"
-}
+[
+    {
+        "Name": "Group 1",
+        "Description": "Some description.",
+        "Location": "Orlando"
+    },
+    {
+        "Name": "Group 2",
+        "Description": "Some description.",
+        "Location": "Unknown"
+    }
+]
 
 Example fail response:
 {

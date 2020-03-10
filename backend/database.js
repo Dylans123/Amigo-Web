@@ -44,7 +44,7 @@ signup = (request, response) => {
     const password = bcrypt.hashSync(body.Password, saltRounds);
     
     query = `
-      INSERT INTO "Users" ("Username", "Password", "FirstName", "LastName", "Email", "PhoneNumber", "LastLoggedIn", "Timestamp")
+      INSERT INTO "Users" ("Username", "Password", "FirstName", "LastName", "Email", "PhoneNumber", "LastLoggedIn", "CreatedOn")
       VALUES ($1, $2, $3, $4, $5, $6, NULL, NOW())
       RETURNING "UserID"
     `;
@@ -53,8 +53,8 @@ signup = (request, response) => {
       .query(query, [body.Username, password, body.FirstName, body.LastName, body.Email, body.PhoneNumber])
       .then(result => {
         // Send verification request email.
-        const payload = {'body': {'Email': body.Email}};
-        sendVerificationEmail(payload);
+        const payload = {'query': {'Email': body.Email}};
+        sendVerification(payload);
         
         response.json({'success': true, 'message': 'Sign up successful! Email verification request sent.'});
       })
@@ -131,7 +131,7 @@ login = (request, response) => {
               .then(result => {
                 const payload = {'UserID': userID};
                 const token = jwt.sign(payload, key, {expiresIn: "7d"});
-                response.json({'success': true, 'message': 'Login successful!', 'token': token, 'verified': active});
+                response.json({'success': true, 'message': 'Login successful!', 'x-access-token': token, 'verified': active});
               })
               .catch(error => {
                 response.json({'success': false, 'message': error.toString()});
@@ -177,23 +177,23 @@ const smtpTransport = nodemailer.createTransport({
   }
 });
 
-sendVerificationEmail = (request, response) => {
-  const body = request.body;
+sendVerification = (request, response) => {
+  const requestQuery = request.query;
 
   const query = `
     SELECT * FROM "Users" WHERE LOWER("Email") = LOWER($1) AND "Active" = false
   `;
   
   client
-    .query(query, [body.Email])
+    .query(query, [requestQuery.Email])
     .then(result => {
       if (result.rows.length > 0) {
-        const payload = {'Email': body.Email};
+        const payload = {'Email': requestQuery.Email};
         const token = jwt.sign(payload, verificationKey, {expiresIn: "3d"});
         const link = "http://" + serverURL + "/verify?token=" + token;
 
         const mailOptions = {
-            'to': body.Email,
+            'to': requestQuery.Email,
             'subject': "Amigo: Verify your email address",
             'html': "Hello,<br><br>Please click on the link to verify your email.<br><a href=" + link + ">Click here to verify</a>"
         }
@@ -263,8 +263,8 @@ verifyEmail = (request, response) => {
   });
 };
 
-// Dispay user information controller
-userInfo = (request, response) => {
+// Get user information controller
+user = (request, response) => {
   const payload = jwt.decode(request.headers['x-access-token']);
 
   const query = `
@@ -280,7 +280,8 @@ userInfo = (request, response) => {
           'FirstName': user.FirstName,
           'LastName': user.LastName,
           'Email': user.Email,
-          'PhoneNumber': user.PhoneNumber
+          'PhoneNumber': user.PhoneNumber,
+          'LastLoggedIn': user.LastLoggedIn
       });
     })
     .catch(error => {
@@ -288,7 +289,7 @@ userInfo = (request, response) => {
     });
 };
 
-// Dispay user's groups controller
+// Get user groups controller
 groups = (request, response) => {
   const payload = jwt.decode(request.headers['x-access-token']);
 
@@ -297,7 +298,7 @@ groups = (request, response) => {
     FROM "UsersGroups", "Groups" 
     WHERE "UsersGroups"."UserID" = $1 AND "UsersGroups"."GroupID" = "Groups"."GroupID"
   `;
-  
+
   client
     .query(query, [payload.UserID])
     .then(result => {
@@ -314,8 +315,8 @@ module.exports = {
   checkEmail,
   login,
   validateUser,
-  sendVerificationEmail,
+  sendVerification,
   verifyEmail,
-  userInfo,
+  user,
   groups
 };
