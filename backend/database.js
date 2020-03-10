@@ -73,7 +73,7 @@ checkUsername = (username, callback) => {
   client
     .query(query, [username])
     .then(result => {
-        callback(result.rows.length > 0);
+      callback(result.rows.length > 0);
     })
     .catch(error => {
       response.json({'success': false, 'message': error.toString()});
@@ -89,7 +89,7 @@ checkEmail = (username, callback) => {
   client
     .query(query, [username])
     .then(result => {
-        callback(result.rows.length > 0);
+      callback(result.rows.length > 0);
     })
     .catch(error => {
       response.json({'success': false, 'message': error.toString()});
@@ -172,8 +172,8 @@ const verificationKey = process.env['EMAIL_VERIFIER_JWT_KEY'];
 const smtpTransport = nodemailer.createTransport({
   service: "gmail",
   auth: {
-      user: mailUsername,
-      pass: mailPassword
+    user: mailUsername,
+    pass: mailPassword
   }
 });
 
@@ -193,9 +193,9 @@ sendVerification = (request, response) => {
         const link = "http://" + serverURL + "/verify?token=" + token;
 
         const mailOptions = {
-            'to': requestQuery.Email,
-            'subject': "Amigo: Verify your email address",
-            'html': "Hello,<br><br>Please click on the link to verify your email.<br><a href=" + link + ">Click here to verify</a>"
+          'to': requestQuery.Email,
+          'subject': "Amigo: Verify your email address",
+          'html': "Hello,<br><br>Please click on the link to verify your email.<br><a href=" + link + ">Click here to verify</a>"
         }
 
         smtpTransport.sendMail(mailOptions, (error, transportResponse) => {
@@ -274,14 +274,14 @@ user = (request, response) => {
   client
     .query(query, [payload.UserID])
     .then(result => {
-        const user = result.rows[0];
-        response.json({
-          'Username': user.Username,
-          'FirstName': user.FirstName,
-          'LastName': user.LastName,
-          'Email': user.Email,
-          'PhoneNumber': user.PhoneNumber,
-          'LastLoggedIn': user.LastLoggedIn
+      const user = result.rows[0];
+      response.json({
+        'Username': user.Username,
+        'FirstName': user.FirstName,
+        'LastName': user.LastName,
+        'Email': user.Email,
+        'PhoneNumber': user.PhoneNumber,
+        'LastLoggedIn': user.LastLoggedIn
       });
     })
     .catch(error => {
@@ -302,7 +302,7 @@ groups = (request, response) => {
   client
     .query(query, [payload.UserID])
     .then(result => {
-        response.json(result.rows);
+      response.json(result.rows);
     })
     .catch(error => {
       response.json({'success': false, 'message': error.toString()});
