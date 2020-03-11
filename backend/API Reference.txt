@@ -19,44 +19,44 @@ Example request body:
 
 Example success response:
 {
-    "success": true,
-    "message": "Sign up successful! Email verification request sent."
+	"success": true,
+	"message": "Sign up successful! Email verification request sent."
 }
 
 Example error response:
 {
-    "errors": [
-        {
-            "value": "User",
-            "msg": "Username has already been taken.",
-            "param": "Username",
-            "location": "body"
-        },
-        {
-            "value": "12345",
-            "msg": "Password must be at least 6 characters.",
-            "param": "Password",
-            "location": "body"
-        },
-        {
-            "value": "123456",
-            "msg": "Passwords do not match.",
-            "param": "ConfirmationPassword",
-            "location": "body"
-        },
-        {
-            "value": "",
-            "msg": "Last name is invalid.",
-            "param": "LastName",
-            "location": "body"
-        },
-        {
-            "value": "girocok844emailnube.com",
-            "msg": "Email is invalid.",
-            "param": "Email",
-            "location": "body"
-        }
-    ]
+	"errors": [
+		{
+			"value": "User",
+			"msg": "Username has already been taken.",
+			"param": "Username",
+			"location": "body"
+		},
+		{
+			"value": "12345",
+			"msg": "Password must be at least 6 characters.",
+			"param": "Password",
+			"location": "body"
+		},
+		{
+			"value": "123456",
+			"msg": "Passwords do not match.",
+			"param": "ConfirmationPassword",
+			"location": "body"
+		},
+		{
+			"value": "",
+			"msg": "Last name is invalid.",
+			"param": "LastName",
+			"location": "body"
+		},
+		{
+			"value": "girocok844emailnube.com",
+			"msg": "Email is invalid.",
+			"param": "Email",
+			"location": "body"
+		}
+	]
 }
 
 --------------------------------------------------------------
@@ -75,39 +75,39 @@ Example request body:
 
 Example success response:
 {
-    "success": true,
-    "message": "Login successful!",
-    "x-access-token": "xxx.yyy.zzz",
-    "verified": true
+	"success": true,
+	"message": "Login successful!",
+	"x-access-token": "xxx.yyy.zzz",
+	"verified": true
 }
 
 Example fail (wrong username or password) response:
 {
-    "success": false,
-    "message": "Login failed."
+	"success": false,
+	"message": "Login failed."
 }
 
 Example fail (email not verified) response:
 {
-    "success": false,
-    "message": "Email has not been verified.",
-    "verified": false
+	"success": false,
+	"message": "Email has not been verified.",
+	"verified": false
 }
 
 Example error response:
 {
-    "errors": [
-        {
-            "msg": "Username is missing.",
-            "param": "Username",
-            "location": "body"
-        },
-        {
-            "msg": "Password is missing.",
-            "param": "Password",
-            "location": "body"
-        }
-    ]
+	"errors": [
+		{
+			"msg": "Username is missing.",
+			"param": "Username",
+			"location": "body"
+		},
+		{
+			"msg": "Password is missing.",
+			"param": "Password",
+			"location": "body"
+		}
+	]
 }
 
 --------------------------------------------------------------
@@ -120,14 +120,14 @@ GET
 
 Example success response:
 {
-    "success": true,
-    "message": "Verification request email sent."
+	"success": true,
+	"message": "Verification request email sent."
 }
 
 Example fail response:
 {
-    "success": false,
-    "message": "Email already verified or not registered."
+	"success": false,
+	"message": "Email already verified or not registered."
 }
 
 --------------------------------------------------------------
@@ -145,18 +145,18 @@ Example request header:
 
 Example success response:
 {
-    "Username": "User",
-    "FirstName": "First",
-    "LastName": "Last",
-    "Email": "eutjbidq@sharklasers.com",
-    "PhoneNumber": "111-111-1111",
-    "LastLoggedIn": "2020-03-10T16:34:42.665Z"
+	"Username": "User",
+	"FirstName": "First",
+	"LastName": "Last",
+	"Email": "eutjbidq@sharklasers.com",
+	"PhoneNumber": "111-111-1111",
+	"LastLoggedIn": "2020-03-10T16:34:42.665Z"
 }
 
 Example fail response:
 {
-    "success": false,
-    "message": "JsonWebTokenError: invalid signature"
+	"success": false,
+	"message": "JsonWebTokenError: invalid signature"
 }
 
 --------------------------------------------------------------
@@ -174,20 +174,20 @@ Example request header:
 
 Example success response:
 [
-    {
-        "Name": "Group 1",
-        "Description": "Some description.",
-        "Location": "Orlando"
-    },
-    {
-        "Name": "Group 2",
-        "Description": "Some description.",
-        "Location": "Unknown"
-    }
+	{
+		"Name": "Group 1",
+		"Description": "Some description.",
+		"Location": "Orlando"
+	},
+	{
+		"Name": "Group 2",
+		"Description": "Some description.",
+		"Location": "Unknown"
+	}
 ]
 
 Example fail response:
 {
-    "success": false,
-    "message": "JsonWebTokenError: invalid signature"
+	"success": false,
+	"message": "JsonWebTokenError: invalid signature"
 }

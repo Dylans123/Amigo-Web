@@ -17,7 +17,7 @@ const client = new pg.Client(config);
 
 client.connect(error => {
   if (error) throw error;
-  else { 
+  else {
     console.log('We\'re in business.');
     console.log('Database running on port ' + port + '.');
   }
@@ -42,7 +42,7 @@ signup = (request, response) => {
   // Input is valid and username has not been taken, so add user.
   else {
     const password = bcrypt.hashSync(body.Password, saltRounds);
-    
+
     query = `
       INSERT INTO "Users" ("Username", "Password", "FirstName", "LastName", "Email", "PhoneNumber", "LastLoggedIn", "CreatedOn")
       VALUES ($1, $2, $3, $4, $5, $6, NULL, NOW())
@@ -55,7 +55,7 @@ signup = (request, response) => {
         // Send verification request email.
         const payload = {'query': {'Email': body.Email}};
         sendVerification(payload);
-        
+
         response.json({'success': true, 'message': 'Sign up successful! Email verification request sent.'});
       })
       .catch(error => {
@@ -110,7 +110,7 @@ login = (request, response) => {
     var query = `
       SELECT * FROM "Users" WHERE LOWER("Username") = LOWER($1)
     `;
-    
+
     client
       .query(query, [body.Username])
       .then(result => {
@@ -121,7 +121,7 @@ login = (request, response) => {
           // Check verification status.
           if (active == true) {
             const userID = result.rows[0].UserID;
-            
+
             query = `
               UPDATE "Users" SET "LastLoggedIn" = NOW() WHERE "UserID" = $1
             `;
@@ -183,7 +183,7 @@ sendVerification = (request, response) => {
   const query = `
     SELECT * FROM "Users" WHERE LOWER("Email") = LOWER($1) AND "Active" = false
   `;
-  
+
   client
     .query(query, [requestQuery.Email])
     .then(result => {
@@ -229,7 +229,7 @@ verifyEmail = (request, response) => {
       var query = `
         SELECT "Active" FROM "Users" WHERE LOWER("Email") = $1 AND "Active" = false
       `;
-      
+
       client
         .query(query, [payload.Email])
         .then(result => {
@@ -237,7 +237,7 @@ verifyEmail = (request, response) => {
             query = `
               UPDATE "Users" SET "Active" = true WHERE LOWER("Email") = LOWER($1)
             `;
-            
+
             client
               .query(query, [payload.Email])
               .then(result => {
@@ -270,7 +270,7 @@ user = (request, response) => {
   const query = `
     SELECT * FROM "Users" WHERE "UserID" = $1
   `;
-  
+
   client
     .query(query, [payload.UserID])
     .then(result => {
@@ -295,7 +295,7 @@ groups = (request, response) => {
 
   const query = `
     SELECT "Groups"."Name", "Groups"."Description", "Groups"."Location"
-    FROM "UsersGroups", "Groups" 
+    FROM "UsersGroups", "Groups"
     WHERE "UsersGroups"."UserID" = $1 AND "UsersGroups"."GroupID" = "Groups"."GroupID"
   `;
 
