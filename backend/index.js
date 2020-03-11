@@ -56,7 +56,7 @@ app.post(
   [
     check('Username').not().isEmpty().withMessage("Username is missing."),
     check('Password').not().isEmpty().withMessage("Password is missing.")
-  ], 
+  ],
   db.login
 );
 
