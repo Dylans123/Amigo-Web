@@ -309,6 +309,25 @@ groups = (request, response) => {
     });
 };
 
+// Delete group controller
+groupDelete = (request, response) => {
+  const body = request.body;
+  const payload = jwt.decode(request.headers['x-access-token']);
+
+  const query = `
+  DELETE FROM "UsersGroups" WHERE "UsersGroups"."UserID" = $1 AND "UsersGroups"."GroupID" = $2
+  `;
+
+  client
+    .query(query, [payload.UserID, body.GroupID])
+    .then(result => {
+      response.json("Group has been deleted.");
+    })
+    .catch(error => {
+      response.json({'success': false, 'message': error.toString()});
+    });
+};
+
 module.exports = {
   signup,
   checkUsername,
@@ -318,5 +337,6 @@ module.exports = {
   sendVerification,
   verifyEmail,
   user,
-  groups
+  groups,
+  groupDelete
 };

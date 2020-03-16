@@ -191,3 +191,32 @@ Example fail response:
 	"success": false,
 	"message": "JsonWebTokenError: invalid signature"
 }
+
+--------------------------------------------------------------
+groupDelete endpoint
+--------------------------------------------------------------
+
+Route:
+POST
+/api/groupDelete
+
+Example request header:
+{
+	"x-access-token": "xxx.yyy.zzz"
+}
+
+Example request body:
+{
+	"GroupID": "44"
+}
+
+Example success response:
+{
+	"User has left the Group."
+}
+
+Example fail response:
+{
+    "success": false,
+    "message": "JsonWebTokenError: invalid signature"
+}
