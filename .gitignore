@@ -1,5 +1,2 @@
-backend/node_modules
-backend/.env
-backend/.DS_Store
 frontend/node_modules
 .vscode
