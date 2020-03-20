@@ -28,6 +28,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 const key = process.env['JWT_KEY'];
+const adminKey = process.env['JWT_ADMIN_KEY'];
 const serverURL = process.env['SERVER_URL'];
 const {check, validationResult} = require('express-validator');
 
@@ -44,8 +45,8 @@ signup = (request, response) => {
 		const password = bcrypt.hashSync(body.password, saltRounds);
 
 		query = `
-			INSERT INTO users (email, password, first_name, last_name, display_name, last_logged_in, created_on, verified)
-			VALUES ($1, $2, $3, $4, $5, NULL, NOW(), false)
+			INSERT INTO users (email, password, first_name, last_name, display_name, last_logged_in, verified)
+			VALUES ($1, $2, $3, $4, $5, NULL, false)
 			RETURNING user_id
 		`;
 
@@ -64,7 +65,7 @@ signup = (request, response) => {
 	}
 };
 
-// Check to see if email already registered
+// Check to see if email is already registered
 checkEmail = (email, callback) => {
 	var query = `
 		SELECT *
@@ -105,9 +106,10 @@ login = (request, response) => {
 				// Check email and password
 				if (result.rows.length > 0 && bcrypt.compareSync(body.password, result.rows[0].password)) {
 					const verified = result.rows[0].verified;
+					const access_level = result.rows[0].access_level;
 
 					// Check verification status
-					if (verified == true) {
+					if (verified == true || access_level >= 10) {
 						const user_id = result.rows[0].user_id;
 
 						query = `
@@ -120,7 +122,12 @@ login = (request, response) => {
 							.query(query, [user_id])
 							.then(result => {
 								const payload = {'user_id': user_id};
-								const token = jwt.sign(payload, key, {expiresIn: "7d"});
+
+								if (access_level >= 10)
+									var token = jwt.sign(payload, adminKey, {expiresIn: "7d"});
+								else
+									var token = jwt.sign(payload, key, {expiresIn: "7d"});
+
 								response.json({'success': true, 'message': 'Login successful!', 'x-access-token': token, 'verified': true});
 							})
 							.catch(error => {
@@ -145,11 +152,25 @@ login = (request, response) => {
 validateUser = (request, response, next) => {
 	jwt.verify(request.headers['x-access-token'], key, (error, decoded) => {
 		if (error) {
-			response.json({'success': false, 'message': error.toString()});
+			jwt.verify(request.headers['x-access-token'], adminKey, (error, decoded) => {
+				if (error)
+					response.json({'success': false, 'message': error.toString()});
+				else
+					next();
+			});
 		}
 		else {
 			next();
 		}
+	});
+}
+
+validateAdminUser = (request, response, next) => {
+	jwt.verify(request.headers['x-access-token'], adminKey, (error, decoded) => {
+		if (error)
+			response.json({'success': false, 'message': error.toString()});
+		else
+			next();
 	});
 }
 
@@ -227,7 +248,7 @@ verifyEmail = (request, response) => {
 			client
 				.query(query, [payload.email])
 				.then(result => {
-					if (result.rowCount > 0) {
+					if (result.rows.length > 0) {
 						query = `
 							UPDATE users
 							SET verified = true
@@ -237,12 +258,10 @@ verifyEmail = (request, response) => {
 						client
 							.query(query, [payload.email])
 							.then(result => {
-								if (result.rowCount > 0) {
+								if (result.rowCount > 0)
 									response.json({'success': true, 'message': 'Email verified successfully.'});
-								}
-								else {
+								else
 									response.json({'success': false, 'message': 'Problem with email verification.'});
-								}
 							})
 							.catch(error => {
 								response.json({'success': false, 'message': error.toString()});
@@ -290,17 +309,19 @@ getUserInfo = (request, response) => {
 // Create tag controller
 createTag = (request, response) => {
 	const body = request.body;
-	const payload = jwt.decode(request.headers['x-access-token']);
 
 	const query = `
-		INSERT INTO tags (name, location, created_on)
-		VALUES ($1, $2, $3)
+		INSERT INTO tags (name, location)
+		VALUES ($1, $2)
 	`;
 
 	client
-		.query(query, [body.name, body.location, NOW()])
+		.query(query, [body.name, body.location])
 		.then(result => {
-			response.json({'success': true, 'message': "Tag created successfully!"});
+			if (result.rowCount > 0)
+				response.json({'success': true, 'message': "Tag created successfully!"});
+			else
+				response.json({'success': false, 'message': "Tag creation unsuccessful."});
 		})
 		.catch(error => {
 			response.json({'success': false, 'message': error.toString()});
@@ -312,15 +333,37 @@ createChannel = (request, response) => {
 	const body = request.body;
 	const payload = jwt.decode(request.headers['x-access-token']);
 
-	const query = `
-		INSERT INTO channels (user_id, tag_id, name, description, created_on)
-		VALUES ($1, $2, $3, $4, $5)
+	var query = `
+		INSERT INTO channels (user_id, tag_id, name, description)
+		VALUES ($1, $2, $3, $4)
+		RETURNING channel_id
 	`;
 
 	client
-		.query(query, [payload.user_id, body.tag_id, name, description, NOW()])
+		.query(query, [payload.user_id, body.tag_id, body.name, body.description])
 		.then(result => {
-			response.json({'success': true, 'message': "Channel created successfully!"});
+			if (result.rowCount > 0) {
+				// Join channel
+				query = `
+					INSERT INTO users_channels (user_id, channel_id)
+					VALUES ($1, $2)
+				`;
+
+				client
+					.query(query, [payload.user_id, result.rows[0].channel_id])
+					.then(result => {
+						if (result.rowCount > 0)
+							response.json({'success': true, 'message': "Channel created successfully!"});
+						else
+							response.json({'success': false, 'message': 'Channel creation unsuccessful.'});
+					})
+					.catch(error => {
+						response.json({'success': false, 'message': error.toString()});
+					});
+			}
+			else {
+				response.json({'success': false, 'message': "Channel creation unsuccessful."});
+			}
 		})
 		.catch(error => {
 			response.json({'success': false, 'message': error.toString()});
@@ -332,7 +375,7 @@ getUserChannels = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	const query = `
-		SELECT channels.name, channels.description
+		SELECT channels.channel_id, channels.name, channels.description
 		FROM users_channels, channels
 		WHERE users_channels.user_id = $1 AND users_channels.channel_id = channels.channel_id
 	`;
@@ -353,34 +396,80 @@ joinChannel = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	const query = `
-		INSERT INTO users_channels (user_id, channel_id, created_on)
-		WHERE ($1, $2, $3)
+		INSERT INTO users_channels (user_id, channel_id)
+		VALUES ($1, $2)
 	`;
 
 	client
-		.query(query, [payload.user_id, body.channel_id, NOW()])
+		.query(query, [payload.user_id, body.channel_id])
 		.then(result => {
-			response.json({'success': true, 'message': 'User has joined channel.'});
+			if (result.rowCount > 0)
+				response.json({'success': true, 'message': 'User has joined the channel.'});
+			else
+				response.json({'success': false, 'message': 'Join unsuccessful.'});
 		})
 		.catch(error => {
 			response.json({'success': false, 'message': error.toString()});
 		});
 };
 
-// Unjoin channel controller
-unjoinChannel = (request, response) => {
+// Leave channel controller
+leaveChannel = (request, response) => {
 	const body = request.body;
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	const query = `
 		DELETE FROM users_channels
 		WHERE user_id = $1 AND channel_id = $2
+			AND user_id NOT IN (SELECT channels.user_id FROM channels WHERE channels.channel_id = users_channels.channel_id)
 	`;
 
 	client
 		.query(query, [payload.user_id, body.channel_id])
 		.then(result => {
-			response.json({'success': true, 'message': 'User has unjoined channel.'});
+			if (result.rowCount > 0)
+				response.json({'success': true, 'message': 'User has left the channel.'});
+			else
+				response.json({'success': false, 'message': 'Cannot unjoin.'});
+		})
+		.catch(error => {
+			response.json({'success': false, 'message': error.toString()});
+		});
+};
+
+// Get channels by tag controller
+getChannelsByTag = (request, response) => {
+	const params = request.params;
+
+	const query = `
+		SELECT channel_id, name, description
+		FROM channels
+		WHERE tag_id = $1
+	`;
+
+	client
+		.query(query, [params.tag_id])
+		.then(result => {
+			response.json({'success': true, 'channels': result.rows});
+		})
+		.catch(error => {
+			response.json({'success': false, 'message': error.toString()});
+		});
+};
+
+// Get tags controller
+getTags = (request, response) => {
+	const body = request.body;
+
+	const query = `
+		SELECT tag_id, name, location
+		FROM tags
+	`;
+
+	client
+		.query(query)
+		.then(result => {
+			response.json({'success': true, 'tags': result.rows});
 		})
 		.catch(error => {
 			response.json({'success': false, 'message': error.toString()});
@@ -392,8 +481,15 @@ module.exports = {
 	checkEmail,
 	login,
 	validateUser,
+	validateAdminUser,
 	sendVerification,
 	verifyEmail,
 	getUserInfo,
-	getUserChannels
+	createTag,
+	getUserChannels,
+	createChannel,
+	joinChannel,
+	leaveChannel,
+	getChannelsByTag,
+	getTags
 };

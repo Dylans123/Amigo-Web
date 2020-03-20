@@ -172,16 +172,219 @@ Example success response:
 	"success": true,
 	"channels": [
 		{
+			"channel_id": "1",
 			"name": "Channel 1",
 			"description": "Description for Channel 1."
 		},
 		{
+			"channel_id": "2",
 			"name": "Channel 2",
 			"description": "Description for Channel 2."
 		},
 		{
+			"channel_id": "3",
 			"name": "Channel 3",
 			"description": "Description for Channel 3."
+		}
+	]
+}
+
+Example fail response:
+{
+	"success": false,
+	"message": "JsonWebTokenError: invalid signature"
+}
+
+--------------------------------------------------------------
+Create channel endpoint
+--------------------------------------------------------------
+
+Route:
+POST
+/api/channels
+
+Example request header:
+{
+	"x-access-token": "xxx.yyy.zzz"
+}
+
+Example request body:
+{
+	"tag_id": "25",
+	"name": "Channel 1",
+	"description": "Description for Channel 1."
+}
+
+Example success response:
+{
+	"success": true,
+	"message": "Channel created successfully!"
+}
+
+Example fail response:
+{
+	"success": false,
+	"message": "error: insert or update on table \"channels\" violates foreign key constraint \"channels_tag_id_fkey\""
+}
+
+--------------------------------------------------------------
+Join channel endpoint
+--------------------------------------------------------------
+
+Route:
+POST
+/api/join
+
+Example request header:
+{
+	"x-access-token": "xxx.yyy.zzz"
+}
+
+Example request body:
+{
+	"channel_id": "15"
+}
+
+Example success response:
+{
+	"success": true,
+	"message": "User has joined the channel."
+}
+
+Example fail response:
+{
+	"success": false,
+	"message": "Join unsuccessful."
+}
+
+--------------------------------------------------------------
+Leave channel endpoint
+--------------------------------------------------------------
+
+Route:
+POST
+/api/leave
+
+Example request header:
+{
+	"x-access-token": "xxx.yyy.zzz"
+}
+
+Example request body:
+{
+	"channel_id": "15"
+}
+
+Example success response:
+{
+	"success": true,
+	"message": "User has left the channel."
+}
+
+Example fail response:
+{
+	"success": false,
+	"message": "Cannot unjoin."
+}
+
+--------------------------------------------------------------
+Create tag endpoint (Admin)
+--------------------------------------------------------------
+
+Route:
+POST
+/api/createtag
+
+Example request header:
+{
+	"x-access-token": "xxx.yyy.zzz"
+}
+
+Example request body:
+{
+	"name": "Tag 1",
+	"location": "Orlando"
+}
+
+Example success response:
+{
+	"success": true,
+	"message": "Tag created successfully!"
+}
+
+Example fail response:
+{
+	"success": false,
+	"message": "Tag creation unsuccessful."
+}
+
+--------------------------------------------------------------
+Get channels by tag endpoint
+--------------------------------------------------------------
+
+Route:
+GET
+/api/:tag_id/createtag
+
+Example request header:
+{
+	"x-access-token": "xxx.yyy.zzz"
+}
+
+Example success response:
+{
+	"success": true,
+	"channels": [
+		{
+			"channel_id": "1",
+			"name": "Channel 1",
+			"description": "Description for Channel 1."
+		},
+		{
+			"channel_id": "2",
+			"name": "Channel 2",
+			"description": "Description for Channel 2."
+		}
+	]
+}
+
+Example fail response:
+{
+	"success": false,
+	"message": "JsonWebTokenError: invalid signature"
+}
+
+--------------------------------------------------------------
+Get tags endpoint
+--------------------------------------------------------------
+
+Route:
+GET
+/api/tags
+
+Example request header:
+{
+	"x-access-token": "xxx.yyy.zzz"
+}
+
+Example success response:
+{
+	"success": true,
+	"tags": [
+		{
+			"tag_id": "1",
+			"name": "Tag 1",
+			"location": "Orlando"
+		},
+		{
+			"tag_id": "2",
+			"name": "Tag 1",
+			"location": "Miami"
+		},
+		{
+			"tag_id": "3",
+			"name": "Tag 2",
+			"location": "Orlando"
 		}
 	]
 }
