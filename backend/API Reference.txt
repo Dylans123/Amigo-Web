@@ -8,13 +8,12 @@ POST
 
 Example request body:
 {
-	"Username": "User",
-	"Password": "12345",
-	"ConfirmationPassword": "123456",
-	"FirstName": "First",
-	"LastName": "",
-	"Email": "girocok844emailnube.com",
-	"PhoneNumber": "111-111-1111"
+	"email": "girocok844emailnube.com",
+	"password": "12345",
+	"confirmation_password": "123456",
+	"first_name": "First",
+	"last_name": "",
+	"display_name": "girocok844emailnube.com",
 }
 
 Example success response:
@@ -25,35 +24,30 @@ Example success response:
 
 Example error response:
 {
+	"success": false,
 	"errors": [
 		{
-			"value": "User",
-			"msg": "Username has already been taken.",
-			"param": "Username",
+			"value": "girocok844@emailnube.com",
+			"msg": "Email has already been taken.",
+			"param": "email",
 			"location": "body"
 		},
 		{
 			"value": "12345",
 			"msg": "Password must be at least 6 characters.",
-			"param": "Password",
+			"param": "password",
 			"location": "body"
 		},
 		{
 			"value": "123456",
 			"msg": "Passwords do not match.",
-			"param": "ConfirmationPassword",
+			"param": "confirmation_password",
 			"location": "body"
 		},
 		{
 			"value": "",
 			"msg": "Last name is invalid.",
-			"param": "LastName",
-			"location": "body"
-		},
-		{
-			"value": "girocok844emailnube.com",
-			"msg": "Email is invalid.",
-			"param": "Email",
+			"param": "last_name",
 			"location": "body"
 		}
 	]
@@ -69,8 +63,8 @@ POST
 
 Example request body:
 {
-	"Username": "Username",
-	"Password": "12345"
+	"email": "girocok844@emailnube.com",
+	"password": "12345"
 }
 
 Example success response:
@@ -96,15 +90,16 @@ Example fail (email not verified) response:
 
 Example error response:
 {
+	"success": false,
 	"errors": [
 		{
-			"msg": "Username is missing.",
-			"param": "Username",
+			"msg": "Email is missing.",
+			"param": "email",
 			"location": "body"
 		},
 		{
 			"msg": "Password is missing.",
-			"param": "Password",
+			"param": "password",
 			"location": "body"
 		}
 	]
@@ -116,7 +111,7 @@ Send verification email endpoint
 
 Route:
 GET
-/api/sendverification?Email=email.to.be.verified@email.com
+/api/sendverification?email=email.to.be.verified@email.com
 
 Example success response:
 {
@@ -145,12 +140,12 @@ Example request header:
 
 Example success response:
 {
-	"Username": "User",
-	"FirstName": "First",
-	"LastName": "Last",
-	"Email": "eutjbidq@sharklasers.com",
-	"PhoneNumber": "111-111-1111",
-	"LastLoggedIn": "2020-03-10T16:34:42.665Z"
+	"success": true,
+	"email": "eutjbidq@sharklasers.com",
+	"first_name": "First",
+	"last_name": "Last",
+	"display_name": "eutjbidq",
+	"last_logged_in": "2020-03-20T03:33:28.606Z"
 }
 
 Example fail response:
@@ -160,64 +155,39 @@ Example fail response:
 }
 
 --------------------------------------------------------------
-Get user groups endpoint
+Get user channels endpoint
 --------------------------------------------------------------
 
 Route:
 GET
-/api/groups
+/api/channels
 
 Example request header:
 {
 	"x-access-token": "xxx.yyy.zzz"
-}
-
-Example success response:
-[
-	{
-		"Name": "Group 1",
-		"Description": "Some description.",
-		"Location": "Orlando"
-	},
-	{
-		"Name": "Group 2",
-		"Description": "Some description.",
-		"Location": "Unknown"
-	}
-]
-
-Example fail response:
-{
-	"success": false,
-	"message": "JsonWebTokenError: invalid signature"
-}
-
---------------------------------------------------------------
-Delete group endpoint
---------------------------------------------------------------
-
-Route:
-DELETE
-/api/groups
-
-Example request header:
-{
-	"x-access-token": "xxx.yyy.zzz"
-}
-
-Example request body:
-{
-	"GroupID": "44"
 }
 
 Example success response:
 {
 	"success": true,
-	"message": "Group has been deleted."
+	"channels": [
+		{
+			"name": "Channel 1",
+			"description": "Description for Channel 1."
+		},
+		{
+			"name": "Channel 2",
+			"description": "Description for Channel 2."
+		},
+		{
+			"name": "Channel 3",
+			"description": "Description for Channel 3."
+		}
+	]
 }
 
 Example fail response:
 {
-    "success": false,
-    "message": "JsonWebTokenError: invalid signature"
+	"success": false,
+	"message": "JsonWebTokenError: invalid signature"
 }
