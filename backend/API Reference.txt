@@ -13,7 +13,7 @@ Example request body:
 	"confirmation_password": "123456",
 	"first_name": "First",
 	"last_name": "",
-	"display_name": "girocok844emailnube.com",
+	"display_name": "girocok844",
 }
 
 Example success response:
@@ -324,7 +324,7 @@ Get channels by tag endpoint
 
 Route:
 GET
-/api/:tag_id/createtag
+/api/:tag_id/channels
 
 Example request header:
 {

@@ -3,8 +3,12 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
-const db = require('./database');
 const {check, validationResult} = require('express-validator');
+
+const db = require('./database');
+const users = require('./controllers/users');
+const tags = require('./controllers/tags');
+const channels = require('./controllers/channels');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -17,7 +21,7 @@ app.post(
 			.isEmail().withMessage('Email is invalid.')
 			.custom(value => {
 				return new Promise((resolve, reject) => {
-					db.checkEmail(value, taken => {
+					users.checkEmail(value, taken => {
 						if (taken) {
 							reject(new Error('Email already registered.'));
 						}
@@ -35,7 +39,7 @@ app.post(
 			.isAlphanumeric().withMessage("Display name is not valid.")
 			.isLength({min: 3}).withMessage('Display name must be at least 3 characters.')
 	],
-	db.signup
+	users.signup
 );
 
 app.post(
@@ -44,7 +48,7 @@ app.post(
 		check('email').not().isEmpty().withMessage("Username is missing."),
 		check('password').not().isEmpty().withMessage("Password is missing.")
 	],
-	db.login
+	users.login
 );
 
 // Code to generate frontend build directory
@@ -54,17 +58,17 @@ arr.push('frontend')
 arr.push('dist')
 const dir = arr.join('/')
 
-app.get('/verify', db.verifyEmail);
-app.get('/api/sendverification', db.sendVerification);
-app.get('/api/user', db.validateUser, db.getUserInfo);
-app.get('/api/channels', db.validateUser, db.getUserChannels);
-app.post('/api/channels', db.validateUser, db.createChannel);
-app.post('/api/join', db.validateUser, db.joinChannel);
-app.post('/api/leave', db.validateUser, db.leaveChannel);
-app.get('/api/:tag_id/channels', db.validateUser, db.getChannelsByTag);
-app.get('/api/tags', db.validateUser, db.getTags);
+app.get('/verify', users.verifyEmail);
+app.get('/api/sendverification', users.sendVerification);
+app.get('/api/user', users.validateUser, users.getUserInfo);
+app.get('/api/channels', users.validateUser, channels.getUserChannels);
+app.post('/api/channels', users.validateUser, channels.createChannel);
+app.post('/api/join', users.validateUser, channels.joinChannel);
+app.post('/api/leave', users.validateUser, channels.leaveChannel);
+app.get('/api/:tag_id/channels', users.validateUser, channels.getChannelsByTag);
+app.get('/api/tags', users.validateUser, tags.getTags);
 
-app.post('/api/createtag', db.validateAdminUser, db.createTag);
+app.post('/api/createtag', users.validateAdminUser, tags.createTag);
 
 app.use(express.static(dir))
 app.get("/*", (req, res) => {
