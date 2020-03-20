@@ -58,6 +58,13 @@ app.get('/verify', db.verifyEmail);
 app.get('/api/sendverification', db.sendVerification);
 app.get('/api/user', db.validateUser, db.getUserInfo);
 app.get('/api/channels', db.validateUser, db.getUserChannels);
+app.post('/api/channels', db.validateUser, db.createChannel);
+app.post('/api/join', db.validateUser, db.joinChannel);
+app.post('/api/leave', db.validateUser, db.leaveChannel);
+app.get('/api/:tag_id/channels', db.validateUser, db.getChannelsByTag);
+app.get('/api/tags', db.validateUser, db.getTags);
+
+app.post('/api/createtag', db.validateAdminUser, db.createTag);
 
 app.use(express.static(dir))
 app.get("/*", (req, res) => {
