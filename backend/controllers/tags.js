@@ -47,7 +47,7 @@ getUserTags = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	const query = `
-		SELECT tags.tag_id, tags.name, tags.location
+		SELECT DISTINCT tags.tag_id, tags.name, tags.location
 		FROM tags, channels, users_channels
 		WHERE users_channels.user_id = $1
 			AND users_channels.channel_id = channels.channel_id
