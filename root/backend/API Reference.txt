@@ -324,7 +324,7 @@ Get channels by tag endpoint
 
 Route:
 GET
-/api/:tag_id/channels
+/api/channels/:tag_id
 
 Example request header:
 {
@@ -437,7 +437,7 @@ Get messages endpoint
 
 Route:
 GET
-/api/:channel_id/messages
+/api/messages/:channel_id
 
 Example request header:
 {
@@ -472,7 +472,7 @@ Example success response:
 Example fail response:
 {
 	"success": false,
-	"message": "JsonWebTokenError: invalid token"
+	"message": "User needs to join channel first."
 }
 
 --------------------------------------------------------------
@@ -507,6 +507,87 @@ Example WebSocket response:
 	"message": "Hello",
 	"created_on": "2020-03-21T06:37:28.659Z"
 }
+
+Example fail response:
+{
+	"success": false,
+	"message": "User needs to join channel first."
+}
+
+--------------------------------------------------------------
+Get direct messages endpoint
+--------------------------------------------------------------
+
+Route:
+GET
+/api/directmessages/:sender_user_id
+
+Example request header:
+{
+	"x-access-token": "xxx.yyy.zzz"
+}
+
+Example success response:
+{
+	"success": true,
+	"messages": [
+		{
+			"message_id": "1",
+			"receiver_display_name": "p489",
+			"sender_display_name": "y59974",
+			"message": "Hello p489",
+			"created_on": "2020-03-21 13:55:16.378585+00"
+		},
+		{
+			"message_id": "2",
+			"receiver_display_name": "y59974",
+			"sender_display_name": "p489",
+			"message": "Hello y59974",
+			"created_on": "2020-03-21 13:55:16.378585+00"
+		}
+	]
+}
+
+Example fail response:
+{
+	"success": false,
+	"message": "JsonWebTokenError: invalid token"
+}
+
+--------------------------------------------------------------
+Send direct message endpoint
+--------------------------------------------------------------
+
+Route:
+POST
+/api/directmessages
+
+Example request header:
+{
+	"x-access-token": "xxx.yyy.zzz"
+}
+
+Example request body:
+{
+	"receiver_user_id": "10",
+	"message": "Hello"
+}
+
+Example success response:
+{
+	"success": true,
+	"message": "Message sent successfully."
+}
+
+Example WebSocket response:
+{
+	"message": {
+		"message_id": "25",
+		"receiver_display_name": "ijfij12",
+		"sender_display_name": "vejej34",
+		"message": "Hello",
+		"created_on": "2020-03-21 19:13:31.918055+00"
+	}
 
 Example fail response:
 {
