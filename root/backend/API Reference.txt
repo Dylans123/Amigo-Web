@@ -628,3 +628,79 @@ Example fail response:
 	"success": false,
 	"message": "JsonWebTokenError: invalid token"
 }
+
+--------------------------------------------------------------
+Update User endpoint
+--------------------------------------------------------------
+
+Route:
+POST
+/api/user
+
+Example request header:
+{
+	"x-access-token": "xxx.yyy.zzz"
+}
+
+Example request body:
+{
+	"first_name": "Last",
+	"last_name": "First",
+	"display_name": "display",
+	"location": "somewhere",
+	"password": "123456",
+	"new_password": "1234567",
+	"confirmation_new_password": "1234567"
+}
+
+Example request body (without changing password):
+{
+	"first_name": "Last",
+	"last_name": "First",
+	"display_name": "display",
+	"location": "somewhere",
+	"password": "123456"
+}
+
+Example success response:
+{
+	"success": true,
+	"message": "User info was successfully updated."
+}
+
+Example error response:
+{
+	"success": false,
+	"errors": [
+		{
+			"value": "girocok844@emailnube.com",
+			"msg": "Email has already been taken.",
+			"param": "email",
+			"location": "body"
+		},
+		{
+			"value": "12345",
+			"msg": "Password must be at least 6 characters.",
+			"param": "password",
+			"location": "body"
+		},
+		{
+			"value": "123456",
+			"msg": "Passwords do not match.",
+			"param": "confirmation_new_password",
+			"location": "body"
+		},
+		{
+			"value": "",
+			"msg": "Last name is invalid.",
+			"param": "last_name",
+			"location": "body"
+		}
+	]
+}
+
+Example fail response:
+{
+	"success": false,
+	"message": "Wrong Password."
+}

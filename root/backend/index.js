@@ -74,6 +74,20 @@ app.get('/api/directmessages/:sender_user_id', users.validateUser, messages.getD
 app.post('/api/directmessages', users.validateUser, messages.sendDirectMessage);
 app.get('/api/directmessages', users.validateUser, messages.getDirectMessageUsers);
 app.post('/api/tags', users.validateAdminUser, tags.createTag);
+app.post(
+	'/api/user',
+	[
+		check('password').not().isEmpty().withMessage("Must provide password to update."),
+		check('new_password').optional().isLength({min: 6}).withMessage('Password must be at least 6 characters.'),
+		check('confirmation_new_password').custom((value, {req}) => (value === req.body.new_password)).withMessage('Passwords do not match.'),
+		check('first_name').isAlpha().withMessage('First name is invalid.'),
+		check('last_name').isAlpha().withMessage('Last name is invalid.'),
+		check('display_name')
+			.isAlphanumeric().withMessage("Display name is not valid.")
+			.isLength({min: 3}).withMessage('Display name must be at least 3 characters.')
+	],
+	users.validateUser, users.updateUser
+);
 
 // Code to generate frontend build directory
 var arr = __dirname.split('/');
