@@ -25,8 +25,6 @@ createTag = (request, response) => {
 
 // Get tags controller
 getTags = (request, response) => {
-	const body = request.body;
-
 	const query = `
 		SELECT tag_id, name, location
 		FROM tags
@@ -42,7 +40,7 @@ getTags = (request, response) => {
 		});
 };
 
-// Get user tags
+// Get user tags controller
 getUserTags = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
 

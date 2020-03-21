@@ -4,16 +4,23 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 const {check, validationResult} = require('express-validator');
-
+const server = require('http').Server(app);
+const io = require('./websocket').initialize(server);
 const db = require('./database');
 const users = require('./controllers/users');
 const tags = require('./controllers/tags');
 const channels = require('./controllers/channels');
+const messages = require('./controllers/messages');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors());
 
+io.on('connection', () => {
+	console.log('A user is connected.');
+});
+
+// Routes
 app.post(
 	'/api/signup',
 	[
@@ -51,13 +58,6 @@ app.post(
 	users.login
 );
 
-// Code to generate frontend build directory
-var arr = __dirname.split('/');
-arr.pop();
-arr.push('frontend')
-arr.push('dist')
-const dir = arr.join('/')
-
 app.get('/verify', users.verifyEmail);
 app.get('/api/sendverification', users.sendVerification);
 app.get('/api/user', users.validateUser, users.getUserInfo);
@@ -68,14 +68,21 @@ app.post('/api/leave', users.validateUser, channels.leaveChannel);
 app.get('/api/:tag_id/channels', users.validateUser, channels.getChannelsByTag);
 app.get('/api/tags/all', users.validateUser, tags.getTags);
 app.get('/api/tags', users.validateUser, tags.getUserTags);
-
+app.get('/api/:channel_id/messages', users.validateUser, messages.getMessages);
+app.post('/api/messages', users.validateUser, messages.sendMessage);
 app.post('/api/tags', users.validateAdminUser, tags.createTag);
 
-app.use(express.static(dir))
+// Code to generate frontend build directory
+var arr = __dirname.split('/');
+arr.pop();
+arr.push('frontend');
+arr.push('dist');
+const dir = arr.join('/');
+app.use(express.static(dir));
 app.get("/*", (req, res) => {
 	res.sendFile(path.join(dir, "/index.html"));
 });
 
-app.listen(port, () => {
-	console.log(`App running on port ${port}.`)
+server.listen(port, () => {
+	console.log(`Listening on port ${port}.`);
 });

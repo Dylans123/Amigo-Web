@@ -430,3 +430,86 @@ Example fail response:
 	"success": false,
 	"message": "JsonWebTokenError: invalid signature"
 }
+
+--------------------------------------------------------------
+Get messages endpoint
+--------------------------------------------------------------
+
+Route:
+GET
+/api/:channel_id/messages
+
+Example request header:
+{
+	"x-access-token": "xxx.yyy.zzz"
+}
+
+Example success response:
+{
+	"success": true,
+	"messages": [
+		{
+			"message_id": "1",
+			"display_name": "pia9",
+			"message": "Hello",
+			"created_on": "2020-03-21T06:37:28.659Z"
+		},
+		{
+			"message_id": "2",
+			"display_name": "asod521",
+			"message": "Hello",
+			"created_on": "2020-03-21T08:32:19.976Z"
+		},
+		{
+			"message_id": "26",
+			"display_name": "pia9",
+			"message": "Bye",
+			"created_on": "2020-03-21T10:37:12.311Z"
+		}
+	]
+}
+
+Example fail response:
+{
+	"success": false,
+	"message": "JsonWebTokenError: invalid token"
+}
+
+--------------------------------------------------------------
+Send message endpoint
+--------------------------------------------------------------
+
+Route:
+POST
+/api/messages
+
+Example request header:
+{
+	"x-access-token": "xxx.yyy.zzz"
+}
+
+Example request body:
+{
+	"channel_id": "10",
+	"message": "Hello"
+}
+
+Example success response:
+{
+	"success": true,
+	"message": "Message sent successfully."
+}
+
+Example WebSocket response:
+{
+	"message_id": "1",
+	"display_name": "pia9",
+	"message": "Hello",
+	"created_on": "2020-03-21T06:37:28.659Z"
+}
+
+Example fail response:
+{
+	"success": false,
+	"message": "JsonWebTokenError: invalid token"
+}
