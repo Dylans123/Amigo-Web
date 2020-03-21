@@ -181,9 +181,32 @@ sendDirectMessage = (request, response) => {
 		});
 };
 
+// Get direct message user list controller
+getDirectMessageUsers = (request, response) => {
+	const payload = jwt.decode(request.headers['x-access-token']);
+
+	const query = `
+		SELECT DISTINCT users.user_id, users.display_name
+		FROM direct_messages, users
+		WHERE (direct_messages.receiver_user_id = $1 AND users.user_id = direct_messages.sender_user_id)
+			OR (direct_messages.sender_user_id = $1 AND users.user_id = direct_messages.receiver_user_id)
+		ORDER BY users.display_name
+	`;
+
+	db.client
+		.query(query, [payload.user_id])
+		.then(result => {
+			response.json({'success': true, 'users': result.rows});
+		})
+		.catch(error => {
+			response.json({'success': false, 'message': error.toString()});
+		});
+};
+
 module.exports = {
 	getMessages,
 	sendMessage,
 	getDirectMessages,
-	sendDirectMessage
+	sendDirectMessage,
+	getDirectMessageUsers
 };

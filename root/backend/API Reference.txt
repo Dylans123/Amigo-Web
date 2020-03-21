@@ -594,3 +594,37 @@ Example fail response:
 	"success": false,
 	"message": "JsonWebTokenError: invalid token"
 }
+
+--------------------------------------------------------------
+Get direct message user list endpoint
+--------------------------------------------------------------
+
+Route:
+GET
+/api/directmessages
+
+Example request header:
+{
+	"x-access-token": "xxx.yyy.zzz"
+}
+
+Example success response:
+{
+	"success": true,
+	"users": [
+		{
+			"user_id": "11",
+			"display_name": "fei22"
+		},
+		{
+			"user_id": "12",
+			"display_name": "yt59974"
+		}
+	]
+}
+
+Example fail response:
+{
+	"success": false,
+	"message": "JsonWebTokenError: invalid token"
+}
