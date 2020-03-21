@@ -66,9 +66,10 @@ app.post('/api/channels', users.validateUser, channels.createChannel);
 app.post('/api/join', users.validateUser, channels.joinChannel);
 app.post('/api/leave', users.validateUser, channels.leaveChannel);
 app.get('/api/:tag_id/channels', users.validateUser, channels.getChannelsByTag);
-app.get('/api/tags', users.validateUser, tags.getTags);
+app.get('/api/tags/all', users.validateUser, tags.getTags);
+app.get('/api/tags', users.validateUser, tags.getUserTags);
 
-app.post('/api/createtag', users.validateAdminUser, tags.createTag);
+app.post('/api/tags', users.validateAdminUser, tags.createTag);
 
 app.use(express.static(dir))
 app.get("/*", (req, res) => {
