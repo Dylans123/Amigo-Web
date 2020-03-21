@@ -6,20 +6,6 @@
 trigger:
 - master
 
-variables:
-
-  # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: '4df84a35-c7ce-4de7-99b5-e898e612035f'
-  
-  # Web app name
-  webAppName: 'amigo-web-app'
-  
-  # Environment name
-  environmentName: 'amigo-web-app'
-
-  # Agent VM image name
-  vmImageName: 'ubuntu-latest'
-
 stages:
 - stage: Build
   displayName: Build stage
