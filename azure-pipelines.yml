@@ -9,13 +9,13 @@ trigger:
 variables:
 
   # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: '{{ azureRmConnection.Id }}'
+  azureSubscription: '4df84a35-c7ce-4de7-99b5-e898e612035f'
   
   # Web app name
-  webAppName: '{{ webAppName }}'
+  webAppName: 'amigo-web-app'
   
   # Environment name
-  environmentName: '{{ webAppName }}'
+  environmentName: 'amigo-web-app'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
