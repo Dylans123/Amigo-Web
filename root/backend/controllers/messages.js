@@ -41,7 +41,7 @@ sendMessage = (request, response) => {
 			const created_on = result.rows[0].created_on;
 
 			query = `
-				SELECT users.display_name
+				SELECT display_name
 				FROM users
 				WHERE user_id = $1
 			`;
