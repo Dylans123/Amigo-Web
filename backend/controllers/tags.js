@@ -1,4 +1,5 @@
 const db = require('../database');
+const jwt = require('jsonwebtoken');
 
 // Create tag controller
 createTag = (request, response) => {
@@ -41,7 +42,30 @@ getTags = (request, response) => {
 		});
 };
 
+// Get user tags
+getUserTags = (request, response) => {
+	const payload = jwt.decode(request.headers['x-access-token']);
+
+	const query = `
+		SELECT tags.tag_id, tags.name, tags.location
+		FROM tags, channels, users_channels
+		WHERE users_channels.user_id = $1
+			AND users_channels.channel_id = channels.channel_id
+			AND channels.tag_id = tags.tag_id
+	`;
+
+	db.client
+		.query(query, [payload.user_id])
+		.then(result => {
+			response.json({'success': true, 'tags': result.rows});
+		})
+		.catch(error => {
+			response.json({'success': false, 'message': error.toString()});
+		});
+};
+
 module.exports = {
 	createTag,
-	getTags
+	getTags,
+	getUserTags
 };

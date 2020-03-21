@@ -293,7 +293,7 @@ Create tag endpoint (Admin)
 
 Route:
 POST
-/api/createtag
+/api/tags
 
 Example request header:
 {
@@ -355,12 +355,12 @@ Example fail response:
 }
 
 --------------------------------------------------------------
-Get tags endpoint
+Get all tags endpoint
 --------------------------------------------------------------
 
 Route:
 GET
-/api/tags
+/api/tags/all
 
 Example request header:
 {
@@ -385,6 +385,42 @@ Example success response:
 			"tag_id": "3",
 			"name": "Tag 2",
 			"location": "Orlando"
+		}
+	]
+}
+
+Example fail response:
+{
+	"success": false,
+	"message": "JsonWebTokenError: invalid signature"
+}
+
+--------------------------------------------------------------
+Get user tags endpoint
+--------------------------------------------------------------
+
+Route:
+GET
+/api/tags
+
+Example request header:
+{
+	"x-access-token": "xxx.yyy.zzz"
+}
+
+Example success response:
+{
+	"success": true,
+	"tags": [
+		{
+			"tag_id": "1",
+			"name": "Tag 1",
+			"location": "Orlando"
+		},
+		{
+			"tag_id": "2",
+			"name": "Tag 1",
+			"location": "Miami"
 		}
 	]
 }
