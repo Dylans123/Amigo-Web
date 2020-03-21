@@ -283,6 +283,80 @@ getUserInfo = (request, response) => {
 		});
 };
 
+updateUser = (request, response) => {
+	const body = request.body;
+	var errors = validationResult(request);
+	const payload = jwt.decode(request.headers['x-access-token']);
+
+	// Input is invalid and/or email has already been registered
+	if (!errors.isEmpty()) {
+		return response.json({'success': false, 'errors': errors.array()});
+	}
+	// Input is valid and email has not been registered, so add user
+	else {
+		var query = `
+			SELECT * FROM users WHERE users.user_id = $1
+		`;
+
+		db.client
+			.query(query, [payload.user_id])
+			.then(result => {
+				if (!(result.rows.length > 0 && bcrypt.compareSync(body.password, result.rows[0].password))) {
+					response.json({
+						'success': false,
+						'message': 'Wrong Password.'
+					});
+				}
+				else {
+				var query = `
+					UPDATE users
+					SET first_name = $2, last_name = $3, display_name = $4, location = $5
+					WHERE user_id = $1
+				`;
+
+				db.client
+					.query(query, [payload.user_id, body.first_name, body.last_name, body.display_name, body.location])
+					.then(result => {
+						var values = request.body.new_password;
+						if (values == undefined) {
+							response.json({
+								'success': true,
+								'message': 'User info was successfully updated.'
+							});
+						}
+						else {
+							const new_password = bcrypt.hashSync(body.new_password, saltRounds);
+							query = `
+								UPDATE users
+								SET password = $2
+								WHERE user_id = $1
+							`;
+
+						db.client
+							.query(query, [payload.user_id, new_password])
+							.then(result => {
+								response.json({
+									'success': true,
+									'message': 'User info was successfully updated.'
+								});
+							})
+							.catch(error => {
+								response.json({'success': false, 'message': error.toString()});
+							});
+						}
+					})
+					.catch(error => {
+						response.json({'success': false, 'message': error.toString()});
+					});
+				}
+
+			})
+			.catch(error => {
+				response.json({'success': false, 'message': error.toString()});
+			});
+	}
+};
+
 module.exports = {
 	signup,
 	checkEmail,
@@ -291,5 +365,6 @@ module.exports = {
 	validateAdminUser,
 	sendVerification,
 	verifyEmail,
-	getUserInfo
+	getUserInfo,
+	updateUser
 };
