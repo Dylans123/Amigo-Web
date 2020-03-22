@@ -1,5 +1,0 @@
-root/frontend/node_modules
-root/backend/node_modules
-root/backend/.env
-root/backend/.DS_Store
-.vscode
