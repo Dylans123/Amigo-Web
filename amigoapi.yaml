@@ -656,7 +656,7 @@ paths:
                     type: string
   /api/messages:
     post:
-      summary: Create a tag
+      summary: Send a message
       parameters:
         - in: header
           name: x-access-token
@@ -697,7 +697,7 @@ paths:
                     type: string
   /api/directmessages/{receiver_user_id}:
     get:
-      summary: Get the current user's direct messages using the other party's user id
+      summary: Get the current user's direct messages with another user
       parameters:
         - in: header
           name: x-access-token
