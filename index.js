@@ -118,14 +118,10 @@ app.post(
 );
 
 // Code to generate frontend build directory
-var arr = __dirname.split('/');
-arr.pop();
-arr.push('frontend');
-arr.push('dist');
-const dir = arr.join('/');
-app.use(express.static(dir));
+console.log(__dirname);
+app.use(express.static(__dirname + "/frontend/dist"));
 app.get("/*", (req, res) => {
-	res.sendFile(path.join(dir, "/index.html"));
+	res.sendFile(path.join(__dirname, "/frontend/dist/index.html"));
 });
 
 server.listen(port, () => {

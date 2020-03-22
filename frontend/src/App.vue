@@ -25,11 +25,11 @@ export default {
     }
   },
   mounted () {
-    // fetch('https://jsonplaceholder.typicode.com/todos/1')
-    //   .then(response => response.json())
-    //   .then(json => this.info = json)
-    api.get('/verify')
-      .then(response => (this.info = response))
+    fetch('https://jsonplaceholder.typicode.com/todos/1')
+      .then(response => response.json())
+      .then(json => this.info = json)
+    // api.get('/verify')
+    //   .then(response => (this.info = response))
   }
 }
 </script>
