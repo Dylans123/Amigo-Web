@@ -26,20 +26,20 @@ createChannel = (request, response) => {
 					.query(query, [payload.user_id, result.rows[0].channel_id])
 					.then(result => {
 						if (result.rowCount > 0)
-							response.json({'success': true, 'message': "Channel created successfully!"});
+							response.status(200).json({'success': true, 'message': "Channel created successfully!"});
 						else
-							response.json({'success': false, 'message': 'Channel creation unsuccessful.'});
+							response.status(400).json({'success': false, 'message': 'Channel creation unsuccessful.'});
 					})
 					.catch(error => {
-						response.json({'success': false, 'message': error.toString()});
+						response.status(400).json({'success': false, 'message': error.toString()});
 					});
 			}
 			else {
-				response.json({'success': false, 'message': "Channel creation unsuccessful."});
+				response.status(400).json({'success': false, 'message': "Channel creation unsuccessful."});
 			}
 		})
 		.catch(error => {
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
 
@@ -56,10 +56,10 @@ getUserChannels = (request, response) => {
 	db.client
 		.query(query, [payload.user_id])
 		.then(result => {
-			response.json({'success': true, 'channels': result.rows});
+			response.status(200).json({'success': true, 'channels': result.rows});
 		})
 		.catch(error => {
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
 
@@ -77,12 +77,12 @@ joinChannel = (request, response) => {
 		.query(query, [payload.user_id, body.channel_id])
 		.then(result => {
 			if (result.rowCount > 0)
-				response.json({'success': true, 'message': 'User has joined the channel.'});
+				response.status(200).json({'success': true, 'message': 'User has joined the channel.'});
 			else
-				response.json({'success': false, 'message': 'Join unsuccessful.'});
+				response.status(400).json({'success': false, 'message': 'Join unsuccessful.'});
 		})
 		.catch(error => {
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
 
@@ -101,12 +101,12 @@ leaveChannel = (request, response) => {
 		.query(query, [payload.user_id, body.channel_id])
 		.then(result => {
 			if (result.rowCount > 0)
-				response.json({'success': true, 'message': 'User has left the channel.'});
+				response.status(200).json({'success': true, 'message': 'User has left the channel.'});
 			else
-				response.json({'success': false, 'message': 'Cannot unjoin.'});
+				response.status(400).json({'success': false, 'message': 'Cannot unjoin.'});
 		})
 		.catch(error => {
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
 
@@ -123,10 +123,10 @@ getChannelsByTag = (request, response) => {
 	db.client
 		.query(query, [params.tag_id])
 		.then(result => {
-			response.json({'success': true, 'channels': result.rows});
+			response.status(200).json({'success': true, 'channels': result.rows});
 		})
 		.catch(error => {
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
 

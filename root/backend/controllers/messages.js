@@ -29,18 +29,18 @@ getMessages = (request, response) => {
 				db.client
 					.query(query, [params.channel_id])
 					.then(result => {
-						response.json({'success': true, 'messages': result.rows});
+						response.status(200).json({'success': true, 'messages': result.rows});
 					})
 					.catch(error => {
-						response.json({'success': false, 'message': error.toString()});
+						response.status(400).json({'success': false, 'message': error.toString()});
 					});
 			}
 			else {
-				response.json({'success': false, 'message': 'User needs to join channel first.'});
+				response.status(400).json({'success': false, 'message': 'User needs to join channel first.'});
 			}
 		})
 		.catch(error => {
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
 
@@ -91,22 +91,22 @@ sendMessage = (request, response) => {
 									'created_on': created_on
 								});
 
-								response.json({'success': true, 'message': 'Message sent successfully.'});
+								response.status(200).json({'success': true, 'message': 'Message sent successfully.'});
 							})
 							.catch(error => {
-								response.json({'success': false, 'message': error.toString()});
+								response.status(400).json({'success': false, 'message': error.toString()});
 							});
 					})
 					.catch(error => {
-						response.json({'success': false, 'message': error.toString()});
+						response.status(400).json({'success': false, 'message': error.toString()});
 					});
 			}
 			else {
-				response.json({'success': false, 'message': 'User needs to join channel first.'});
+				response.status(400).json({'success': false, 'message': 'User needs to join channel first.'});
 			}
 		})
 		.catch(error => {
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
 
@@ -126,10 +126,10 @@ getDirectMessages = (request, response) => {
 	db.client
 		.query(query, [payload.user_id, params.sender_user_id])
 		.then(result => {
-			response.json({'success': true, 'messages': result.rows});
+			response.status(200).json({'success': true, 'messages': result.rows});
 		})
 		.catch(error => {
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
 
@@ -173,14 +173,14 @@ sendDirectMessage = (request, response) => {
 							'created_on': created_on
 						});
 
-					response.json({'success': true, 'message': 'Message sent successfully.'});
+					response.status(200).json({'success': true, 'message': 'Message sent successfully.'});
 				})
 				.catch(error => {
-					response.json({'success': false, 'message': error.toString()});
+					response.status(400).json({'success': false, 'message': error.toString()});
 				});
 		})
 		.catch(error => {
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
 
@@ -199,10 +199,10 @@ getDirectMessageUsers = (request, response) => {
 	db.client
 		.query(query, [payload.user_id])
 		.then(result => {
-			response.json({'success': true, 'users': result.rows});
+			response.status(200).json({'success': true, 'users': result.rows});
 		})
 		.catch(error => {
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
 
