@@ -14,12 +14,12 @@ createTag = (request, response) => {
 		.query(query, [body.name, body.location])
 		.then(result => {
 			if (result.rowCount > 0)
-				response.json({'success': true, 'message': "Tag created successfully!"});
+				response.status(200).json({'success': true, 'message': "Tag created successfully!"});
 			else
-				response.json({'success': false, 'message': "Tag creation unsuccessful."});
+				response.status(400).json({'success': false, 'message': "Tag creation unsuccessful."});
 		})
 		.catch(error => {
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
 
@@ -33,10 +33,10 @@ getTags = (request, response) => {
 	db.client
 		.query(query)
 		.then(result => {
-			response.json({'success': true, 'tags': result.rows});
+			response.status(200).json({'success': true, 'tags': result.rows});
 		})
 		.catch(error => {
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
 
@@ -55,10 +55,10 @@ getUserTags = (request, response) => {
 	db.client
 		.query(query, [payload.user_id])
 		.then(result => {
-			response.json({'success': true, 'tags': result.rows});
+			response.status(200).json({'success': true, 'tags': result.rows});
 		})
 		.catch(error => {
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
 

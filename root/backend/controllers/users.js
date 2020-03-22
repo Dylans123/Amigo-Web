@@ -15,7 +15,7 @@ signup = (request, response) => {
 
 	// Input is invalid and/or email has already been registered
 	if (!errors.isEmpty()) {
-		return response.json({'success': false, 'errors': errors.array()});
+		return response.status(400).json({'success': false, 'errors': errors.array()});
 	}
 	// Input is valid and email has not been registered, so add user
 	else {
@@ -34,10 +34,10 @@ signup = (request, response) => {
 				const payload = {'query': {'email': body.email}};
 				sendVerification(payload);
 
-				response.json({'success': true, 'message': 'Sign up successful! Email verification request sent.'});
+				response.status(200).json({'success': true, 'message': 'Sign up successful! Email verification request sent.'});
 			})
 			.catch(error => {
-				response.json({'success': false, 'message': error.toString()});
+				response.status(400).json({'success': false, 'message': error.toString()});
 			});
 	}
 };
@@ -56,7 +56,7 @@ checkEmail = (email, callback) => {
 			callback(result.rows.length > 0);
 		})
 		.catch(error => {
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
 
@@ -67,7 +67,7 @@ login = (request, response) => {
 
 	// Input is missing
 	if (!errors.isEmpty()) {
-		return response.json({'success': false, 'errors': errors.array()});
+		return response.status(400).json({'success': false, 'errors': errors.array()});
 	}
 	// Input is not missing, so issue token
 	else {
@@ -105,22 +105,22 @@ login = (request, response) => {
 								else
 									var token = jwt.sign(payload, key, {expiresIn: "7d"});
 
-								response.json({'success': true, 'message': 'Login successful!', 'x-access-token': token, 'verified': true});
+								response.status(200).json({'success': true, 'message': 'Login successful!', 'x-access-token': token, 'verified': true});
 							})
 							.catch(error => {
-								response.json({'success': false, 'message': error.toString()});
+								response.status(400).json({'success': false, 'message': error.toString()});
 							});
 					}
 					else {
-						response.json({'success': false, 'message': 'Email has not been verified.', 'verified': false});
+						response.status(400).json({'success': false, 'message': 'Email has not been verified.', 'verified': false});
 					}
 				}
 				else {
-					response.json({'success': false, 'message': 'Login failed.'});
+					response.status(400).json({'success': false, 'message': 'Login failed.'});
 				}
 			})
 			.catch(error => {
-				response.json({'success': false, 'message': error.toString()});
+				response.status(400).json({'success': false, 'message': error.toString()});
 			});
 	}
 };
@@ -131,7 +131,7 @@ validateUser = (request, response, next) => {
 		if (error) {
 			jwt.verify(request.headers['x-access-token'], adminKey, (error, decoded) => {
 				if (error)
-					response.json({'success': false, 'message': error.toString()});
+					response.status(400).json({'success': false, 'message': error.toString()});
 				else
 					next();
 			});
@@ -145,7 +145,7 @@ validateUser = (request, response, next) => {
 validateAdminUser = (request, response, next) => {
 	jwt.verify(request.headers['x-access-token'], adminKey, (error, decoded) => {
 		if (error)
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		else
 			next();
 	});
@@ -190,19 +190,19 @@ sendVerification = (request, response) => {
 
 				smtpTransport.sendMail(mailOptions, (error, transportResponse) => {
 					if (error) {
-						response.json({'success': false, 'message': error.toString()});
+						response.status(400).json({'success': false, 'message': error.toString()});
 					}
 					else {
-						response.json({'success': true, 'message': 'Verification request email sent.'});
+						response.status(200).json({'success': true, 'message': 'Verification request email sent.'});
 					}
 				});
 			}
 			else {
-				response.json({'success': false, 'message': 'Email already verified or not registered.'});
+				response.status(400).json({'success': false, 'message': 'Email already verified or not registered.'});
 			}
 		})
 		.catch(error => {
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
 
@@ -211,7 +211,7 @@ verifyEmail = (request, response) => {
 
 	jwt.verify(token, verificationKey, (error, decoded) => {
 		if (error) {
-			response.json({'success': false, 'message': 'Email verification failed.'});
+			response.status(400).json({'success': false, 'message': 'Email verification failed.'});
 		}
 		else {
 			const payload = jwt.decode(token);
@@ -236,20 +236,20 @@ verifyEmail = (request, response) => {
 							.query(query, [payload.email])
 							.then(result => {
 								if (result.rowCount > 0)
-									response.json({'success': true, 'message': 'Email verified successfully.'});
+									response.status(200).json({'success': true, 'message': 'Email verified successfully.'});
 								else
-									response.json({'success': false, 'message': 'Problem with email verification.'});
+									response.status(400).json({'success': false, 'message': 'Problem with email verification.'});
 							})
 							.catch(error => {
-								response.json({'success': false, 'message': error.toString()});
+								response.status(400).json({'success': false, 'message': error.toString()});
 							});
 					}
 					else {
-						response.json({'success': false, 'message': 'Email already verified or not registered.'});
+						response.status(400).json({'success': false, 'message': 'Email already verified or not registered.'});
 					}
 				})
 				.catch(error => {
-					response.json({'success': false, 'message': error.toString()});
+					response.status(400).json({'success': false, 'message': error.toString()});
 				});
 		}
 	});
@@ -279,7 +279,7 @@ getUserInfo = (request, response) => {
 			});
 		})
 		.catch(error => {
-			response.json({'success': false, 'message': error.toString()});
+			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
 
@@ -290,7 +290,7 @@ updateUser = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	if (!errors.isEmpty()) {
-		return response.json({'success': false, 'errors': errors.array()});
+		return response.status(400).json({'success': false, 'errors': errors.array()});
 	}
 	else {
 		var query = `
@@ -303,7 +303,7 @@ updateUser = (request, response) => {
 			.query(query, [payload.user_id])
 			.then(result => {
 				if (!(result.rows.length > 0 && bcrypt.compareSync(body.password, result.rows[0].password))) {
-					response.json({'success': false, 'message': 'Wrong Password.'});
+					response.status(400).json({'success': false, 'message': 'Wrong Password.'});
 				}
 				else {
 					query = `
@@ -318,7 +318,7 @@ updateUser = (request, response) => {
 							var values = request.body.new_password;
 							
 							if (values == undefined) {
-								response.json({'success': true, 'message': 'User info was successfully updated.'});
+								response.status(200).json({'success': true, 'message': 'User info was successfully updated.'});
 							}
 							else {
 								const new_password = bcrypt.hashSync(body.new_password, saltRounds);
@@ -332,20 +332,20 @@ updateUser = (request, response) => {
 								db.client
 									.query(query, [payload.user_id, new_password])
 									.then(result => {
-										response.json({'success': true, 'message': 'User info was successfully updated.'});
+										response.status(200).json({'success': true, 'message': 'User info was successfully updated.'});
 									})
 									.catch(error => {
-										response.json({'success': false, 'message': error.toString()});
+										response.status(400).json({'success': false, 'message': error.toString()});
 									});
 							}
 						})
 						.catch(error => {
-							response.json({'success': false, 'message': error.toString()});
+							response.status(400).json({'success': false, 'message': error.toString()});
 						});
 				}
 			})
 			.catch(error => {
-				response.json({'success': false, 'message': error.toString()});
+				response.status(400).json({'success': false, 'message': error.toString()});
 			});
 	}
 };
