@@ -100,6 +100,7 @@ app.get('/api/directmessages/:sender_user_id', users.validateUser, messages.getD
 app.post('/api/directmessages', users.validateUser, messages.sendDirectMessage);
 app.get('/api/directmessages', users.validateUser, messages.getDirectMessageUsers);
 app.post('/api/tags', users.validateAdminUser, tags.createTag);
+
 app.post(
 	'/api/user',
 	[
@@ -112,7 +113,8 @@ app.post(
 			.isAlphanumeric().withMessage("Display name is not valid.")
 			.isLength({min: 3}).withMessage('Display name must be at least 3 characters.')
 	],
-	users.validateUser, users.updateUser
+	users.validateUser,
+	users.updateUser
 );
 
 // Code to generate frontend build directory
