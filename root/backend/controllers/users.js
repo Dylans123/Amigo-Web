@@ -15,7 +15,7 @@ signup = (request, response) => {
 
 	// Input is invalid and/or email has already been registered
 	if (!errors.isEmpty()) {
-		return response.status(400).json({'success': false, 'errors': errors.array()});
+		return response.status(422).json({'success': false, 'errors': errors.array()});
 	}
 	// Input is valid and email has not been registered, so add user
 	else {
@@ -67,7 +67,7 @@ login = (request, response) => {
 
 	// Input is missing
 	if (!errors.isEmpty()) {
-		return response.status(400).json({'success': false, 'errors': errors.array()});
+		return response.status(422).json({'success': false, 'errors': errors.array()});
 	}
 	// Input is not missing, so issue token
 	else {
@@ -112,11 +112,11 @@ login = (request, response) => {
 							});
 					}
 					else {
-						response.status(400).json({'success': false, 'message': 'Email has not been verified.', 'verified': false});
+						response.status(403).json({'success': false, 'message': 'Email has not been verified.', 'verified': false});
 					}
 				}
 				else {
-					response.status(400).json({'success': false, 'message': 'Login failed.'});
+					response.status(401).json({'success': false, 'message': 'Login failed.'});
 				}
 			})
 			.catch(error => {
@@ -290,7 +290,7 @@ updateUser = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	if (!errors.isEmpty()) {
-		return response.status(400).json({'success': false, 'errors': errors.array()});
+		return response.status(422).json({'success': false, 'errors': errors.array()});
 	}
 	else {
 		var query = `

@@ -96,7 +96,7 @@ app.get('/api/tags/all', users.validateUser, tags.getTags);
 app.get('/api/tags', users.validateUser, tags.getUserTags);
 app.get('/api/messages/:channel_id', users.validateUser, messages.getMessages);
 app.post('/api/messages', users.validateUser, messages.sendMessage);
-app.get('/api/directmessages/:sender_user_id', users.validateUser, messages.getDirectMessages);
+app.get('/api/directmessages/:receiver_user_id', users.validateUser, messages.getDirectMessages);
 app.post('/api/directmessages', users.validateUser, messages.sendDirectMessage);
 app.get('/api/directmessages', users.validateUser, messages.getDirectMessageUsers);
 app.post('/api/tags', users.validateAdminUser, tags.createTag);
