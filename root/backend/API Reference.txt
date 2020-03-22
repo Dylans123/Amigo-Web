@@ -13,7 +13,7 @@ Example request body:
 	"confirmation_password": "123456",
 	"first_name": "First",
 	"last_name": "",
-	"display_name": "girocok844",
+	"display_name": "girocok844"
 }
 
 Example success response:
@@ -494,6 +494,11 @@ Example request body:
 	"message": "Hello"
 }
 
+Example WebSocket connection:
+var socket = io();
+socket.emit("join", {'token': 'xxx.yyy.zzz', 'channel_id': '15'});
+socket.on('message', callback());
+
 Example success response:
 {
 	"success": true,
@@ -572,6 +577,11 @@ Example request body:
 	"receiver_user_id": "10",
 	"message": "Hello"
 }
+
+Example WebSocket connection:
+var socket = io();
+socket.emit('join', {'token': 'xxx.yyy.zzz', 'receiver_user_id': '20'});
+socket.on('message', callback());
 
 Example success response:
 {

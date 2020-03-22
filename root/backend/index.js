@@ -6,6 +6,7 @@ const port = process.env.PORT || 3000;
 const {check, validationResult} = require('express-validator');
 const server = require('http').Server(app);
 const io = require('./websocket').initialize(server);
+const jwt = require('jsonwebtoken');
 const db = require('./database');
 const users = require('./controllers/users');
 const tags = require('./controllers/tags');
@@ -16,9 +17,34 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors());
 
-io.on('connection', () => {
-	console.log('A user is connected.');
+// Socket connections
+const key = process.env['JWT_KEY'];
+const adminKey = process.env['JWT_ADMIN_KEY'];
+
+io.on('connection', (socket) => {
+	socket.on('join', (data) => {
+		jwt.verify(data.token, key, (error, decoded) => {
+			if (error) {
+				jwt.verify(data.token, adminKey, (error, decoded) => {
+					if (!error)
+						joinRoom(socket, data);
+				});
+			}
+			else {
+				joinRoom(socket, data);
+			}
+		});
+	});
 });
+
+function joinRoom(socket, data) {
+	const payload = jwt.decode(data.token);
+
+	if (!(data.channel_id === undefined))
+		socket.join(data.channel_id);
+	else (!(data.sender_user_id === undefined))
+		socket.join(payload.user_id + ":" + data.receiver_user_id);
+}
 
 // Routes
 app.post(
