@@ -42,7 +42,7 @@ function joinRoom(socket, data) {
 
 	if (!(data.channel_id === undefined))
 		socket.join(data.channel_id);
-	else (!(data.sender_user_id === undefined))
+	else (!(data.receiver_user_id === undefined))
 		socket.join(payload.user_id + ":" + data.receiver_user_id);
 }
 
