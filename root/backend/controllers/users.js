@@ -269,7 +269,7 @@ getUserInfo = (request, response) => {
 		.query(query, [payload.user_id])
 		.then(result => {
 			const user = result.rows[0];
-			response.json({
+			response.status(200).json({
 				'success': true,
 				'email': user.email,
 				'first_name': user.first_name,
