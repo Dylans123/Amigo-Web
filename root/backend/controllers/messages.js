@@ -84,7 +84,7 @@ sendMessage = (request, response) => {
 							.then(result => {
 								const display_name = result.rows[0].display_name;
 
-								io.emit('message', {
+								io.to(body.channel_id).emit('message', {
 									'message_id': message_id,
 									'display_name': display_name,
 									'message': body.message,
@@ -162,13 +162,16 @@ sendDirectMessage = (request, response) => {
 					const sender_display_name = result.rows[0].sender_display_name;
 					const receiver_display_name = result.rows[0].receiver_display_name;
 
-					io.emit('message', {
-						'message_id': message_id,
-						'receiver_display_name': receiver_display_name,
-						'sender_display_name': sender_display_name,
-						'message': body.message,
-						'created_on': created_on
-					});
+					io
+						.to(payload.user_id + ":" + body.receiver_user_id)
+						.to(body.receiver_user_id + ":" + payload.user_idd)
+						.emit('message', {
+							'message_id': message_id,
+							'receiver_display_name': receiver_display_name,
+							'sender_display_name': sender_display_name,
+							'message': body.message,
+							'created_on': created_on
+						});
 
 					response.json({'success': true, 'message': 'Message sent successfully.'});
 				})
