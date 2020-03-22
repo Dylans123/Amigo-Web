@@ -124,7 +124,7 @@ getDirectMessages = (request, response) => {
 	`;
 
 	db.client
-		.query(query, [payload.user_id, params.sender_user_id])
+		.query(query, [payload.user_id, params.receiver_user_id])
 		.then(result => {
 			response.status(200).json({'success': true, 'messages': result.rows});
 		})
