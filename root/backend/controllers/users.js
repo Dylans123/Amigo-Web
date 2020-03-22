@@ -343,7 +343,6 @@ updateUser = (request, response) => {
 							response.json({'success': false, 'message': error.toString()});
 						});
 				}
-
 			})
 			.catch(error => {
 				response.json({'success': false, 'message': error.toString()});
