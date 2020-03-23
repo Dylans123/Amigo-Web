@@ -11,6 +11,8 @@ paths:
   /api/signup:
     post:
       summary: Register a new user
+      tags:
+        - Registration/Login
       requestBody:
         content:
           application/json:
@@ -77,6 +79,8 @@ paths:
   /api/login:
     post:
       summary: Log in a user
+      tags:
+        - Registration/Login
       requestBody:
         content:
           application/json:
@@ -152,6 +156,8 @@ paths:
   /api/user:
     get:
       summary: Get the current user's information
+      tags:
+        - User
       parameters:
         - in: header
           name: x-access-token
@@ -189,8 +195,10 @@ paths:
                   message:
                     type: string
     post:
-      summary: Update the current user's info
+      summary: Update the current user's information
       description: The new password is not required in the request body.
+      tags:
+        - User
       requestBody:
         content:
           application/json:
@@ -259,6 +267,8 @@ paths:
   /api/sendverification:
     get:
       summary: Send verification email
+      tags:
+        - Registration/Login
       responses:
         '200':
           description: Successful
@@ -285,6 +295,8 @@ paths:
   /api/channels:
     get:
       summary: Get the current user's channels
+      tags:
+        - Channels
       parameters:
         - in: header
           name: x-access-token
@@ -324,6 +336,8 @@ paths:
                     type: string
     post:
       summary: Create a channel
+      tags:
+        - Channels
       parameters:
         - in: header
           name: x-access-token
@@ -367,6 +381,8 @@ paths:
   /api/join:
     post:
       summary: Join a channel
+      tags:
+        - Channels
       parameters:
         - in: header
           name: x-access-token
@@ -406,6 +422,8 @@ paths:
   /api/leave:
     post:
       summary: Leave a channel
+      tags:
+        - Channels
       parameters:
         - in: header
           name: x-access-token
@@ -444,7 +462,9 @@ paths:
                     type: string
   /api/tags:
     post:
-      summary: Create a tag
+      summary: Create a tag (Admin)
+      tags:
+        - Tags
       parameters:
         - in: header
           name: x-access-token
@@ -485,6 +505,8 @@ paths:
                     type: string
     get:
       summary: Get the current user's tags
+      tags:
+        - Tags
       parameters:
         - in: header
           name: x-access-token
@@ -525,6 +547,8 @@ paths:
   /api/channels/{tag_id}:
     get:
       summary: Get a list of channels based on tag id
+      tags:
+        - Tags
       parameters:
         - in: header
           name: x-access-token
@@ -570,6 +594,8 @@ paths:
   /api/tags/all:
     get:
       summary: Get a list of all tags
+      tags:
+        - Tags
       parameters:
         - in: header
           name: x-access-token
@@ -610,6 +636,8 @@ paths:
   /api/messages/{channel_id}:
     get:
       summary: Get a channel's messages
+      tags:
+        - Channels
       parameters:
         - in: header
           name: x-access-token
@@ -657,6 +685,8 @@ paths:
   /api/messages:
     post:
       summary: Send a message
+      tags:
+        - Channels
       parameters:
         - in: header
           name: x-access-token
@@ -698,6 +728,8 @@ paths:
   /api/directmessages/{receiver_user_id}:
     get:
       summary: Get the current user's direct messages with another user
+      tags:
+        - Direct Messages
       parameters:
         - in: header
           name: x-access-token
@@ -747,6 +779,8 @@ paths:
   /api/directmessages:
     post:
       summary: Send a direct message
+      tags:
+        - Direct Messages
       parameters:
         - in: header
           name: x-access-token
@@ -787,6 +821,8 @@ paths:
                     type: string
     get:
       summary: Get a list of users that have direct messaged with the current user
+      tags:
+        - Direct Messages
       parameters:
         - in: header
           name: x-access-token

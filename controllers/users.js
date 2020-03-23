@@ -315,13 +315,13 @@ updateUser = (request, response) => {
 					db.client
 						.query(query, [payload.user_id, body.first_name, body.last_name, body.display_name, body.location])
 						.then(result => {
-							var values = request.body.new_password;
+							var new_password = request.body.new_password;
 							
-							if (values == undefined) {
+							if (new_password == undefined) {
 								response.status(200).json({'success': true, 'message': 'User info was successfully updated.'});
 							}
 							else {
-								const new_password = bcrypt.hashSync(body.new_password, saltRounds);
+								new_password = bcrypt.hashSync(body.new_password, saltRounds);
 
 								query = `
 									UPDATE users
