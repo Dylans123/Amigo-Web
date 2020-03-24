@@ -130,10 +130,31 @@ getChannelsByTag = (request, response) => {
 		});
 };
 
+// Get channel member count controller
+getChannelMemberCount = (request, response) => {
+	const params = request.params;
+
+	const query = `
+		SELECT COUNT(*)
+		FROM users_channels
+		WHERE channel_id = $1
+	`;
+
+	db.client
+		.query(query, [params.channel_id])
+		.then(result => {
+			response.status(200).json({'success': true, 'member_count': result.rows[0].count});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+};
+
 module.exports = {
 	getUserChannels,
 	createChannel,
 	joinChannel,
 	leaveChannel,
-	getChannelsByTag
+	getChannelsByTag,
+	getChannelMemberCount
 };
