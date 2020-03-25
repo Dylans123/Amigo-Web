@@ -133,13 +133,11 @@ app.post(
 );
 
 // Code to generate frontend build directory
-// console.log(__dirname);
-// app.use(express.static(__dirname + "/frontend/dist"));
-// app.get("/*", (req, res) => {
-// 	res.sendFile(path.join(__dirname, "/frontend/dist/index.html"));
-// });
-
-app.use(express.static(__dirname));
+console.log(__dirname);
+app.use(express.static(__dirname + "/frontend/dist"));
+app.get("/*", (req, res) => {
+	res.sendFile(path.join(__dirname, "/frontend/dist/index.html"));
+});
 
 server.listen(port, () => {
 	console.log(`Listening on port ${port}.`);
