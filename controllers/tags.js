@@ -82,9 +82,30 @@ getUserTags = (request, response) => {
 		});
 };
 
+// Search tags controller
+searchTags = (request, response) => {
+	const requestQuery = request.query;
+
+	const query = `
+		SELECT tags.tag_id, tags.name
+		FROM tags, channels
+		WHERE tags.tag_id = channels.tag_id AND channels.school_id = $1 AND tags.name ILIKE $2
+	`;
+
+	db.client
+		.query(query, [requestQuery.school_id, requestQuery.query + "%"])
+		.then(result => {
+			response.status(200).json({'success': true, 'tags': result.rows});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+};
+
 module.exports = {
 	createTag,
 	getTags,
 	getUserTags,
-	getTagsBySchool
+	getTagsBySchool,
+	searchTags
 };

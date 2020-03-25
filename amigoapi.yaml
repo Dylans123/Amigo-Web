@@ -392,6 +392,58 @@ paths:
                     type: boolean
                   message:
                     type: string
+  /api/searchchannels:
+    get:
+      summary: Search channels by search query
+      tags:
+        - Channels
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: query
+          schema:
+            type: string
+        - in: query
+          name: school_id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  channels:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        channel_id:
+                          type: string
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        school_id:
+                          type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
   /api/join:
     post:
       summary: Join the current user to a channel
@@ -567,6 +619,54 @@ paths:
         - in: path
           name: school_id
           required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  tags:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tag_id:
+                          type: string
+                        name:
+                          type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/searchtags:
+    get:
+      summary: Search tags by search query and school ID
+      tags:
+        - Tags
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: query
+          schema:
+            type: string
+        - in: query
+          name: school_id
           schema:
             type: string
       responses:
@@ -1052,6 +1152,52 @@ paths:
       parameters:
         - in: header
           name: x-access-token
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  schools:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        school_id:
+                          type: string
+                        location_id:
+                          type: string
+                        name:
+                          type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/searchschools:
+    get:
+      summary: Search schools by search query
+      tags:
+        - Schools
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: query
           schema:
             type: string
       responses:

@@ -170,6 +170,26 @@ getChannelMemberCount = (request, response) => {
 		});
 };
 
+// Search channels controller
+searchChannels = (request, response) => {
+	const requestQuery = request.query;
+
+	const query = `
+		SELECT channel_id, name, description, school_id
+		FROM channels
+		WHERE school_id = $1 AND name ILIKE $2
+	`;
+
+	db.client
+		.query(query, [requestQuery.school_id, requestQuery.query + "%"])
+		.then(result => {
+			response.status(200).json({'success': true, 'channels': result.rows});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+};
+
 module.exports = {
 	getUserChannels,
 	createChannel,
@@ -177,5 +197,6 @@ module.exports = {
 	leaveChannel,
 	getChannelsByTag,
 	getChannelMemberCount,
-	getChannelsByTagAndSchool
+	getChannelsByTagAndSchool,
+	searchChannels
 };

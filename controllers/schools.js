@@ -37,7 +37,28 @@ getSchoolByID = (request, response) => {
 		});
 };
 
+// Search schools controller
+searchSchools = (request, response) => {
+	const requestQuery = request.query;
+
+	const query = `
+		SELECT *
+		FROM schools
+		WHERE name ILIKE $1
+	`;
+
+	db.client
+		.query(query, [requestQuery.query + "%"])
+		.then(result => {
+			response.status(200).json({'success': true, 'tags': result.rows});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+};
+
 module.exports = {
 	getSchools,
-	getSchoolByID
+	getSchoolByID,
+	searchSchools
 }
