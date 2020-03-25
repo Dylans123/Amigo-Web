@@ -120,8 +120,8 @@ app.post('/api/channels', users.validateUser, channels.createChannel);
 app.post('/api/channels/join', users.validateUser, channels.joinChannel);
 app.post('/api/channels/leave', users.validateUser, channels.leaveChannel);
 app.get('/api/channels/membercount', users.validateUser, channels.getChannelMemberCount);
-app.get('/api/channel/messages', users.validateUser, messages.getMessages);
-app.post('/api/channel/messages', users.validateUser, messages.sendMessage);
+app.get('/api/channels/messages', users.validateUser, messages.getMessages);
+app.post('/api/channels/messages', users.validateUser, messages.sendMessage);
 
 // Tag routes
 app.get('/api/tags', users.validateUser, tags.getTags);

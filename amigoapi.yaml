@@ -696,7 +696,7 @@ paths:
                     type: boolean
                   message:
                     type: string
-  /api/channel/messages:
+  /api/channels/messages:
     get:
       summary: Get all of a channel's messages
       tags:
