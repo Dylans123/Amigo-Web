@@ -25,39 +25,63 @@ createTag = (request, response) => {
 
 // Get tags controller
 getTags = (request, response) => {
-	const query = `
-		SELECT tags.tag_id, tags.name, tags.school_id
-		FROM tags
-	`;
+	const requestQuery = request.query;
+	var query;
 
-	db.client
-		.query(query)
-		.then(result => {
-			response.status(200).json({'success': true, 'tags': result.rows});
-		})
-		.catch(error => {
-			response.status(400).json({'success': false, 'message': error.toString()});
-		});
-};
+	// All
+	if (requestQuery.school_id === undefined && requestQuery.query === undefined) {
+		query = `
+			SELECT tag_id, name
+			FROM tags
+		`;
 
-// Get tags by school controller
-getTagsBySchool = (request, response) => {
-	const params = request.params;
+		db.client
+			.query(query)
+			.then(result => {
+				response.status(200).json({'success': true, 'tags': result.rows});
+			})
+			.catch(error => {
+				response.status(400).json({'success': false, 'message': error.toString()});
+			});
+	}
+	// By school_id
+	else if (!(requestQuery.school_id === undefined) && requestQuery.query === undefined) {
+		query = `
+			SELECT DISTINCT tags.tag_id, tags.name
+			FROM tags, channels
+			WHERE channels.school_id = $1 AND channels.tag_id = tags.tag_id
+		`;
 
-	const query = `
-		SELECT DISTINCT tags.tag_id, tags.name
-		FROM tags, channels
-		WHERE channels.school_id = $1 AND channels.tag_id = tags.tag_id
-	`;
+		db.client
+			.query(query, [requestQuery.school_id])
+			.then(result => {
+				response.status(200).json({'success': true, 'tags': result.rows});
+			})
+			.catch(error => {
+				response.status(400).json({'success': false, 'message': error.toString()});
+			});
+	}
+	// By school_id and search query
+	else if (!(requestQuery.school_id === undefined) && !(requestQuery.query === undefined)) {
+		query = `
+			SELECT DISTINCT tags.tag_id, tags.name
+			FROM tags, channels
+			WHERE tags.tag_id = channels.tag_id AND channels.school_id = $1 AND tags.name ILIKE $2
+		`;
 
-	db.client
-		.query(query, [params.school_id])
-		.then(result => {
-			response.status(200).json({'success': true, 'tags': result.rows});
-		})
-		.catch(error => {
-			response.status(400).json({'success': false, 'message': error.toString()});
-		});
+		db.client
+			.query(query, [requestQuery.school_id, requestQuery.query + "%"])
+			.then(result => {
+				response.status(200).json({'success': true, 'tags': result.rows});
+			})
+			.catch(error => {
+				response.status(400).json({'success': false, 'message': error.toString()});
+			});
+	}
+	// Invalid
+	else {
+		response.status(400).json({'success': false, 'message': 'Set of queries provided is not valid.'});
+	}
 };
 
 // Get user tags controller
@@ -65,7 +89,7 @@ getUserTags = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	const query = `
-		SELECT DISTINCT tags.tag_id, tags.name, tags.school_id
+		SELECT DISTINCT tags.tag_id, tags.name
 		FROM tags, channels, users_channels
 		WHERE users_channels.user_id = $1
 			AND users_channels.channel_id = channels.channel_id
@@ -82,30 +106,8 @@ getUserTags = (request, response) => {
 		});
 };
 
-// Search tags controller
-searchTags = (request, response) => {
-	const requestQuery = request.query;
-
-	const query = `
-		SELECT tags.tag_id, tags.name
-		FROM tags, channels
-		WHERE tags.tag_id = channels.tag_id AND channels.school_id = $1 AND tags.name ILIKE $2
-	`;
-
-	db.client
-		.query(query, [requestQuery.school_id, requestQuery.query + "%"])
-		.then(result => {
-			response.status(200).json({'success': true, 'tags': result.rows});
-		})
-		.catch(error => {
-			response.status(400).json({'success': false, 'message': error.toString()});
-		});
-};
-
 module.exports = {
 	createTag,
 	getTags,
 	getUserTags,
-	getTagsBySchool,
-	searchTags
 };

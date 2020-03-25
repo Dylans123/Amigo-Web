@@ -110,49 +110,9 @@ leaveChannel = (request, response) => {
 		});
 };
 
-// Get channels by tag controller
-getChannelsByTag = (request, response) => {
-	const params = request.params;
-
-	const query = `
-		SELECT channel_id, name, description, school_id
-		FROM channels
-		WHERE tag_id = $1
-	`;
-
-	db.client
-		.query(query, [params.tag_id])
-		.then(result => {
-			response.status(200).json({'success': true, 'channels': result.rows});
-		})
-		.catch(error => {
-			response.status(400).json({'success': false, 'message': error.toString()});
-		});
-};
-
-// Get channels by tag controller
-getChannelsByTagAndSchool = (request, response) => {
-	const params = request.params;
-
-	const query = `
-		SELECT channel_id, name, description, school_id
-		FROM channels
-		WHERE tag_id = $1 and school_id = $2
-	`;
-
-	db.client
-		.query(query, [params.tag_id, params.school_id])
-		.then(result => {
-			response.status(200).json({'success': true, 'channels': result.rows});
-		})
-		.catch(error => {
-			response.status(400).json({'success': false, 'message': error.toString()});
-		});
-};
-
 // Get channel member count controller
 getChannelMemberCount = (request, response) => {
-	const params = request.params;
+	const requestQuery = request.query;
 
 	const query = `
 		SELECT COUNT(*)
@@ -161,29 +121,9 @@ getChannelMemberCount = (request, response) => {
 	`;
 
 	db.client
-		.query(query, [params.channel_id])
+		.query(query, [requestQuery.channel_id])
 		.then(result => {
 			response.status(200).json({'success': true, 'member_count': result.rows[0].count});
-		})
-		.catch(error => {
-			response.status(400).json({'success': false, 'message': error.toString()});
-		});
-};
-
-// Search channels controller
-searchChannels = (request, response) => {
-	const requestQuery = request.query;
-
-	const query = `
-		SELECT channel_id, name, description, school_id
-		FROM channels
-		WHERE school_id = $1 AND name ILIKE $2
-	`;
-
-	db.client
-		.query(query, [requestQuery.school_id, requestQuery.query + "%"])
-		.then(result => {
-			response.status(200).json({'success': true, 'channels': result.rows});
 		})
 		.catch(error => {
 			response.status(400).json({'success': false, 'message': error.toString()});
@@ -208,14 +148,79 @@ checkChannelJoin = (user_id, channel_id, next) => {
 		});
 }
 
+// Get channels controller
+getChannels = (request, response) => {
+	const requestQuery = request.query;
+	var query;
+
+	// By tag_id
+	if (!(requestQuery.tag_id === undefined) && requestQuery.school_id === undefined && requestQuery.query === undefined) {
+		console.log("2");
+		query = `
+			SELECT channel_id, name, description, school_id
+			FROM channels
+			WHERE tag_id = $1
+		`;
+
+		db.client
+			.query(query, [requestQuery.tag_id])
+			.then(result => {
+				response.status(200).json({'success': true, 'channels': result.rows});
+			})
+			.catch(error => {
+				response.status(400).json({'success': false, 'message': error.toString()});
+			});
+	}
+	// By tag_id and school_id
+	else if (!(requestQuery.tag_id === undefined) && !(requestQuery.school_id === undefined) && requestQuery.query === undefined) {
+		console.log("3");
+		query = `
+			SELECT channel_id, name, description, school_id
+			FROM channels
+			WHERE tag_id = $1 and school_id = $2
+		`;
+
+		db.client
+			.query(query, [requestQuery.tag_id, requestQuery.school_id])
+			.then(result => {
+				response.status(200).json({'success': true, 'channels': result.rows});
+			})
+			.catch(error => {
+				response.status(400).json({'success': false, 'message': error.toString()});
+			});
+	}
+	// By school_id and search query
+	else if (requestQuery.tag_id === undefined && !(requestQuery.school_id === undefined) && !(requestQuery.query === undefined)) {
+		console.log("4");
+		const requestQuery = request.query;
+
+		const query = `
+			SELECT channel_id, name, description, school_id
+			FROM channels
+			WHERE school_id = $1 AND name ILIKE $2
+		`;
+
+		db.client
+			.query(query, [requestQuery.school_id, requestQuery.query + "%"])
+			.then(result => {
+				response.status(200).json({'success': true, 'channels': result.rows});
+			})
+			.catch(error => {
+				response.status(400).json({'success': false, 'message': error.toString()});
+			});
+	}
+	// Invalid
+	else {
+		response.status(400).json({'success': false, 'message': 'Set of queries provided is not valid.'});
+	}
+};
+
 module.exports = {
 	getUserChannels,
 	createChannel,
 	joinChannel,
 	leaveChannel,
-	getChannelsByTag,
 	getChannelMemberCount,
-	getChannelsByTagAndSchool,
-	searchChannels,
-	checkChannelJoin
+	checkChannelJoin,
+	getChannels
 };
