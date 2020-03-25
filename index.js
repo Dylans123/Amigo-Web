@@ -91,6 +91,15 @@ app.post(
 	users.login
 );
 
+app.post(
+	'/api/admin/login',
+	[
+		check('email').not().isEmpty().withMessage("Username is missing."),
+		check('password').not().isEmpty().withMessage("Password is missing.")
+	],
+	users.adminLogin
+);
+
 app.get('/verify', users.verifyEmail);
 app.get('/api/sendverification', users.sendVerification);
 

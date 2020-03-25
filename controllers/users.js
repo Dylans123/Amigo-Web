@@ -125,6 +125,68 @@ login = (request, response) => {
 	}
 };
 
+// Admin login controller
+adminLogin = (request, response) => {
+	const body = request.body;
+	const errors = validationResult(request);
+
+	// Input is missing
+	if (!errors.isEmpty()) {
+		return response.status(422).json({'success': false, 'errors': errors.array()});
+	}
+	// Input is not missing, so issue token
+	else {
+		var query = `
+			SELECT *
+			FROM users
+			WHERE LOWER(email) = LOWER($1)
+		`;
+
+		db.client
+			.query(query, [body.email])
+			.then(result => {
+				// Check email and password
+				if (result.rows.length > 0 && bcrypt.compareSync(body.password, result.rows[0].password)) {
+					const verified = result.rows[0].verified;
+					const access_level = result.rows[0].access_level;
+
+					// Check admin status
+					if (access_level >= 10) {
+						const user_id = result.rows[0].user_id;
+
+						query = `
+							UPDATE users
+							SET last_logged_in = NOW()
+							WHERE user_id = $1
+						`;
+
+						db.client
+							.query(query, [user_id])
+							.then(result => {
+								const payload = {'user_id': user_id};
+
+								var token = jwt.sign(payload, adminKey, {expiresIn: "7d"});
+
+								response.status(200).json({'success': true, 'message': 'Login successful!', 'x-access-token': token});
+							})
+							.catch(error => {
+								response.status(400).json({'success': false, 'message': error.toString()});
+							});
+					}
+					else {
+						response.status(403).json({'success': false, 'message': 'Not authorized.'});
+					}
+				}
+				else {
+					response.status(401).json({'success': false, 'message': 'Login failed.'});
+				}
+			})
+			.catch(error => {
+				response.status(400).json({'success': false, 'message': error.toString()});
+			});
+	}
+};
+
 // Validate a user
 validateUser = (request, response, next) => {
 	jwt.verify(request.headers['x-access-token'], key, (error, decoded) => {
@@ -360,5 +422,6 @@ module.exports = {
 	sendVerification,
 	verifyEmail,
 	getUserInfo,
-	updateUser
+	updateUser,
+	adminLogin
 };
