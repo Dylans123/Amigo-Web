@@ -276,7 +276,6 @@ paths:
       parameters:
         - in: query
           name: email
-          required: true
           schema:
             type: string
       responses:
@@ -672,7 +671,6 @@ paths:
             type: string
         - in: query
           name: channel_id
-          required: true
           schema:
             type: string
       responses:
@@ -710,7 +708,6 @@ paths:
             type: string
         - in: query
           name: channel_id
-          required: true
           schema:
             type: string
       responses:
@@ -801,7 +798,6 @@ paths:
             type: string
         - in: query
           name: receiver_user_id
-          required: true
           schema:
             type: string
       responses:
