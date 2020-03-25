@@ -12,6 +12,7 @@ const users = require('./controllers/users');
 const tags = require('./controllers/tags');
 const channels = require('./controllers/channels');
 const messages = require('./controllers/messages');
+const schools = require('./controllers/schools');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -92,14 +93,18 @@ app.post('/api/channels', users.validateUser, channels.createChannel);
 app.post('/api/join', users.validateUser, channels.joinChannel);
 app.post('/api/leave', users.validateUser, channels.leaveChannel);
 app.get('/api/channels/:tag_id', users.validateUser, channels.getChannelsByTag);
+app.get('/api/channels/:school_id/:tag_id', users.validateUser, channels.getChannelsByTagAndSchool);
 app.get('/api/channels/:channel_id/count', users.validateUser, channels.getChannelMemberCount);
 app.get('/api/tags/all', users.validateUser, tags.getTags);
 app.get('/api/tags', users.validateUser, tags.getUserTags);
+app.get('/api/tags/:school_id', users.validateUser, tags.getTagsBySchool);
 app.get('/api/messages/:channel_id', users.validateUser, messages.getMessages);
 app.post('/api/messages', users.validateUser, messages.sendMessage);
 app.get('/api/directmessages/:receiver_user_id', users.validateUser, messages.getDirectMessages);
 app.post('/api/directmessages', users.validateUser, messages.sendDirectMessage);
 app.get('/api/directmessages/receivers', users.validateUser, messages.getDirectMessageUsers);
+app.get('/api/schools/:school_id', users.validateUser, schools.getSchoolByID);
+app.get('/api/schools', users.validateUser, schools.getSchools);
 app.post('/api/tags', users.validateAdminUser, tags.createTag);
 
 app.post(

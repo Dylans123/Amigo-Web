@@ -7,13 +7,13 @@ createChannel = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	var query = `
-		INSERT INTO channels (user_id, tag_id, name, description)
+		INSERT INTO channels (user_id, tag_id, name, description, school_id)
 		VALUES ($1, $2, $3, $4)
 		RETURNING channel_id
 	`;
 
 	db.client
-		.query(query, [payload.user_id, body.tag_id, body.name, body.description])
+		.query(query, [payload.user_id, body.tag_id, body.name, body.description, body.school_id])
 		.then(result => {
 			if (result.rowCount > 0) {
 				// Join channel
@@ -48,7 +48,7 @@ getUserChannels = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	const query = `
-		SELECT channels.channel_id, channels.name, channels.description
+		SELECT channels.channel_id, channels.name, channels.description, channels.school_id
 		FROM users_channels, channels
 		WHERE users_channels.user_id = $1 AND users_channels.channel_id = channels.channel_id
 	`;
@@ -115,13 +115,33 @@ getChannelsByTag = (request, response) => {
 	const params = request.params;
 
 	const query = `
-		SELECT channel_id, name, description
+		SELECT channel_id, name, description, school_id
 		FROM channels
 		WHERE tag_id = $1
 	`;
 
 	db.client
 		.query(query, [params.tag_id])
+		.then(result => {
+			response.status(200).json({'success': true, 'channels': result.rows});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+};
+
+// Get channels by tag controller
+getChannelsByTagAndSchool = (request, response) => {
+	const params = request.params;
+
+	const query = `
+		SELECT channel_id, name, description, school_id
+		FROM channels
+		WHERE tag_id = $1 and school_id = $2
+	`;
+
+	db.client
+		.query(query, [params.tag_id, params.school_id])
 		.then(result => {
 			response.status(200).json({'success': true, 'channels': result.rows});
 		})
@@ -156,5 +176,6 @@ module.exports = {
 	joinChannel,
 	leaveChannel,
 	getChannelsByTag,
-	getChannelMemberCount
+	getChannelMemberCount,
+	getChannelsByTagAndSchool
 };

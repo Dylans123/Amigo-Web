@@ -22,13 +22,13 @@ signup = (request, response) => {
 		const password = bcrypt.hashSync(body.password, saltRounds);
 
 		query = `
-			INSERT INTO users (email, password, first_name, last_name, display_name, last_logged_in, verified)
-			VALUES ($1, $2, $3, $4, $5, NULL, false)
+			INSERT INTO users (email, password, first_name, last_name, display_name, school_id, last_logged_in, verified)
+			VALUES ($1, $2, $3, $4, $5, $6, NULL, false)
 			RETURNING user_id
 		`;
 
 		db.client
-			.query(query, [body.email, password, body.first_name, body.last_name, body.display_name])
+			.query(query, [body.email, password, body.first_name, body.last_name, body.display_name, body.school_id])
 			.then(result => {
 				// Send verification request email
 				const payload = {'query': {'email': body.email}};
@@ -275,7 +275,8 @@ getUserInfo = (request, response) => {
 				'first_name': user.first_name,
 				'last_name': user.last_name,
 				'display_name': user.display_name,
-				'last_logged_in': user.last_logged_in
+				'last_logged_in': user.last_logged_in,
+				'school_id': user.school_id
 			});
 		})
 		.catch(error => {
@@ -308,12 +309,12 @@ updateUser = (request, response) => {
 				else {
 					query = `
 						UPDATE users
-						SET first_name = $2, last_name = $3, display_name = $4, location = $5
+						SET first_name = $2, last_name = $3, display_name = $4, school_id = $5
 						WHERE user_id = $1
 					`;
 
 					db.client
-						.query(query, [payload.user_id, body.first_name, body.last_name, body.display_name, body.location])
+						.query(query, [payload.user_id, body.first_name, body.last_name, body.display_name, body.school_id])
 						.then(result => {
 							var new_password = request.body.new_password;
 							

@@ -31,6 +31,8 @@ paths:
                   type: string
                 display_name:
                   type: string
+                school_id:
+                  type: string
       responses:
         '200':
           description: Successful
@@ -183,6 +185,8 @@ paths:
                     type: string
                   last_logged_in:
                     type: string
+                  school_id:
+                    type: string
         '400':
           description: Failed
           content:
@@ -196,7 +200,7 @@ paths:
                     type: string
     post:
       summary: Update the current user's information
-      description: The new password is not required in the request body.
+      description: The new password and confirmation new password is not required in the request body.
       tags:
         - User
       requestBody:
@@ -211,7 +215,7 @@ paths:
                   type: string
                 display_name:
                   type: string
-                location:
+                school_id:
                   type: string
                 password:
                   type: string
@@ -329,6 +333,8 @@ paths:
                           type: string
                         description:
                           type: string
+                        school_id:
+                          type: string
         '400':
           description: Failed
           content:
@@ -360,6 +366,8 @@ paths:
                 name:
                   type: string
                 description:
+                  type: string
+                school_id:
                   type: string
       responses:
         '200':
@@ -484,8 +492,6 @@ paths:
               properties:
                 name:
                   type: string
-                location:
-                  type: string
       responses:
         '200':
           description: Successful
@@ -537,7 +543,50 @@ paths:
                           type: string
                         name:
                           type: string
-                        location:
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/tags/{school_id}:
+    get:
+      summary: Get a list of channels based on tag id
+      tags:
+        - Tags
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: path
+          name: school_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  tags:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tag_id:
+                          type: string
+                        name:
                           type: string
         '400':
           description: Failed
@@ -554,7 +603,7 @@ paths:
     get:
       summary: Get a list of channels based on tag id
       tags:
-        - Tags
+        - Channels
       parameters:
         - in: header
           name: x-access-token
@@ -585,6 +634,62 @@ paths:
                         name:
                           type: string
                         description:
+                          type: string
+                        school_id:
+                          type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/channels/{school_id}/{tag_id}:
+    get:
+      summary: Get a list of channels based on tag id
+      tags:
+        - Channels
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: path
+          name: school_id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: tag_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  channels:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        channel_id:
+                          type: string
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        school_id:
                           type: string
         '400':
           description: Failed
@@ -625,8 +730,6 @@ paths:
                         tag_id:
                           type: string
                         name:
-                          type: string
-                        location:
                           type: string
         '400':
           description: Failed
@@ -713,19 +816,8 @@ paths:
                 properties:
                   success:
                     type: boolean
-                  messages:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        message_id:
-                          type: string
-                        display_name:
-                          type: string
-                        message:
-                          type: string
-                        created_on:
-                          type: string
+                  member_count:
+                    type: string
         '400':
           description: Failed
           content:
@@ -902,6 +994,86 @@ paths:
                         user_id:
                           type: string
                         display_name:
+                          type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/schools/{school_id}:
+    get:
+      summary: Get school information by ID
+      tags:
+        - Schools
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: path
+          name: school_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  name:
+                    type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/schools:
+    get:
+      summary: Get a list of all schools
+      tags:
+        - Schools
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  schools:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        school_id:
+                          type: string
+                        location_id:
+                          type: string
+                        name:
                           type: string
         '400':
           description: Failed

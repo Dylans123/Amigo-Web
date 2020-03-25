@@ -6,12 +6,12 @@ createTag = (request, response) => {
 	const body = request.body;
 
 	const query = `
-		INSERT INTO tags (name, location)
+		INSERT INTO tags (name)
 		VALUES ($1, $2)
 	`;
 
 	db.client
-		.query(query, [body.name, body.location])
+		.query(query, [body.name])
 		.then(result => {
 			if (result.rowCount > 0)
 				response.status(200).json({'success': true, 'message': "Tag created successfully!"});
@@ -26,7 +26,7 @@ createTag = (request, response) => {
 // Get tags controller
 getTags = (request, response) => {
 	const query = `
-		SELECT tag_id, name, location
+		SELECT tags.tag_id, tags.name, tags.school_id
 		FROM tags
 	`;
 
@@ -40,12 +40,32 @@ getTags = (request, response) => {
 		});
 };
 
+// Get tags by school controller
+getTagsBySchool = (request, response) => {
+	const params = request.params;
+
+	const query = `
+		SELECT DISTINCT tags.tag_id, tags.name
+		FROM tags, channels
+		WHERE channels.school_id = $1 AND channels.tag_id = tags.tag_id
+	`;
+
+	db.client
+		.query(query, [params.school_id])
+		.then(result => {
+			response.status(200).json({'success': true, 'tags': result.rows});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+};
+
 // Get user tags controller
 getUserTags = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	const query = `
-		SELECT DISTINCT tags.tag_id, tags.name, tags.location
+		SELECT DISTINCT tags.tag_id, tags.name, tags.school_id
 		FROM tags, channels, users_channels
 		WHERE users_channels.user_id = $1
 			AND users_channels.channel_id = channels.channel_id
@@ -65,5 +85,6 @@ getUserTags = (request, response) => {
 module.exports = {
 	createTag,
 	getTags,
-	getUserTags
+	getUserTags,
+	getTagsBySchool
 };
