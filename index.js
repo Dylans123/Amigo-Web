@@ -41,10 +41,16 @@ io.on('connection', (socket) => {
 function joinRoom(socket, data) {
 	const payload = jwt.decode(data.token);
 
-	if (!(data.channel_id === undefined))
-		socket.join(data.channel_id);
-	else (!(data.receiver_user_id === undefined))
+	if (!(data.channel_id === undefined)) {
+		channels.checkChannelJoin(payload.user_id, data.channel_id, hasJoinedChannel =>
+		{
+			if (hasJoinedChannel)
+				socket.join(data.channel_id);
+		});
+	}
+	else if (!(data.receiver_user_id === undefined)) {
 		socket.join(payload.user_id + ":" + data.receiver_user_id);
+	}
 }
 
 // Routes
@@ -127,11 +133,13 @@ app.post(
 );
 
 // Code to generate frontend build directory
-console.log(__dirname);
-app.use(express.static(__dirname + "/frontend/dist"));
-app.get("/*", (req, res) => {
-	res.sendFile(path.join(__dirname, "/frontend/dist/index.html"));
-});
+// console.log(__dirname);
+// app.use(express.static(__dirname + "/frontend/dist"));
+// app.get("/*", (req, res) => {
+// 	res.sendFile(path.join(__dirname, "/frontend/dist/index.html"));
+// });
+
+app.use(express.static(__dirname));
 
 server.listen(port, () => {
 	console.log(`Listening on port ${port}.`);

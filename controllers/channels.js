@@ -190,6 +190,24 @@ searchChannels = (request, response) => {
 		});
 };
 
+// Check to see if a user has joined a channel
+checkChannelJoin = (user_id, channel_id, next) => {
+	const query = `
+		SELECT *
+		FROM users_channels
+		WHERE user_id = $1 AND channel_id = $2
+	`;
+
+	db.client
+		.query(query, [user_id, channel_id])
+		.then(result => {
+			return next(result.rows.length > 0);
+		})
+		.catch(error => {
+			return false;
+		});
+}
+
 module.exports = {
 	getUserChannels,
 	createChannel,
@@ -198,5 +216,6 @@ module.exports = {
 	getChannelsByTag,
 	getChannelMemberCount,
 	getChannelsByTagAndSchool,
-	searchChannels
+	searchChannels,
+	checkChannelJoin
 };

@@ -43,7 +43,7 @@ signup = (request, response) => {
 };
 
 // Check to see if email is already registered
-checkEmail = (email, callback) => {
+checkEmail = (email, next) => {
 	var query = `
 		SELECT *
 		FROM users
@@ -53,7 +53,7 @@ checkEmail = (email, callback) => {
 	db.client
 		.query(query, [email])
 		.then(result => {
-			callback(result.rows.length > 0);
+			next(result.rows.length > 0);
 		})
 		.catch(error => {
 			response.status(400).json({'success': false, 'message': error.toString()});
