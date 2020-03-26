@@ -36,6 +36,10 @@ io.on('connection', (socket) => {
 			}
 		});
 	});
+
+	socket.on('leave', (data) => {
+		leaveRoom(socket, data);
+	})
 });
 
 function joinRoom(socket, data) {
@@ -51,6 +55,13 @@ function joinRoom(socket, data) {
 	else if (!(data.receiver_user_id === undefined)) {
 		socket.join(payload.user_id + ":" + data.receiver_user_id);
 	}
+}
+
+function leaveRoom(socket, data) {
+	if (!(data.channel_id === undefined))
+		socket.leave(data.channel_id);
+	else if (!(data.receiver_user_id === undefined))
+		socket.leave(payload.user_id + ":" + data.receiver_user_id);
 }
 
 // Registration and login routes
