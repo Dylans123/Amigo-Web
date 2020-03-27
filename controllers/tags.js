@@ -7,7 +7,7 @@ createTag = (request, response) => {
 
 	const query = `
 		INSERT INTO tags (name)
-		VALUES ($1, $2)
+		VALUES ($1)
 	`;
 
 	db.client
