@@ -148,6 +148,22 @@ checkChannelJoin = (user_id, channel_id, next) => {
 		});
 }
 
+getAllChannels = (request, response) => {
+	const query = `
+		SELECT *
+		FROM channels
+	`;
+
+	db.client
+		.query(query)
+		.then(result => {
+			return next(result.rows.length > 0);
+		})
+		.catch(error => {
+			return false;
+		});
+}
+
 // Get channels controller
 getChannels = (request, response) => {
 	const requestQuery = request.query;
@@ -222,5 +238,6 @@ module.exports = {
 	leaveChannel,
 	getChannelMemberCount,
 	checkChannelJoin,
-	getChannels
+	getChannels,
+	getAllChannels
 };

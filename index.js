@@ -137,6 +137,7 @@ app.post(
 // Channel routes
 app.get('/api/user/channels', users.validateUser, channels.getUserChannels);
 app.get('/api/channels', users.validateUser, channels.getChannels);
+app.get('/api/channels/all', users.validateUser, channels.getAllChannels);
 app.post('/api/channels', users.validateUser, channels.createChannel);
 app.post('/api/channels/join', users.validateUser, channels.joinChannel);
 app.post('/api/channels/leave', users.validateUser, channels.leaveChannel);
