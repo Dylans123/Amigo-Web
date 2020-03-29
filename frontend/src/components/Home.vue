@@ -68,7 +68,8 @@
 </template>
 <script>
 import generateUsers from "../users.js"
-import generateGroups from "../groups.js"
+// import generateGroups from "../groups.js"
+import axios from 'axios';
 export default {
   created () {
     const cookie = document.cookie;
@@ -80,19 +81,31 @@ export default {
     } else {
       console.log("Were cookin now");
     }
+    this.groups = this.getGroups();
   },
   data: function() {
     return {
       users: generateUsers(),
-      groups: generateGroups(),
+      groups: null,
       showDialog: false,
       jwt: null
     }
   },
   methods: {
     logout: function() {
+      // Code to remove the cookie that is storing the jwt
       document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
       this.$router.push('/login');
+    },
+    getGroups: function() {
+      console.log(this.jwt)
+      axios.get('https://amigo-web-app.azurewebsites.net/api/channels', {
+        headers: {'x-access-token': this.jwt}
+      }).then((res) => {  
+        console.log(res);
+      }).catch((err) => {
+        console.log(err);
+      })
     }
   }
 }
