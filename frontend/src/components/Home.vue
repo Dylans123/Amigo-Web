@@ -13,10 +13,23 @@
           <button type="button" class="btn btn-outline-primary" v-on:click="logout()">New Group +</button>
         </div>
         <div class="row">
-          <div class="col-3">
-            
+          <div class="col-3 home-data">
+            <p class="my-3"><b>Admin Groups</b></p>
+            <template v-for="group in groups">
+              <md-card :key="group.name" class="my-2 md-elevation-4" md-with-hover>
+                <md-card-media>
+                  <div class="red-circle"></div>
+                </md-card-media>
+                <md-card-header>
+                  <md-card-header-text>
+                    <div><h6>{{ group.name }}</h6></div>
+                    <div>{{ group.memberCount }} members</div>
+                  </md-card-header-text>
+                </md-card-header>
+              </md-card>
+            </template>
           </div>
-          <div class="col-9">
+          <div class="col-9 home-data">
             <md-table>
               <md-table-row>
                 <md-table-head>First Name</md-table-head>
@@ -32,7 +45,7 @@
                   <md-table-cell>{{ user.displayName }}</md-table-cell>
                   <md-table-cell>{{ user.dateJoined }}</md-table-cell>
                   <md-table-cell>
-                    <button type="button" class="btn btn-outline-primary" v-on:click="logout()">New Group +</button>
+                    <button type="button" class="btn btn-outline-primary" v-on:click="logout()">Remove</button>
                   </md-table-cell>
                 </md-table-row>
               </template>
@@ -44,6 +57,7 @@
 </template>
 <script>
 import generateUsers from "../users.js"
+import generateGroups from "../groups.js"
 export default {
   mounted: () => {
     const cookie = document.cookie;
@@ -51,7 +65,8 @@ export default {
   },
   data: function() {
     return {
-      users: generateUsers()
+      users: generateUsers(),
+      groups: generateGroups()
     }
   },
   methods: {
@@ -69,5 +84,21 @@ export default {
   }
   .admin-text {
     color: #F65D62;
+  }
+  .home-data {
+    max-height: 75vh;
+    overflow: scroll;
+  }
+  .red-circle {
+    border-radius: 100%;
+    height: 40px;
+    width: 40px;
+    background: #F65D62;
+  }
+  .md-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
   }
 </style>
