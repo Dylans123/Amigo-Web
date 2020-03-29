@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 const {check, validationResult} = require('express-validator');
@@ -157,8 +158,7 @@ app.get('/api/directmessages/receivers', users.validateUser, messages.getDirectM
 app.get('/api/schools', users.validateUser, schools.getSchools);
 
 // Code to generate frontend build directory
-console.log(__dirname);
-app.use(express.static(__dirname + "/frontend/dist"));
+app.use(express.static(path.join(__dirname, "frontend/dist")));
 app.get("/*", (req, res) => {
 	res.sendFile(path.join(__dirname, "/frontend/dist/index.html"));
 });

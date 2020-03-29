@@ -6,7 +6,7 @@
           <h1 class="mb-2">
             Welcome to <span class="admin-text">Amigo Admin</span>
           </h1>
-          <h5 class="mb-4">Login to Get Started</h5>
+          <h5 class="mb-5 description-text">Login to Get Started</h5>
           <md-card class="md-elevation-15">
             <div class="row">
               <div class="col-12 login-text">
@@ -16,7 +16,7 @@
                       <md-icon>account_circle</md-icon>
                     </span>
                   </div>
-                  <input type="text" class="form-control" placeholder="Username or Email" aria-label="Username" aria-describedby="basic-addon1">
+                  <input type="text" class="form-control" placeholder="Username or Email" v-model="username" aria-label="Username" aria-describedby="basic-addon1">
                 </div>
                 <div class="input-group mb-3 login-field">
                   <div class="input-group-prepend">
@@ -24,10 +24,10 @@
                       <md-icon>lock</md-icon>
                     </span>
                   </div>
-                  <input type="password" class="form-control" placeholder="Password" aria-label="Username" aria-describedby="basic-addon2">
+                  <input type="password" class="form-control" placeholder="Password" v-model="password" aria-label="Username" aria-describedby="basic-addon2">
                 </div>
                 <div>
-                  <button type="button" class="btn btn-block btn-primary" v-on:click="login">Login</button>
+                  <button type="button" class="btn btn-block btn-primary" v-on:click="login(username,password)">Login</button>
                 </div>
                 <div class="login-links my-2">
                   <router-link class="login-register" to="/register">Register</router-link>
@@ -42,10 +42,21 @@
   </div>
 </template>
 <script>
+import api from "../api";
 export default {
   methods: {
-    login: () => {
+    login: function (username, password) {
       console.log('hello this is an event handler');
+      console.log('Username: ' + username);
+      console.log('Password: ' + password);
+      api.login(username, password).then((res, err) => {
+        if (err) {
+          console.log('there was an error ' + err);
+        } else {
+          console.log(res);
+          this.$router.push('/');
+        }
+      });
     }
   }
 }
@@ -61,9 +72,17 @@ export default {
     align-items: center;
   }
 
+  .admin-text {
+    color: #F65D62;
+  }
+
+  .description-text {
+    color: #989898;
+  }
+
   .md-card {
     width: 100%;
-    padding: 100px 50px;
+    padding: 50px;
     vertical-align: top;
     background-color: white !important;
   }

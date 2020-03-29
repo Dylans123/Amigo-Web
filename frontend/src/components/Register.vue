@@ -6,7 +6,7 @@
           <h1 class="mb-2">
             Welcome to <span class="admin-text">Amigo Admin</span>
           </h1>
-          <h5 class="mb-4">Create an Admin Account to Get Started</h5>
+          <h5 class="mb-4 description-text">Create an Admin Account to Get Started</h5>
           <md-card class="md-elevation-15">
             <div class="row">
               <div class="col-12 register-text">
@@ -57,12 +57,16 @@ export default {
   }
 
   .admin-text {
-    color: #EA9292;
+    color: #F65D62;
+  }
+
+  .description-text {
+    color: #989898;
   }
 
   .md-card {
     width: 100%;
-    padding: 100px 50px;
+    padding: 0 50px;
     vertical-align: top;
     background-color: white !important;
   }
