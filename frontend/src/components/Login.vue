@@ -54,6 +54,7 @@ export default {
           console.log('there was an error ' + err);
         } else {
           console.log(res);
+          document.cookie = `jwt=${res.data["x-access-token"]}`;
           this.$router.push('/');
         }
       });
