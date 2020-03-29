@@ -2,8 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router';
 import VueMaterial from 'vue-material';
 import App from './App.vue'
-import 'bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import './assets/custom.scss';
 import 'vue-material/dist/vue-material.min.css';
 
 import routes from './routes';

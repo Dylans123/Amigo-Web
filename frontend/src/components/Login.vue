@@ -2,13 +2,14 @@
   <div class="login-page">
     <div class="container">
       <div class="row justify-content-center align-items-center">
-        <div class="col-12 col-md-10">
+        <div class="col-12 col-md-6">
+          <h1 class="mb-2">
+            Welcome to <span class="admin-text">Amigo Admin</span>
+          </h1>
+          <h5 class="mb-4">Login to Get Started</h5>
           <md-card class="md-elevation-15">
             <div class="row">
-              <div class="col-12 col-md-6 login-text">
-                <h1 class="mb-4">
-                  Welcome!
-                </h1>
+              <div class="col-12 login-text">
                 <div class="input-group mb-3 login-field">
                   <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon1">
@@ -26,15 +27,12 @@
                   <input type="password" class="form-control" placeholder="Password" aria-label="Username" aria-describedby="basic-addon2">
                 </div>
                 <div>
-                  <button type="button" class="btn btn-block btn-primary">Login</button>
+                  <button type="button" class="btn btn-block btn-primary" v-on:click="login">Login</button>
                 </div>
                 <div class="login-links my-2">
                   <router-link class="login-register" to="/register">Register</router-link>
                   <router-link class="login-forgot" to="/forgot">Forgot Password</router-link>
                 </div>
-              </div>
-              <div class="d-none d-md-block col-6 login-image">
-                <img src="../assets/Login.png" />
               </div>
             </div>
           </md-card>
@@ -45,6 +43,11 @@
 </template>
 <script>
 export default {
+  methods: {
+    login: () => {
+      console.log('hello this is an event handler');
+    }
+  }
 }
 </script>
 
