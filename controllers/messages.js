@@ -4,7 +4,7 @@ const io = require('../websocket').io();
 
 // Get messages controller
 getMessages = (request, response) => {
-	const params = request.params;
+	const requestQuery = request.query;
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	// Check to see if user has joined channel
@@ -15,7 +15,7 @@ getMessages = (request, response) => {
 	`;
 
 	db.client
-		.query(query, [payload.user_id, params.channel_id])
+		.query(query, [payload.user_id, requestQuery.channel_id])
 		.then(result => {
 			if (result.rows.length > 0) {
 				// Get messages
@@ -27,7 +27,7 @@ getMessages = (request, response) => {
 				`;
 
 				db.client
-					.query(query, [params.channel_id])
+					.query(query, [requestQuery.channel_id])
 					.then(result => {
 						response.status(200).json({'success': true, 'messages': result.rows});
 					})
@@ -112,7 +112,7 @@ sendMessage = (request, response) => {
 
 // Get direct messages controller
 getDirectMessages = (request, response) => {
-	const params = request.params;
+	const requestQuery = request.query;
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	const query = `
@@ -124,7 +124,7 @@ getDirectMessages = (request, response) => {
 	`;
 
 	db.client
-		.query(query, [payload.user_id, params.receiver_user_id])
+		.query(query, [payload.user_id, requestQuery.receiver_user_id])
 		.then(result => {
 			response.status(200).json({'success': true, 'messages': result.rows});
 		})
@@ -184,8 +184,8 @@ sendDirectMessage = (request, response) => {
 		});
 };
 
-// Get direct message user list controller
-getDirectMessageUsers = (request, response) => {
+// Get direct message receiver list controller
+getDirectMessageReceivers = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	const query = `
@@ -211,5 +211,5 @@ module.exports = {
 	sendMessage,
 	getDirectMessages,
 	sendDirectMessage,
-	getDirectMessageUsers
+	getDirectMessageReceivers
 };

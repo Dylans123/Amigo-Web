@@ -12,6 +12,7 @@ const users = require('./controllers/users');
 const tags = require('./controllers/tags');
 const channels = require('./controllers/channels');
 const messages = require('./controllers/messages');
+const schools = require('./controllers/schools');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -35,18 +36,35 @@ io.on('connection', (socket) => {
 			}
 		});
 	});
+
+	socket.on('leave', (data) => {
+		leaveRoom(socket, data);
+	})
 });
 
 function joinRoom(socket, data) {
 	const payload = jwt.decode(data.token);
 
-	if (!(data.channel_id === undefined))
-		socket.join(data.channel_id);
-	else (!(data.receiver_user_id === undefined))
+	if (!(data.channel_id === undefined)) {
+		channels.checkChannelJoin(payload.user_id, data.channel_id, hasJoinedChannel =>
+		{
+			if (hasJoinedChannel)
+				socket.join(data.channel_id);
+		});
+	}
+	else if (!(data.receiver_user_id === undefined)) {
 		socket.join(payload.user_id + ":" + data.receiver_user_id);
+	}
 }
 
-// Routes
+function leaveRoom(socket, data) {
+	if (!(data.channel_id === undefined))
+		socket.leave(data.channel_id);
+	else if (!(data.receiver_user_id === undefined))
+		socket.leave(payload.user_id + ":" + data.receiver_user_id);
+}
+
+// Registration and login routes
 app.post(
 	'/api/signup',
 	[
@@ -84,22 +102,20 @@ app.post(
 	users.login
 );
 
+app.post(
+	'/api/admin/login',
+	[
+		check('email').not().isEmpty().withMessage("Username is missing."),
+		check('password').not().isEmpty().withMessage("Password is missing.")
+	],
+	users.adminLogin
+);
+
 app.get('/verify', users.verifyEmail);
 app.get('/api/sendverification', users.sendVerification);
+
+// User routes
 app.get('/api/user', users.validateUser, users.getUserInfo);
-app.get('/api/channels', users.validateUser, channels.getUserChannels);
-app.post('/api/channels', users.validateUser, channels.createChannel);
-app.post('/api/join', users.validateUser, channels.joinChannel);
-app.post('/api/leave', users.validateUser, channels.leaveChannel);
-app.get('/api/channels/:tag_id', users.validateUser, channels.getChannelsByTag);
-app.get('/api/tags/all', users.validateUser, tags.getTags);
-app.get('/api/tags', users.validateUser, tags.getUserTags);
-app.get('/api/messages/:channel_id', users.validateUser, messages.getMessages);
-app.post('/api/messages', users.validateUser, messages.sendMessage);
-app.get('/api/directmessages/:receiver_user_id', users.validateUser, messages.getDirectMessages);
-app.post('/api/directmessages', users.validateUser, messages.sendDirectMessage);
-app.get('/api/directmessages', users.validateUser, messages.getDirectMessageUsers);
-app.post('/api/tags', users.validateAdminUser, tags.createTag);
 
 app.post(
 	'/api/user',
@@ -116,6 +132,29 @@ app.post(
 	users.validateUser,
 	users.updateUser
 );
+
+// Channel routes
+app.get('/api/user/channels', users.validateUser, channels.getUserChannels);
+app.get('/api/channels', users.validateUser, channels.getChannels);
+app.post('/api/channels', users.validateUser, channels.createChannel);
+app.post('/api/channels/join', users.validateUser, channels.joinChannel);
+app.post('/api/channels/leave', users.validateUser, channels.leaveChannel);
+app.get('/api/channels/membercount', users.validateUser, channels.getChannelMemberCount);
+app.get('/api/channels/messages', users.validateUser, messages.getMessages);
+app.post('/api/channels/messages', users.validateUser, messages.sendMessage);
+
+// Tag routes
+app.get('/api/tags', users.validateUser, tags.getTags);
+app.get('/api/user/tags', users.validateUser, tags.getUserTags);
+app.post('/api/tags', users.validateAdminUser, tags.createTag);
+
+// Direct message routes
+app.get('/api/directmessages', users.validateUser, messages.getDirectMessages);
+app.post('/api/directmessages', users.validateUser, messages.sendDirectMessage);
+app.get('/api/directmessages/receivers', users.validateUser, messages.getDirectMessageReceivers);
+
+// School routes
+app.get('/api/schools', users.validateUser, schools.getSchools);
 
 // Code to generate frontend build directory
 console.log(__dirname);

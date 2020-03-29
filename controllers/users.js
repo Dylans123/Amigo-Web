@@ -22,13 +22,13 @@ signup = (request, response) => {
 		const password = bcrypt.hashSync(body.password, saltRounds);
 
 		query = `
-			INSERT INTO users (email, password, first_name, last_name, display_name, last_logged_in, verified)
-			VALUES ($1, $2, $3, $4, $5, NULL, false)
+			INSERT INTO users (email, password, first_name, last_name, display_name, school_id, last_logged_in, verified)
+			VALUES ($1, $2, $3, $4, $5, $6, NULL, false)
 			RETURNING user_id
 		`;
 
 		db.client
-			.query(query, [body.email, password, body.first_name, body.last_name, body.display_name])
+			.query(query, [body.email, password, body.first_name, body.last_name, body.display_name, body.school_id])
 			.then(result => {
 				// Send verification request email
 				const payload = {'query': {'email': body.email}};
@@ -43,7 +43,7 @@ signup = (request, response) => {
 };
 
 // Check to see if email is already registered
-checkEmail = (email, callback) => {
+checkEmail = (email, next) => {
 	var query = `
 		SELECT *
 		FROM users
@@ -53,7 +53,7 @@ checkEmail = (email, callback) => {
 	db.client
 		.query(query, [email])
 		.then(result => {
-			callback(result.rows.length > 0);
+			next(result.rows.length > 0);
 		})
 		.catch(error => {
 			response.status(400).json({'success': false, 'message': error.toString()});
@@ -113,6 +113,68 @@ login = (request, response) => {
 					}
 					else {
 						response.status(403).json({'success': false, 'message': 'Email has not been verified.', 'verified': false});
+					}
+				}
+				else {
+					response.status(401).json({'success': false, 'message': 'Login failed.'});
+				}
+			})
+			.catch(error => {
+				response.status(400).json({'success': false, 'message': error.toString()});
+			});
+	}
+};
+
+// Admin login controller
+adminLogin = (request, response) => {
+	const body = request.body;
+	const errors = validationResult(request);
+
+	// Input is missing
+	if (!errors.isEmpty()) {
+		return response.status(422).json({'success': false, 'errors': errors.array()});
+	}
+	// Input is not missing, so issue token
+	else {
+		var query = `
+			SELECT *
+			FROM users
+			WHERE LOWER(email) = LOWER($1)
+		`;
+
+		db.client
+			.query(query, [body.email])
+			.then(result => {
+				// Check email and password
+				if (result.rows.length > 0 && bcrypt.compareSync(body.password, result.rows[0].password)) {
+					const verified = result.rows[0].verified;
+					const access_level = result.rows[0].access_level;
+
+					// Check admin status
+					if (access_level >= 10) {
+						const user_id = result.rows[0].user_id;
+
+						query = `
+							UPDATE users
+							SET last_logged_in = NOW()
+							WHERE user_id = $1
+						`;
+
+						db.client
+							.query(query, [user_id])
+							.then(result => {
+								const payload = {'user_id': user_id};
+
+								var token = jwt.sign(payload, adminKey, {expiresIn: "7d"});
+
+								response.status(200).json({'success': true, 'message': 'Login successful!', 'x-access-token': token});
+							})
+							.catch(error => {
+								response.status(400).json({'success': false, 'message': error.toString()});
+							});
+					}
+					else {
+						response.status(403).json({'success': false, 'message': 'Not authorized.'});
 					}
 				}
 				else {
@@ -275,7 +337,8 @@ getUserInfo = (request, response) => {
 				'first_name': user.first_name,
 				'last_name': user.last_name,
 				'display_name': user.display_name,
-				'last_logged_in': user.last_logged_in
+				'last_logged_in': user.last_logged_in,
+				'school_id': user.school_id
 			});
 		})
 		.catch(error => {
@@ -308,20 +371,20 @@ updateUser = (request, response) => {
 				else {
 					query = `
 						UPDATE users
-						SET first_name = $2, last_name = $3, display_name = $4, location = $5
+						SET first_name = $2, last_name = $3, display_name = $4, school_id = $5
 						WHERE user_id = $1
 					`;
 
 					db.client
-						.query(query, [payload.user_id, body.first_name, body.last_name, body.display_name, body.location])
+						.query(query, [payload.user_id, body.first_name, body.last_name, body.display_name, body.school_id])
 						.then(result => {
-							var values = request.body.new_password;
+							var new_password = request.body.new_password;
 							
-							if (values == undefined) {
+							if (new_password == undefined) {
 								response.status(200).json({'success': true, 'message': 'User info was successfully updated.'});
 							}
 							else {
-								const new_password = bcrypt.hashSync(body.new_password, saltRounds);
+								new_password = bcrypt.hashSync(body.new_password, saltRounds);
 
 								query = `
 									UPDATE users
@@ -359,5 +422,6 @@ module.exports = {
 	sendVerification,
 	verifyEmail,
 	getUserInfo,
-	updateUser
+	updateUser,
+	adminLogin
 };
