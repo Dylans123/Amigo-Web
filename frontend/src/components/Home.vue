@@ -99,7 +99,7 @@ export default {
     },
     getGroups: function() {
       console.log(this.jwt)
-      axios.get('https://amigo-web-app.azurewebsites.net/api/channels', {
+      axios.get('/api/channels/all', {
         headers: {'x-access-token': this.jwt}
       }).then((res) => {  
         console.log(res);
