@@ -54,7 +54,7 @@
                     <md-table-cell>{{ user.display_name }}</md-table-cell>
                     <md-table-cell>{{ user.created_on }}</md-table-cell>
                     <md-table-cell>
-                      <button type="button" class="btn btn-outline-primary" v-on:click="logout()">Remove</button>
+                      <button type="button" class="btn btn-outline-primary" v-on:click="removeUser(user.user_id)">Remove</button>
                     </md-table-cell>
                   </md-table-row>
                 </template>
@@ -106,8 +106,20 @@ export default {
       this.selected = id;
       this.getUsers();
     },
+    removeUser: function() {
+      '/api/channels/users/remove'
+      axios({
+        method: 'post',
+        url: '/api/channels/users/remove',
+        headers: {'x-access-token': this.jwt}
+      }).then((res) => {  
+        console.log(res);
+        this.users = this.getUsers();
+      }).catch((err) => {
+        console.log(err);
+      })
+    },
     getUsers: function() {
-      '/api/channels/users'
       console.log(this.jwt)
       axios({
         method: 'get',
