@@ -148,8 +148,15 @@ checkChannelJoin = (user_id, channel_id, next) => {
 		});
 }
 
-getAllChannels = (request, response) => {
-	const query = `
+// Get channels controller
+getChannels = (request, response) => {
+	const requestQuery = request.query;
+	var query;
+	console.log(requestQuery);
+
+	// Get all
+	if (!(requestQuery.all === undefined)) {
+		query = `
 		SELECT *
 		FROM channels
 	`;
@@ -157,20 +164,16 @@ getAllChannels = (request, response) => {
 	db.client
 		.query(query)
 		.then(result => {
-			return next(result.rows.length > 0);
+			console.log(result);
+			return response.status(200).json({ success: true, channels: result.rows });
 		})
 		.catch(error => {
-			return false;
+			return response.status(400).json({ success: false, message: 'failure' });
 		});
-}
-
-// Get channels controller
-getChannels = (request, response) => {
-	const requestQuery = request.query;
-	var query;
+	}
 
 	// By tag_id
-	if (!(requestQuery.tag_id === undefined) && requestQuery.school_id === undefined && requestQuery.query === undefined) {
+	else if (!(requestQuery.tag_id === undefined) && requestQuery.school_id === undefined && requestQuery.query === undefined) {
 		console.log("2");
 		query = `
 			SELECT channel_id, name, description, school_id
@@ -238,6 +241,5 @@ module.exports = {
 	leaveChannel,
 	getChannelMemberCount,
 	checkChannelJoin,
-	getChannels,
-	getAllChannels
+	getChannels
 };

@@ -32,7 +32,7 @@
                   <md-card-header>
                     <md-card-header-text>
                       <div><h6>{{ group.name }}</h6></div>
-                      <div>{{ group.memberCount }} members</div>
+                      <div>{{ group.description }} members</div>
                     </md-card-header-text>
                   </md-card-header>
                 </md-card>
@@ -99,10 +99,13 @@ export default {
     },
     getGroups: function() {
       console.log(this.jwt)
-      axios.get('/api/channels/all', {
+      axios({
+        method: 'get',
+        url: '/api/channels?all=true',
         headers: {'x-access-token': this.jwt}
       }).then((res) => {  
         console.log(res);
+        this.groups = res.data.channels;
       }).catch((err) => {
         console.log(err);
       })
