@@ -63,6 +63,26 @@ getUserChannels = (request, response) => {
 		});
 };
 
+getChannelUsers = (request, response) => {
+	const requestQuery = request.query;
+
+	const query = `
+		SELECT users.user_id,users.first_name, users.last_name, users.display_name
+		FROM users
+		JOIN users_channels ON users.user_id=users_channels.user_id
+		AND users_channels.channel_id = ${requestQuery.channel_id};
+	`;
+
+	db.client
+		.query(query)
+		.then(result => {
+			response.status(200).json({'success': true, 'channels': result.rows});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+}
+
 // Join channel controller
 joinChannel = (request, response) => {
 	const body = request.body;
@@ -236,6 +256,7 @@ getChannels = (request, response) => {
 
 module.exports = {
 	getUserChannels,
+	getChannelUsers,
 	createChannel,
 	joinChannel,
 	leaveChannel,
