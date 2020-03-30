@@ -48,13 +48,13 @@
                   <md-table-head></md-table-head>
                 </md-table-row>
                 <template v-for="user in users">
-                  <md-table-row :key="user.displayName">
+                  <md-table-row :key="user.display_name">
                     <md-table-cell>{{ user.first_name }}</md-table-cell>
                     <md-table-cell>{{ user.last_name }}</md-table-cell>
                     <md-table-cell>{{ user.display_name }}</md-table-cell>
                     <md-table-cell>{{ user.created_on }}</md-table-cell>
                     <md-table-cell>
-                      <button type="button" class="btn btn-outline-primary" v-on:click="removeUser(user.user_id)">Remove</button>
+                      <button type="button" class="btn btn-outline-primary" v-on:click="removeUser(user['user_id'], selected)">Remove</button>
                     </md-table-cell>
                   </md-table-row>
                 </template>
@@ -106,11 +106,14 @@ export default {
       this.selected = id;
       this.getUsers();
     },
-    removeUser: function() {
-      '/api/channels/users/remove'
+    removeUser: function(user_id, channel_id) {
       axios({
         method: 'post',
         url: '/api/channels/users/remove',
+        data: {
+          user_id: user_id,
+          channel_id: channel_id
+        },
         headers: {'x-access-token': this.jwt}
       }).then((res) => {  
         console.log(res);
