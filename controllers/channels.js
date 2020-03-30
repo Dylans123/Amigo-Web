@@ -76,7 +76,7 @@ getChannelUsers = (request, response) => {
 	db.client
 		.query(query)
 		.then(result => {
-			response.status(200).json({'success': true, 'channels': result.rows});
+			response.status(200).json({'success': true, 'users': result.rows});
 		})
 		.catch(error => {
 			response.status(400).json({'success': false, 'message': error.toString()});

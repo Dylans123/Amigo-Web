@@ -5,8 +5,8 @@
         <md-dialog :md-active.sync="showDialog" style="background: white">
           <md-dialog-title>New Group Information</md-dialog-title>
           <md-dialog-actions>
-            <md-button class="md-primary" @click="showDialog = false">Close</md-button>
-            <md-button class="md-primary" @click="showDialog = false">Save</md-button>
+            <md-button class="md-primary" @click="showDialog=false">Close</md-button>
+            <md-button class="md-primary" @click="showDialog=false">Save</md-button>
           </md-dialog-actions>
         </md-dialog>
         <md-toolbar md-elevation="0">
@@ -24,15 +24,15 @@
           <div class="row">
             <div class="col-3 home-data">
               <p class="my-3"><b>Admin Groups</b></p>
-              <template v-for="group in groups">
-                <md-card :key="group.name" class="my-2 md-elevation-4" md-with-hover>
+              <template v-for="group in groups" v-on:click.native="updateSelected(group['channel_id'])">
+                <md-card :key="group.name" v-on:click.native="updateSelected(group['channel_id'])" v-bind:class="{ 'active': selected==group['channel_id'] }" class="my-2 md-elevation-4" md-with-hover>
                   <md-card-media>
                     <div class="red-circle"></div>
                   </md-card-media>
                   <md-card-header>
                     <md-card-header-text>
                       <div><h6>{{ group.name }}</h6></div>
-                      <div>{{ group.description }} members</div>
+                      <!-- <div>{{ group.description }} members</div> -->
                     </md-card-header-text>
                   </md-card-header>
                 </md-card>
@@ -49,10 +49,10 @@
                 </md-table-row>
                 <template v-for="user in users">
                   <md-table-row :key="user.displayName">
-                    <md-table-cell>{{ user.firstName }}</md-table-cell>
-                    <md-table-cell>{{ user.lastName }}</md-table-cell>
-                    <md-table-cell>{{ user.displayName }}</md-table-cell>
-                    <md-table-cell>{{ user.dateJoined }}</md-table-cell>
+                    <md-table-cell>{{ user.first_name }}</md-table-cell>
+                    <md-table-cell>{{ user.last_name }}</md-table-cell>
+                    <md-table-cell>{{ user.display_name }}</md-table-cell>
+                    <md-table-cell>{{ user.created_on }}</md-table-cell>
                     <md-table-cell>
                       <button type="button" class="btn btn-outline-primary" v-on:click="logout()">Remove</button>
                     </md-table-cell>
@@ -67,7 +67,7 @@
   </div>
 </template>
 <script>
-import generateUsers from "../users.js"
+// import generateUsers from "../users.js"
 // import generateGroups from "../groups.js"
 import axios from 'axios';
 export default {
@@ -81,13 +81,17 @@ export default {
     } else {
       console.log("Were cookin now");
     }
+    this.selected = 0;
     this.groups = this.getGroups();
+    console.log(this.groups);
+    this.users = this.getUsers();
   },
   data: function() {
     return {
-      users: generateUsers(),
-      groups: null,
+      selected: 0,
       showDialog: false,
+      users: null,
+      groups: null,
       jwt: null
     }
   },
@@ -96,6 +100,25 @@ export default {
       // Code to remove the cookie that is storing the jwt
       document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
       this.$router.push('/login');
+    },
+    updateSelected: function(id) {
+      console.log(id);
+      this.selected = id;
+      this.getUsers();
+    },
+    getUsers: function() {
+      '/api/channels/users'
+      console.log(this.jwt)
+      axios({
+        method: 'get',
+        url: `/api/channels/users?channel_id=${this.selected}`,
+        headers: {'x-access-token': this.jwt}
+      }).then((res) => {  
+        console.log(res);
+        this.users = res.data.users;
+      }).catch((err) => {
+        console.log(err);
+      })
     },
     getGroups: function() {
       console.log(this.jwt)
@@ -137,5 +160,8 @@ export default {
     flex-direction: row;
     align-items: center;
     padding: 10px;
+  }
+  .active {
+    border: #F65D62 solid 5px;
   }
 </style>
