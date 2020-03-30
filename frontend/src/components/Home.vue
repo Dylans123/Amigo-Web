@@ -2,30 +2,37 @@
   <div>
     <template v-if="this.jwt">
       <div>
-        <md-dialog :md-active.sync="showDialog" style="background: white">
+        <md-dialog :md-active.sync="showGroupDialog" style="background: white">
           <md-dialog-title>New Group Information</md-dialog-title>
           <md-dialog-actions>
-            <md-button class="md-primary" @click="showDialog=false">Close</md-button>
-            <md-button class="md-primary" @click="showDialog=false">Save</md-button>
+            <md-button class="md-primary" @click="showGroupDialog=false">Close</md-button>
+            <md-button class="md-primary" @click="showGroupDialog=false">Save</md-button>
+          </md-dialog-actions>
+        </md-dialog>
+        <md-dialog :md-active.sync="showDeleteDialog" style="background: white">
+          <md-dialog-title>Are you sure you want to remove this user from this group? This action can't be undone.</md-dialog-title>
+          <md-dialog-actions>
+            <md-button class="md-primary" @click="showDeleteDialog=false">No</md-button>
+            <md-button class="md-primary" @click="removeUser(curUser['user_id'], curChannel['channel_id'])">Yes</md-button>
           </md-dialog-actions>
         </md-dialog>
         <md-toolbar md-elevation="0">
           <div class="container d-flex justify-content-between align-items-center w-100 my-3">
             <h3 class="admin-text"><b>Amigo Admin Dashboard</b></h3>
-            <button type="button" class="btn" v-on:click="logout()"><h4>Logout</h4></button>
+            <button type="button" class="btn" @click="logout()"><h4>Logout</h4></button>
           </div>
         </md-toolbar>
         <md-divider></md-divider>
         <div class="container">
           <div class="d-flex justify-content-between align-items-center w-100 my-3">
             <h3><b>Groups</b></h3>
-            <button type="button" class="btn btn-outline-primary" @click="showDialog=true">New Group +</button>
+            <button type="button" class="btn btn-outline-primary" @click="showGroupDialog=true">New Group +</button>
           </div>
           <div class="row">
             <div class="col-3 home-data">
               <p class="my-3"><b>Admin Groups</b></p>
-              <template v-for="group in groups" v-on:click.native="updateSelected(group['channel_id'])">
-                <md-card :key="group.name" v-on:click.native="updateSelected(group['channel_id'])" v-bind:class="{ 'active': selected==group['channel_id'] }" class="my-2 md-elevation-4" md-with-hover>
+              <template v-for="group in groups" @click.native="updateCurChannel(group)">
+                <md-card :key="group.name" @click.native="updateCurChannel(group)" v-bind:class="{ 'active': curChannel['channel_id']==group['channel_id'] }" class="my-2 md-elevation-4" md-with-hover>
                   <md-card-media>
                     <div class="red-circle"></div>
                   </md-card-media>
@@ -54,7 +61,7 @@
                     <md-table-cell>{{ user.display_name }}</md-table-cell>
                     <md-table-cell>{{ user.created_on }}</md-table-cell>
                     <md-table-cell>
-                      <button type="button" class="btn btn-outline-primary" v-on:click="removeUser(user['user_id'], selected)">Remove</button>
+                      <button type="button" class="btn btn-outline-primary" @click="updateCurUser(user)">Remove</button>
                     </md-table-cell>
                   </md-table-row>
                 </template>
@@ -81,15 +88,14 @@ export default {
     } else {
       console.log("Were cookin now");
     }
-    this.selected = 0;
     this.groups = this.getGroups();
-    console.log(this.groups);
-    this.users = this.getUsers();
   },
   data: function() {
     return {
-      selected: 0,
-      showDialog: false,
+      showGroupDialog: false,
+      showDeleteDialog: false,
+      curUser: null,
+      curChannel: null,
       users: null,
       groups: null,
       jwt: null
@@ -101,10 +107,14 @@ export default {
       document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
       this.$router.push('/login');
     },
-    updateSelected: function(id) {
-      console.log(id);
-      this.selected = id;
+    updateCurChannel: function(channel) {
+      console.log(channel);
+      this.curChannel = channel;
       this.getUsers();
+    },
+    updateCurUser: function(user) {
+      this.curUser = user;
+      this.showDeleteDialog = true; 
     },
     removeUser: function(user_id, channel_id) {
       axios({
@@ -121,12 +131,14 @@ export default {
       }).catch((err) => {
         console.log(err);
       })
+      this.showDeleteDialog = false;
+      this.curUser = null;
     },
     getUsers: function() {
       console.log(this.jwt)
       axios({
         method: 'get',
-        url: `/api/channels/users?channel_id=${this.selected}`,
+        url: `/api/channels/users?channel_id=${this.curChannel['channel_id']}`,
         headers: {'x-access-token': this.jwt}
       }).then((res) => {  
         console.log(res);
@@ -144,6 +156,8 @@ export default {
       }).then((res) => {  
         console.log(res);
         this.groups = res.data.channels;
+        this.curChannel = res.data.channels[0];
+        this.users = this.getUsers();
       }).catch((err) => {
         console.log(err);
       })
