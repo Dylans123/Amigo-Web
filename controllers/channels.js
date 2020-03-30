@@ -130,6 +130,28 @@ leaveChannel = (request, response) => {
 		});
 };
 
+removeChannelUser = (request, response) => {
+	const body = request.body;
+
+	const query = `
+		DELETE FROM users_channels
+		WHERE user_id = $1 AND channel_id = $2
+			AND user_id NOT IN (SELECT channels.user_id FROM channels WHERE channels.channel_id = users_channels.channel_id)
+	`;
+
+	db.client
+		.query(query, [body.user_id, body.channel_id])
+		.then(result => {
+			if (result.rowCount > 0)
+				response.status(200).json({'success': true, 'message': 'User has been removed from the channel'});
+			else
+				response.status(400).json({'success': false, 'message': 'Cannot remove this user from this channel.'});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+}
+
 // Get channel member count controller
 getChannelMemberCount = (request, response) => {
 	const requestQuery = request.query;
@@ -262,5 +284,6 @@ module.exports = {
 	leaveChannel,
 	getChannelMemberCount,
 	checkChannelJoin,
-	getChannels
+	getChannels,
+	removeChannelUser
 };
