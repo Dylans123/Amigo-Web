@@ -430,6 +430,10 @@ paths:
           schema:
             type: string
         - in: query
+          name: all
+          schema:
+            type: string
+        - in: query
           name: tag_id
           schema:
             type: string

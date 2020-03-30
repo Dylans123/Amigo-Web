@@ -8,7 +8,7 @@ createChannel = (request, response) => {
 
 	var query = `
 		INSERT INTO channels (user_id, tag_id, name, description, school_id)
-		VALUES ($1, $2, $3, $4)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING channel_id
 	`;
 
@@ -132,6 +132,7 @@ leaveChannel = (request, response) => {
 
 removeChannelUser = (request, response) => {
 	const body = request.body;
+	console.log(body);
 
 	const query = `
 		DELETE FROM users_channels
@@ -194,7 +195,6 @@ checkChannelJoin = (user_id, channel_id, next) => {
 getChannels = (request, response) => {
 	const requestQuery = request.query;
 	var query;
-	console.log(requestQuery);
 
 	// Get all
 	if (!(requestQuery.all === undefined)) {
@@ -206,7 +206,6 @@ getChannels = (request, response) => {
 	db.client
 		.query(query)
 		.then(result => {
-			console.log(result);
 			return response.status(200).json({ success: true, channels: result.rows });
 		})
 		.catch(error => {

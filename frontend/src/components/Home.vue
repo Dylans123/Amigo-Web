@@ -4,9 +4,33 @@
       <div>
         <md-dialog :md-active.sync="showGroupDialog" style="background: white">
           <md-dialog-title>New Group Information</md-dialog-title>
+          <div class="row px-5">
+            <div class="col-12 my-1">
+              <label for="tag">Tag</label>
+              <select class="custom-select" name="tag" v-model="newGroupTag">
+                <option selected></option>
+                <option v-for="tag in tags" :key="tag['tag_id']" v-bind:value="tag['tag_id']">{{ tag.name }}</option>
+              </select>
+            </div>
+            <div class="col-12 my-1">
+              <label for="school">School</label>
+              <select class="custom-select" name="school" v-model="newGroupSchool">
+                <option selected></option>
+                <option v-for="school in schools" :key="school.name" v-bind:value="school['school_id']">{{ school.name }}</option>
+              </select>
+            </div>
+            <div class="col-12 my-1">
+              <label for="name">Name</label>
+              <input type="text" class="form-control" v-model="newGroupName" value="" required>
+            </div>
+            <div class="col-12 my-1">
+              <label for="description">Description</label>
+              <input type="text" class="form-control" v-model="newGroupDescription" value="" required>
+            </div>
+          </div>
           <md-dialog-actions>
-            <md-button class="md-primary" @click="showGroupDialog=false">Close</md-button>
-            <md-button class="md-primary" @click="showGroupDialog=false">Save</md-button>
+            <md-button class="md-primary" @click="showGroupDialog=false">Cancel</md-button>
+            <md-button class="md-primary" @click="createGroup()">Create</md-button>
           </md-dialog-actions>
         </md-dialog>
         <md-dialog :md-active.sync="showDeleteDialog" style="background: white">
@@ -88,16 +112,24 @@ export default {
     } else {
       console.log("Were cookin now");
     }
-    this.groups = this.getGroups();
+    this.getGroups();
+    this.getSchools();
+    this.getTags();
   },
   data: function() {
     return {
       showGroupDialog: false,
       showDeleteDialog: false,
+      newGroupName: null,
+      newGroupDescription: null,
+      newGroupTag: null,
+      newGroupSchool: null,
       curUser: null,
       curChannel: null,
       users: null,
       groups: null,
+      schools: null,
+      tags: null,
       jwt: null
     }
   },
@@ -108,7 +140,6 @@ export default {
       this.$router.push('/login');
     },
     updateCurChannel: function(channel) {
-      console.log(channel);
       this.curChannel = channel;
       this.getUsers();
     },
@@ -125,8 +156,7 @@ export default {
           channel_id: channel_id
         },
         headers: {'x-access-token': this.jwt}
-      }).then((res) => {  
-        console.log(res);
+      }).then(() => {  
         this.users = this.getUsers();
       }).catch((err) => {
         console.log(err);
@@ -135,32 +165,75 @@ export default {
       this.curUser = null;
     },
     getUsers: function() {
-      console.log(this.jwt)
       axios({
         method: 'get',
         url: `/api/channels/users?channel_id=${this.curChannel['channel_id']}`,
         headers: {'x-access-token': this.jwt}
       }).then((res) => {  
-        console.log(res);
         this.users = res.data.users;
       }).catch((err) => {
         console.log(err);
       })
     },
     getGroups: function() {
-      console.log(this.jwt)
       axios({
         method: 'get',
         url: '/api/channels?all=true',
         headers: {'x-access-token': this.jwt}
       }).then((res) => {  
-        console.log(res);
         this.groups = res.data.channels;
         this.curChannel = res.data.channels[0];
         this.users = this.getUsers();
       }).catch((err) => {
         console.log(err);
       })
+    },
+    getSchools: function() {
+      axios({
+        method: 'get',
+        url: '/api/schools',
+        headers: {'x-access-token': this.jwt}
+      }).then((res) => {  
+        this.schools = res.data.schools;
+      }).catch((err) => {
+        console.log(err);
+      })
+    },
+    getTags: function() {
+      axios({
+        method: 'get',
+        url: '/api/tags',
+        headers: {'x-access-token': this.jwt}
+      }).then((res) => {  
+        this.tags = res.data.tags;
+      }).catch((err) => {
+        console.log(err);
+      })
+    },
+    createGroup: function() {
+      console.log({
+        tag_id: this.newGroupTag,
+        school_id: this.newGroupSchool,
+        name: this.newGroupName,
+        description: this.newGroupDescription
+      });
+      axios({
+        method: 'post',
+        url: '/api/channels',
+        data: {
+          tag_id: this.newGroupTag,
+          school_id: this.newGroupSchool,
+          name: this.newGroupName,
+          description: this.newGroupDescription
+        },
+        headers: {'x-access-token': this.jwt}
+      }).then((res) => {  
+        console.log(res);
+        this.groups = this.getGroups();
+      }).catch((err) => {
+        console.log(err);
+      })
+      this.showGroupDialog = false;
     }
   }
 }
