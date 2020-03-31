@@ -162,7 +162,7 @@ app.get('/api/schools', users.validateUser, schools.getSchools);
 // Code to generate frontend build directory
 app.use(express.static(path.join(__dirname, "frontend/dist")));
 app.get("/*", (req, res) => {
-	res.sendFile(path.join(__dirname, "frontend/dist/index.html"));
+	res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
 });
 
 server.listen(port, () => {
