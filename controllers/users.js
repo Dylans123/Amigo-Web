@@ -105,7 +105,7 @@ login = (request, response) => {
 								else
 									var token = jwt.sign(payload, key, {expiresIn: "7d"});
 
-								response.status(200).json({'success': true, 'message': 'Login successful!', 'x-access-token': token, 'verified': true});
+								response.status(200).set('Set-Cookie', `jwt=${token}`).json({'success': true, 'message': 'Login successful!', 'x-access-token': token, 'verified': true});
 							})
 							.catch(error => {
 								response.status(400).json({'success': false, 'message': error.toString()});
