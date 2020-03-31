@@ -126,6 +126,11 @@ app.post(
 app.get('/verify', users.verifyEmail);
 app.get('/api/sendverification', users.sendVerification);
 
+// Password Reset
+app.get('/resetpassword', users.resetPassword);
+app.get('/api/resetpasswordrequest', users.resetPasswordRequest);
+app.post('/api/changepassword', users.validateUser, users.changePassword);
+
 // User routes
 app.get('/api/user', users.validateUser, users.getUserInfo);
 
