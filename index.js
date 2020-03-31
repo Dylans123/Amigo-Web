@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const multer = require('multer')
 const cors = require('cors');
+const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 const {check, validationResult} = require('express-validator');
@@ -13,7 +15,17 @@ const tags = require('./controllers/tags');
 const channels = require('./controllers/channels');
 const messages = require('./controllers/messages');
 const schools = require('./controllers/schools');
+const uploadImage = require('./images.js');
 
+const multerMid = multer({
+	storage: multer.memoryStorage(),
+	limits: {
+		fileSize: 5 * 1024 * 1024,
+	},
+})
+  
+app.disable('x-powered-by')
+app.use(multerMid.single('file'))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors());
@@ -139,6 +151,8 @@ app.get('/api/channels', users.validateUser, channels.getChannels);
 app.post('/api/channels', users.validateUser, channels.createChannel);
 app.post('/api/channels/join', users.validateUser, channels.joinChannel);
 app.post('/api/channels/leave', users.validateUser, channels.leaveChannel);
+app.get('/api/channels/users', users.validateUser, channels.getChannelUsers);
+app.post('/api/channels/users/remove', users.validateUser, channels.removeChannelUser);
 app.get('/api/channels/membercount', users.validateUser, channels.getChannelMemberCount);
 app.get('/api/channels/messages', users.validateUser, messages.getMessages);
 app.post('/api/channels/messages', users.validateUser, messages.sendMessage);
@@ -157,10 +171,33 @@ app.get('/api/directmessages/receivers', users.validateUser, messages.getDirectM
 app.get('/api/schools', users.validateUser, schools.getSchools);
 
 // Code to generate frontend build directory
-console.log(__dirname);
-app.use(express.static(__dirname + "/frontend/dist"));
+app.use(express.static(path.join(__dirname, "frontend/dist")));
 app.get("/*", (req, res) => {
-	res.sendFile(path.join(__dirname, "/frontend/dist/index.html"));
+	res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+});
+
+// Storage API
+app.post('/api/uploads', async (req, res, next) => {
+	try {
+		const myFile = req.file
+		const imageUrl = await uploadImage(myFile);
+		res
+			.status(200)
+			.json({
+			message: "Upload was successful",
+			data: imageUrl
+		})
+	} catch (error) {
+		next(error)
+	}
+});
+
+app.use((err, req, res, next) => {
+	res.status(500).json({
+		error: err,
+		message: 'Internal server error!',
+	})
+	next()
 });
 
 server.listen(port, () => {

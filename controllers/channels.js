@@ -8,7 +8,7 @@ createChannel = (request, response) => {
 
 	var query = `
 		INSERT INTO channels (user_id, tag_id, name, description, school_id)
-		VALUES ($1, $2, $3, $4)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING channel_id
 	`;
 
@@ -63,6 +63,26 @@ getUserChannels = (request, response) => {
 		});
 };
 
+getChannelUsers = (request, response) => {
+	const requestQuery = request.query;
+
+	const query = `
+		SELECT users.user_id,users.first_name, users.last_name, users.display_name
+		FROM users
+		JOIN users_channels ON users.user_id=users_channels.user_id
+		AND users_channels.channel_id = ${requestQuery.channel_id};
+	`;
+
+	db.client
+		.query(query)
+		.then(result => {
+			response.status(200).json({'success': true, 'users': result.rows});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+}
+
 // Join channel controller
 joinChannel = (request, response) => {
 	const body = request.body;
@@ -110,6 +130,29 @@ leaveChannel = (request, response) => {
 		});
 };
 
+removeChannelUser = (request, response) => {
+	const body = request.body;
+	console.log(body);
+
+	const query = `
+		DELETE FROM users_channels
+		WHERE user_id = $1 AND channel_id = $2
+			AND user_id NOT IN (SELECT channels.user_id FROM channels WHERE channels.channel_id = users_channels.channel_id)
+	`;
+
+	db.client
+		.query(query, [body.user_id, body.channel_id])
+		.then(result => {
+			if (result.rowCount > 0)
+				response.status(200).json({'success': true, 'message': 'User has been removed from the channel'});
+			else
+				response.status(400).json({'success': false, 'message': 'Cannot remove this user from this channel.'});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+}
+
 // Get channel member count controller
 getChannelMemberCount = (request, response) => {
 	const requestQuery = request.query;
@@ -153,8 +196,25 @@ getChannels = (request, response) => {
 	const requestQuery = request.query;
 	var query;
 
+	// Get all
+	if (!(requestQuery.all === undefined)) {
+		query = `
+		SELECT *
+		FROM channels
+	`;
+
+	db.client
+		.query(query)
+		.then(result => {
+			return response.status(200).json({ success: true, channels: result.rows });
+		})
+		.catch(error => {
+			return response.status(400).json({ success: false, message: 'failure' });
+		});
+	}
+
 	// By tag_id
-	if (!(requestQuery.tag_id === undefined) && requestQuery.school_id === undefined && requestQuery.query === undefined) {
+	else if (!(requestQuery.tag_id === undefined) && requestQuery.school_id === undefined && requestQuery.query === undefined) {
 		console.log("2");
 		query = `
 			SELECT channel_id, name, description, school_id
@@ -217,10 +277,12 @@ getChannels = (request, response) => {
 
 module.exports = {
 	getUserChannels,
+	getChannelUsers,
 	createChannel,
 	joinChannel,
 	leaveChannel,
 	getChannelMemberCount,
 	checkChannelJoin,
-	getChannels
+	getChannels,
+	removeChannelUser
 };

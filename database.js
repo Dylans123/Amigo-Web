@@ -8,9 +8,9 @@ const config = {
 	host: process.env['DB_HOST'],
 	user: process.env['DB_USERNAME'],
 	password: process.env['DB_PASS'],
-	database: process.env['DB_NAME'],
+	name: process.env['DB_NAME'],
+	database: process.env['DB_DATABASE'],
 	port: port,
-	ssl: false
 };
 
 const client = new pg.Client(config);
