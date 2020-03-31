@@ -418,10 +418,9 @@ paths:
                     type: boolean
                   message:
                     type: string
-  /api/channels:
+  /api/channels/users:
     get:
-      summary: Get a list of channels based on queries
-      description: "Supported query combinations: (1) tag_id, (2) tag_id and school_id, (3) school_id and query"
+      summary: Get a list of a channel's users
       tags:
         - Channels
       parameters:
@@ -430,7 +429,95 @@ paths:
           schema:
             type: string
         - in: query
-          name: all
+          name: channel_id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user_id:
+                          type: string
+                        first_name:
+                          type: string
+                        last_name:
+                          type: string
+                        display_name:
+                          type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/channels/users/remove:
+    post:
+      summary: Remove a user from a channel (Admin)
+      tags:
+        - Channels
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                channel_id:
+                  type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/channels:
+    get:
+      summary: Get a list of channels based on queries
+      description: "Supported query combinations: (1) tag_id, (2) tag_id and school_id, (3) school_id and query, (4) none (displays all)"
+      tags:
+        - Channels
+      parameters:
+        - in: header
+          name: x-access-token
           schema:
             type: string
         - in: query
@@ -467,6 +554,8 @@ paths:
                         description:
                           type: string
                         school_id:
+                          type: string
+                        member_count:
                           type: string
         '400':
           description: Failed
@@ -1035,6 +1124,50 @@ paths:
                           type: string
                         name:
                           type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/upload:
+    post:
+      summary: Upload an image
+      tags:
+        - Images
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  image_url:
+                    type: string
         '400':
           description: Failed
           content:

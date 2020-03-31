@@ -15,7 +15,7 @@ const tags = require('./controllers/tags');
 const channels = require('./controllers/channels');
 const messages = require('./controllers/messages');
 const schools = require('./controllers/schools');
-const uploadImage = require('./images.js');
+const images = require('./controllers/images');
 
 const multerMid = multer({
 	storage: multer.memoryStorage(),
@@ -23,7 +23,7 @@ const multerMid = multer({
 		fileSize: 5 * 1024 * 1024,
 	},
 })
-  
+
 app.disable('x-powered-by')
 app.use(multerMid.single('file'))
 app.use(bodyParser.json());
@@ -58,8 +58,7 @@ function joinRoom(socket, data) {
 	const payload = jwt.decode(data.token);
 
 	if (!(data.channel_id === undefined)) {
-		channels.checkChannelJoin(payload.user_id, data.channel_id, hasJoinedChannel =>
-		{
+		channels.checkChannelJoin(payload.user_id, data.channel_id, hasJoinedChannel => {
 			if (hasJoinedChannel)
 				socket.join(data.channel_id);
 		});
@@ -152,7 +151,7 @@ app.post('/api/channels', users.validateUser, channels.createChannel);
 app.post('/api/channels/join', users.validateUser, channels.joinChannel);
 app.post('/api/channels/leave', users.validateUser, channels.leaveChannel);
 app.get('/api/channels/users', users.validateUser, channels.getChannelUsers);
-app.post('/api/channels/users/remove', users.validateUser, channels.removeChannelUser);
+app.post('/api/channels/users/remove', users.validateAdminUser, channels.removeChannelUser);
 app.get('/api/channels/membercount', users.validateUser, channels.getChannelMemberCount);
 app.get('/api/channels/messages', users.validateUser, messages.getMessages);
 app.post('/api/channels/messages', users.validateUser, messages.sendMessage);
@@ -170,26 +169,13 @@ app.get('/api/directmessages/receivers', users.validateUser, messages.getDirectM
 // School routes
 app.get('/api/schools', users.validateUser, schools.getSchools);
 
+// Image routes
+app.post('/api/upload', validateUser, images.upload);
+
 // Code to generate frontend build directory
 app.use(express.static(path.join(__dirname, "frontend/dist")));
 app.get("/*", (req, res) => {
 	res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
-});
-
-// Storage API
-app.post('/api/uploads', async (req, res, next) => {
-	try {
-		const myFile = req.file
-		const imageUrl = await uploadImage(myFile);
-		res
-			.status(200)
-			.json({
-			message: "Upload was successful",
-			data: imageUrl
-		})
-	} catch (error) {
-		next(error)
-	}
 });
 
 app.use((err, req, res, next) => {
