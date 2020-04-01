@@ -1,1 +1,77 @@
-<!DOCTYPE html><html lang=en><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><link rel=icon href=/favicon.ico><link rel=stylesheet href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons"><title>frontend</title><link href=/css/app.20d26fa4.css rel=preload as=style><link href=/css/chunk-vendors.80a9e6ca.css rel=preload as=style><link href=/js/app.ff817568.js rel=preload as=script><link href=/js/chunk-vendors.3e6c5aff.js rel=preload as=script><link href=/css/chunk-vendors.80a9e6ca.css rel=stylesheet><link href=/css/app.20d26fa4.css rel=stylesheet></head><body><noscript><strong>We're sorry but frontend doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id=app></div><script src=/js/chunk-vendors.3e6c5aff.js></script><script src=/js/app.ff817568.js></script></body></html>
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	</head>
+	<body>
+		<div class="container"><br>
+			<div class="jumbotron">
+				<h1 class="display-4">Send Message</h1><br>
+				<input id="channel_id" class="form-control" placeholder="Channel ID" value="1"><br>
+				<input id="user_id" class="form-control" placeholder="User ID" value="15"><br>
+				<textarea id="message" class="form-control" placeholder="Your message here"></textarea><br>
+				<button id="send" class="btn btn-success">Send</button>
+			</div>
+			<div id="messages"></div>
+		</div>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script>
+			var socket = io("https://amigo-269801.appspot.com");
+			var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTgiLCJpYXQiOjE1ODU2NDgyMzYsImV4cCI6MTU4NjI1MzAzNn0.5fPzBzlkPu33pG5sS2W66d7CSjz0hefS_9J-gfkXslM";
+
+			socket.emit('join', {'token': token, 'channel_id': $("#channel_id").val()});
+			socket.on('message', addMessage);
+
+			$(() => {
+				$("#send").click(() => {
+					sendMessage({
+						'user_id': $("#user_id").val(),
+						'channel_id': $("#channel_id").val(),
+						'message': $("#message").val()
+					});
+				});
+				
+				getMessages($("#channel_id").val());
+			});
+
+			function addMessage(message) {
+				$("#messages").append(`
+					<p><b>${message.display_name}</b> <i>${message.created_on}</i> ${message.message}</p>
+				`);
+			}
+
+			function getMessages(channel_id) {
+				$.ajax({
+					url: 'https://amigo-269801.appspot.com/api/channels/messages/' + channel_id,
+					type: 'get',
+					headers: {
+						'x-access-token': token
+					},
+					dataType: 'json',
+					success: (data) => {
+						var messages = data.messages;
+						messages.forEach(addMessage);
+					}
+				});
+			}
+
+			function sendMessage(data) {
+				$.ajax({
+					url: 'https://amigo-269801.appspot.com/api/channels/messages',
+					type: 'post',
+					headers: {
+						'x-access-token': token
+					},
+					data: {
+						'channel_id': data.channel_id,
+						'message': data.message
+					},
+					dataType: 'json'
+				});
+			}
+		</script>
+	</body>
+</html>
