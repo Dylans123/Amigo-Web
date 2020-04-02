@@ -334,6 +334,7 @@ getUserInfo = (request, response) => {
 			response.status(200).json({
 				'success': true,
 				'email': user.email,
+				'user_id': user.user_id,
 				'first_name': user.first_name,
 				'last_name': user.last_name,
 				'display_name': user.display_name,

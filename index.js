@@ -65,7 +65,11 @@ function joinRoom(socket, data) {
 		});
 	}
 	else if (!(data.receiver_user_id === undefined)) {
-		socket.join(payload.user_id + ":" + data.receiver_user_id);
+		if (parseInt(payload.user_id) <= parseInt(data.receiver_user_id)) {
+			socket.join(payload.user_id + ":" + data.receiver_user_id);
+		} else {
+			socket.join(data.receiver_user_id + ":" + payload.user_id);
+		}
 	}
 }
 

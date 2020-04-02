@@ -7,7 +7,7 @@
 		<div class="container"><br>
 			<div class="jumbotron">
 				<h1 class="display-4">Send Message</h1><br>
-				<input id="channel_id" class="form-control" placeholder="Channel ID" value="4"><br>
+				<input id="channel_id" class="form-control" placeholder="Channel ID" value="15"><br>
 				<input id="user_id" class="form-control" placeholder="User ID" value="10"><br>
 				<textarea id="message" class="form-control" placeholder="Your message here"></textarea><br>
 				<button id="send" class="btn btn-success">Send</button>
@@ -19,28 +19,32 @@
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script>
-			var socket = io("https://amigo-269801.appspot.com");
+            // "https://amigo-269801.appspot.com"
+			var socket = io("https://amigo-269801.appspot.com/");
 			var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTgiLCJpYXQiOjE1ODU2NDgyMzYsImV4cCI6MTU4NjI1MzAzNn0.5fPzBzlkPu33pG5sS2W66d7CSjz0hefS_9J-gfkXslM";
             // thirdDSkelz: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMjciLCJpYXQiOjE1ODU3Nzc1NzksImV4cCI6MTU4NjM4MjM3OX0.mNwgyHBjch20Zx92QNn300zws5VGDdbIWyZBg9HfFl8
             // firstDSkelz: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTgiLCJpYXQiOjE1ODU2NDgyMzYsImV4cCI6MTU4NjI1MzAzNn0.5fPzBzlkPu33pG5sS2W66d7CSjz0hefS_9J-gfkXslM
-			socket.emit('join', {'token': token, 'channel_id': $("#channel_id").val()});
+			socket.emit('join', {'token': token, 'receiver_user_id': "15"});
 			socket.on('message', addMessage);
 
 			$(() => {
 				$("#send").click(() => {
-					sendMessage({
-						'user_id': $("#user_id").val(),
-						'channel_id': $("#channel_id").val(),
-						'message': $("#message").val()
+					sendDirectMessage({
+						// 'user_id': $("#user_id").val(),
+                        // 'channel_id': $("#channel_id").val(),
+                        receiver_user_id: "15",
+						message: $("#message").val()
 					});
 				});
 				
-				getMessages($("#channel_id").val());
+				getDirectMessages();
 			});
 
 			function addMessage(message) {
+                console.log("There was a message that was heard");
+                console.log(message);
 				$("#messages").append(`
-					<p><b>${message.display_name}</b> <i>${message.created_on}</i> ${message.message}</p>
+					<p><b>${message.sender_display_name}</b> <i>${message.created_on}</i> ${message.message}</p>
 				`);
 			}
 
@@ -57,7 +61,22 @@
 						messages.forEach(addMessage);
 					}
 				});
-			}
+            }
+            
+            function getDirectMessages() {
+                $.ajax({
+					url: 'https://amigo-269801.appspot.com/api/directmessages?receiver_user_id=' + "15",
+					type: 'get',
+					headers: {
+						'x-access-token': token
+					},
+					dataType: 'json',
+					success: (data) => {
+						var messages = data.messages;
+						messages.forEach(addMessage);
+					}
+				});
+            }
 
 			function sendMessage(data) {
 				$.ajax({
@@ -72,7 +91,22 @@
 					},
 					dataType: 'json'
 				});
-			}
+            }
+            
+            function sendDirectMessage(data) {
+                $.ajax({
+					url: 'https://amigo-269801.appspot.com/api/directmessages',
+					type: 'post',
+					headers: {
+						'x-access-token': token
+					},
+					data: {
+						'receiver_user_id': data.receiver_user_id,
+						'message': data.message
+					},
+					dataType: 'json'
+				});
+            }
 		</script>
 	</body>
 </html>
