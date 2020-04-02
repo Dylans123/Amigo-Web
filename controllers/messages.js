@@ -162,9 +162,9 @@ sendDirectMessage = (request, response) => {
 					const sender_display_name = result.rows[0].sender_display_name;
 					const receiver_display_name = result.rows[0].receiver_display_name;
 
-					io
+					if (parseInt(payload.user_id) <= parseInt(body.receiver_user_id)) {
+						io
 						.to(payload.user_id + ":" + body.receiver_user_id)
-						.to(body.receiver_user_id + ":" + payload.user_idd)
 						.emit('message', {
 							'message_id': message_id,
 							'receiver_display_name': receiver_display_name,
@@ -172,6 +172,17 @@ sendDirectMessage = (request, response) => {
 							'message': body.message,
 							'created_on': created_on
 						});
+					} else {
+						io
+						.to(body.receiver_user_id + ":" + payload.user_id)
+						.emit('message', {
+							'message_id': message_id,
+							'receiver_display_name': receiver_display_name,
+							'sender_display_name': sender_display_name,
+							'message': body.message,
+							'created_on': created_on
+						});
+					}
 
 					response.status(200).json({'success': true, 'message': 'Message sent successfully.'});
 				})
