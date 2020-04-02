@@ -7,8 +7,8 @@
 		<div class="container"><br>
 			<div class="jumbotron">
 				<h1 class="display-4">Send Message</h1><br>
-				<input id="channel_id" class="form-control" placeholder="Channel ID" value="1"><br>
-				<input id="user_id" class="form-control" placeholder="User ID" value="15"><br>
+				<input id="channel_id" class="form-control" placeholder="Channel ID" value="4"><br>
+				<input id="user_id" class="form-control" placeholder="User ID" value="10"><br>
 				<textarea id="message" class="form-control" placeholder="Your message here"></textarea><br>
 				<button id="send" class="btn btn-success">Send</button>
 			</div>
@@ -21,7 +21,8 @@
 		<script>
 			var socket = io("https://amigo-269801.appspot.com");
 			var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTgiLCJpYXQiOjE1ODU2NDgyMzYsImV4cCI6MTU4NjI1MzAzNn0.5fPzBzlkPu33pG5sS2W66d7CSjz0hefS_9J-gfkXslM";
-
+            // thirdDSkelz: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMjciLCJpYXQiOjE1ODU3Nzc1NzksImV4cCI6MTU4NjM4MjM3OX0.mNwgyHBjch20Zx92QNn300zws5VGDdbIWyZBg9HfFl8
+            // firstDSkelz: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTgiLCJpYXQiOjE1ODU2NDgyMzYsImV4cCI6MTU4NjI1MzAzNn0.5fPzBzlkPu33pG5sS2W66d7CSjz0hefS_9J-gfkXslM
 			socket.emit('join', {'token': token, 'channel_id': $("#channel_id").val()});
 			socket.on('message', addMessage);
 
