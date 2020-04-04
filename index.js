@@ -132,6 +132,7 @@ app.get('/api/sendverification', users.sendVerification);
 
 // User routes
 app.get('/api/user', users.validateUser, users.getUserInfo);
+app.get('/api/user/search', users.validateUser, users.searchUser);
 
 app.post(
 	'/api/user',

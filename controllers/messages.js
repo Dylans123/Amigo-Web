@@ -161,7 +161,6 @@ sendDirectMessage = (request, response) => {
 				.then(result => {
 					const sender_display_name = result.rows[0].sender_display_name;
 					const receiver_display_name = result.rows[0].receiver_display_name;
-
 					if (parseInt(payload.user_id) <= parseInt(body.receiver_user_id)) {
 						io
 						.to(payload.user_id + ":" + body.receiver_user_id)
