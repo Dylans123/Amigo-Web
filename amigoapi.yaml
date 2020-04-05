@@ -756,7 +756,7 @@ paths:
   /api/tags:
     get:
       summary: Get a list of tags based on queries
-      description: "Supported query combinations: (1) none (displays all), (2) school_id, (3) school_id and query"
+      description: "Supported query combinations: (1) none (displays all), (2) school_id, (3) school_id and query, (4) school_id, query, and exact (true or false)"
       tags:
         - Tags
       parameters:
@@ -770,6 +770,10 @@ paths:
             type: string
         - in: query
           name: query
+          schema:
+            type: string
+        - in: query
+          name: exact
           schema:
             type: string
       responses:

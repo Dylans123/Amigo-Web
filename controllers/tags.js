@@ -29,7 +29,7 @@ getTags = (request, response) => {
 	var query;
 
 	// All
-	if (requestQuery.school_id === undefined && requestQuery.query === undefined) {
+	if (requestQuery.school_id === undefined && requestQuery.query === undefined && requestQuery.exact === undefined) {
 		query = `
 			SELECT tag_id, name
 			FROM tags
@@ -45,7 +45,7 @@ getTags = (request, response) => {
 			});
 	}
 	// By school_id
-	else if (!(requestQuery.school_id === undefined) && requestQuery.query === undefined) {
+	else if (!(requestQuery.school_id === undefined) && requestQuery.query === undefined && requestQuery.exact === undefined) {
 		query = `
 			SELECT DISTINCT tags.tag_id, tags.name
 			FROM tags, channels
@@ -61,8 +61,25 @@ getTags = (request, response) => {
 				response.status(400).json({'success': false, 'message': error.toString()});
 			});
 	}
+	// By school_id and search query exact match
+	else if (!(requestQuery.school_id === undefined) && !(requestQuery.query === undefined) && requestQuery.exact == "true") {
+		query = `
+			SELECT DISTINCT tags.tag_id, tags.name
+			FROM tags, channels
+			WHERE tags.tag_id = channels.tag_id AND channels.school_id = $1 AND LOWER(tags.name) = LOWER($2)
+		`;
+
+		db.client
+			.query(query, [requestQuery.school_id, requestQuery.query])
+			.then(result => {
+				response.status(200).json({'success': true, 'tags': result.rows});
+			})
+			.catch(error => {
+				response.status(400).json({'success': false, 'message': error.toString()});
+			});
+	}
 	// By school_id and search query
-	else if (!(requestQuery.school_id === undefined) && !(requestQuery.query === undefined)) {
+	else if (!(requestQuery.school_id === undefined) && !(requestQuery.query === undefined) && (requestQuery.exact === undefined || requestQuery.exact == "false")) {
 		query = `
 			SELECT DISTINCT tags.tag_id, tags.name
 			FROM tags, channels
