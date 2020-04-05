@@ -360,10 +360,14 @@ updateUser = (request, response) => {
 	const body = request.body;
 	const payload = jwt.decode(request.headers['x-access-token']);
 	var errors = validationResult(request);
+	var fileTypeError = request.fileValidationError;
 	var imageURL;
 
 	if (!errors.isEmpty()) {
 		return response.status(422).json({'success': false, 'errors': errors.array()});
+	}
+	else if (fileTypeError) {
+		return response.status(422).json({'success': false, 'errors': [{'msg': fileTypeError}]});
 	}
 	else {
 		var query = `
