@@ -326,7 +326,7 @@ getUserInfo = (request, response) => {
 		FROM users
 		WHERE user_id = $1
 	`;
-
+	
 	db.client
 		.query(query, [payload.user_id])
 		.then(result => {
@@ -340,6 +340,7 @@ getUserInfo = (request, response) => {
 				'display_name': user.display_name,
 				'last_logged_in': user.last_logged_in,
 				'school_id': user.school_id,
+				'created_on': user.created_on,
 				'photo': user.photo
 			});
 		})
