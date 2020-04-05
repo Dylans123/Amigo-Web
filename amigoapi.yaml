@@ -228,6 +228,8 @@ paths:
                           type: string
                         location:
                           type: string
+                        photo:
+                          type: string
   /api/user:
     get:
       summary: Get the current user's information
@@ -276,26 +278,41 @@ paths:
       description: The new password and confirmation new password is not required in the request body.
       tags:
         - User
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               properties:
+                file:
+                  type: string
+                  format: binary
                 first_name:
                   type: string
+                  format: text
                 last_name:
                   type: string
+                  format: text
                 display_name:
                   type: string
+                  format: text
                 school_id:
                   type: string
+                  format: text
                 password:
                   type: string
+                  format: text
                 new_password:
                   type: string
+                  format: text
                 confirmation_new_password:
                   type: string
+                  format: text
       responses:
         '200':
           description: Successful
@@ -1124,50 +1141,6 @@ paths:
                           type: string
                         name:
                           type: string
-        '400':
-          description: Failed
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-  /api/upload:
-    post:
-      summary: Upload an image
-      tags:
-        - Images
-      parameters:
-        - in: header
-          name: x-access-token
-          schema:
-            type: string
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-      responses:
-        '200':
-          description: Successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  image_url:
-                    type: string
         '400':
           description: Failed
           content:

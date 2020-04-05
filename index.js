@@ -132,7 +132,7 @@ app.post(
 	'/api/user',
 	[
 		check('password').not().isEmpty().withMessage("Must provide password to update."),
-		check('new_password').optional().isLength({min: 6}).withMessage('Password must be at least 6 characters.'),
+		check('new_password').optional({checkFalsy: true}).isLength({min: 6}).withMessage('Password must be at least 6 characters.'),
 		check('confirmation_new_password').custom((value, {req}) => (value === req.body.new_password)).withMessage('Passwords do not match.'),
 		check('first_name').isAlpha().withMessage('First name is invalid.'),
 		check('last_name').isAlpha().withMessage('Last name is invalid.'),
@@ -168,9 +168,6 @@ app.get('/api/directmessages/receivers', users.validateUser, messages.getDirectM
 
 // School routes
 app.get('/api/schools', users.validateUser, schools.getSchools);
-
-// Image routes
-app.post('/api/upload', validateUser, images.upload);
 
 // Code to generate frontend build directory
 app.use(express.static(path.join(__dirname, "frontend/dist")));
