@@ -339,7 +339,8 @@ getUserInfo = (request, response) => {
 				'last_name': user.last_name,
 				'display_name': user.display_name,
 				'last_logged_in': user.last_logged_in,
-				'school_id': user.school_id
+				'school_id': user.school_id,
+				'photo': user.photo
 			});
 		})
 		.catch(error => {
@@ -348,13 +349,26 @@ getUserInfo = (request, response) => {
 };
 
 // Update user controller
+const Cloud = require('@google-cloud/storage');
+const path = require('path');
+const serviceKey = path.join(__dirname, '../keys.json');
+const {Storage} = Cloud;
+const storage = new Storage({keyFilename: serviceKey});
+const bucket = storage.bucket('amigo-bucket');
+
 updateUser = (request, response) => {
+	const file = request.file;
 	const body = request.body;
-	var errors = validationResult(request);
 	const payload = jwt.decode(request.headers['x-access-token']);
+	var errors = validationResult(request);
+	var fileTypeError = request.fileValidationError;
+	var imageURL;
 
 	if (!errors.isEmpty()) {
 		return response.status(422).json({'success': false, 'errors': errors.array()});
+	}
+	else if (fileTypeError) {
+		return response.status(422).json({'success': false, 'errors': [{'msg': fileTypeError}]});
 	}
 	else {
 		var query = `
@@ -380,11 +394,8 @@ updateUser = (request, response) => {
 						.query(query, [payload.user_id, body.first_name, body.last_name, body.display_name, body.school_id])
 						.then(result => {
 							var new_password = request.body.new_password;
-							
-							if (new_password == undefined) {
-								response.status(200).json({'success': true, 'message': 'User info was successfully updated.'});
-							}
-							else {
+
+							if (!(new_password == undefined || new_password == "")) {
 								new_password = bcrypt.hashSync(body.new_password, saltRounds);
 
 								query = `
@@ -395,9 +406,6 @@ updateUser = (request, response) => {
 
 								db.client
 									.query(query, [payload.user_id, new_password])
-									.then(result => {
-										response.status(200).json({'success': true, 'message': 'User info was successfully updated.'});
-									})
 									.catch(error => {
 										response.status(400).json({'success': false, 'message': error.toString()});
 									});
@@ -406,6 +414,40 @@ updateUser = (request, response) => {
 						.catch(error => {
 							response.status(400).json({'success': false, 'message': error.toString()});
 						});
+				}
+			})
+			.then(() => {
+				if (file != undefined) {
+					const {originalname, buffer} = file;
+					const blob = bucket.file("users/" + payload.user_id + originalname.replace(/^.*\./, "."));
+					const blobStream = blob.createWriteStream({resumable: false});
+
+					blobStream
+						.on('finish', () => {
+							imageURL = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+
+							query = `
+								UPDATE users
+								SET photo = $2
+								WHERE user_id = $1
+							`;
+
+							db.client
+								.query(query, [payload.user_id, imageURL])
+								.then(result => {
+									response.status(200).json({'success': true, 'message': 'User info was successfully updated.'});
+								})
+								.catch(error => {
+									response.status(400).json({'success': false, 'message': error.toString()});
+								});
+							})
+							.on('error', () => {
+								response.status(400).json({'success': false, 'message': error.toString()});
+							})
+							.end(buffer)
+				}
+				else {
+					response.status(200).json({'success': true, 'message': 'User info was successfully updated.'});
 				}
 			})
 			.catch(error => {

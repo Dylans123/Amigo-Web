@@ -15,15 +15,16 @@ const tags = require('./controllers/tags');
 const channels = require('./controllers/channels');
 const messages = require('./controllers/messages');
 const schools = require('./controllers/schools');
-const uploadImage = require('./images.js');
+const images = require('./controllers/images');
 
 const multerMid = multer({
 	storage: multer.memoryStorage(),
 	limits: {
 		fileSize: 5 * 1024 * 1024,
 	},
+	fileFilter: images.imageFilter
 })
-  
+
 app.disable('x-powered-by')
 app.use(multerMid.single('file'))
 app.use(bodyParser.json());
@@ -58,8 +59,7 @@ function joinRoom(socket, data) {
 	const payload = jwt.decode(data.token);
 
 	if (!(data.channel_id === undefined)) {
-		channels.checkChannelJoin(payload.user_id, data.channel_id, hasJoinedChannel =>
-		{
+		channels.checkChannelJoin(payload.user_id, data.channel_id, hasJoinedChannel => {
 			if (hasJoinedChannel)
 				socket.join(data.channel_id);
 		});
@@ -138,7 +138,7 @@ app.post(
 	'/api/user',
 	[
 		check('password').not().isEmpty().withMessage("Must provide password to update."),
-		check('new_password').optional().isLength({min: 6}).withMessage('Password must be at least 6 characters.'),
+		check('new_password').optional({checkFalsy: true}).isLength({min: 6}).withMessage('Password must be at least 6 characters.'),
 		check('confirmation_new_password').custom((value, {req}) => (value === req.body.new_password)).withMessage('Passwords do not match.'),
 		check('first_name').isAlpha().withMessage('First name is invalid.'),
 		check('last_name').isAlpha().withMessage('Last name is invalid.'),
@@ -157,7 +157,7 @@ app.post('/api/channels', users.validateUser, channels.createChannel);
 app.post('/api/channels/join', users.validateUser, channels.joinChannel);
 app.post('/api/channels/leave', users.validateUser, channels.leaveChannel);
 app.get('/api/channels/users', users.validateUser, channels.getChannelUsers);
-app.post('/api/channels/users/remove', users.validateUser, channels.removeChannelUser);
+app.post('/api/channels/users/remove', users.validateAdminUser, channels.removeChannelUser);
 app.get('/api/channels/membercount', users.validateUser, channels.getChannelMemberCount);
 app.get('/api/channels/messages', users.validateUser, messages.getMessages);
 app.post('/api/channels/messages', users.validateUser, messages.sendMessage);
@@ -179,22 +179,6 @@ app.get('/api/schools', users.validateUser, schools.getSchools);
 app.use(express.static(path.join(__dirname, "frontend/dist")));
 app.get("/*", (req, res) => {
 	res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
-});
-
-// Storage API
-app.post('/api/uploads', async (req, res, next) => {
-	try {
-		const myFile = req.file
-		const imageUrl = await uploadImage(myFile);
-		res
-			.status(200)
-			.json({
-			message: "Upload was successful",
-			data: imageUrl
-		})
-	} catch (error) {
-		next(error)
-	}
 });
 
 app.use((err, req, res, next) => {

@@ -228,6 +228,8 @@ paths:
                           type: string
                         location:
                           type: string
+                        photo:
+                          type: string
   /api/user:
     get:
       summary: Get the current user's information
@@ -276,26 +278,41 @@ paths:
       description: The new password and confirmation new password is not required in the request body.
       tags:
         - User
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               properties:
+                file:
+                  type: string
+                  format: binary
                 first_name:
                   type: string
+                  format: text
                 last_name:
                   type: string
+                  format: text
                 display_name:
                   type: string
+                  format: text
                 school_id:
                   type: string
+                  format: text
                 password:
                   type: string
+                  format: text
                 new_password:
                   type: string
+                  format: text
                 confirmation_new_password:
                   type: string
+                  format: text
       responses:
         '200':
           description: Successful
@@ -418,10 +435,9 @@ paths:
                     type: boolean
                   message:
                     type: string
-  /api/channels:
+  /api/channels/users:
     get:
-      summary: Get a list of channels based on queries
-      description: "Supported query combinations: (1) tag_id, (2) tag_id and school_id, (3) school_id and query"
+      summary: Get a list of a channel's users
       tags:
         - Channels
       parameters:
@@ -430,7 +446,95 @@ paths:
           schema:
             type: string
         - in: query
-          name: all
+          name: channel_id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user_id:
+                          type: string
+                        first_name:
+                          type: string
+                        last_name:
+                          type: string
+                        display_name:
+                          type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/channels/users/remove:
+    post:
+      summary: Remove a user from a channel (Admin)
+      tags:
+        - Channels
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                channel_id:
+                  type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/channels:
+    get:
+      summary: Get a list of channels based on queries
+      description: "Supported query combinations: (1) tag_id, (2) tag_id and school_id, (3) school_id and query, (4) none (displays all)"
+      tags:
+        - Channels
+      parameters:
+        - in: header
+          name: x-access-token
           schema:
             type: string
         - in: query
@@ -467,6 +571,8 @@ paths:
                         description:
                           type: string
                         school_id:
+                          type: string
+                        member_count:
                           type: string
         '400':
           description: Failed
@@ -650,7 +756,7 @@ paths:
   /api/tags:
     get:
       summary: Get a list of tags based on queries
-      description: "Supported query combinations: (1) none (displays all), (2) school_id, (3) school_id and query"
+      description: "Supported query combinations: (1) none (displays all), (2) school_id, (3) school_id and query, (4) school_id, query, and exact (true or false)"
       tags:
         - Tags
       parameters:
@@ -664,6 +770,10 @@ paths:
             type: string
         - in: query
           name: query
+          schema:
+            type: string
+        - in: query
+          name: exact
           schema:
             type: string
       responses:
