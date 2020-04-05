@@ -322,11 +322,14 @@ getUserInfo = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	const query = `
-		SELECT *
+		SELECT users.*, schools.name as school_name, COUNT(users_channels.*) as channel_count
 		FROM users
-		WHERE user_id = $1
+		INNER JOIN schools ON users.user_id = $1
+		AND schools.school_id = users.school_id
+		INNER JOIN users_channels ON users.user_id = users_channels.user_id
+		GROUP BY users.user_id, schools.name
 	`;
-	
+
 	db.client
 		.query(query, [payload.user_id])
 		.then(result => {
@@ -340,6 +343,8 @@ getUserInfo = (request, response) => {
 				'display_name': user.display_name,
 				'last_logged_in': user.last_logged_in,
 				'school_id': user.school_id,
+				'school_name': user.school_name,
+				'channel_count': user.channel_count,
 				'created_on': user.created_on,
 				'photo': user.photo
 			});
