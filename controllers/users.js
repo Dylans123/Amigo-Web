@@ -433,6 +433,8 @@ searchUser = (request, response) => {
 		});
 }
 
+const resetKey = process.env['PASSWORD_RESET_JWT_KEY'];
+
 resetPasswordRequest = (request, response) => {
 	const requestQuery = request.query;
 
@@ -447,7 +449,7 @@ resetPasswordRequest = (request, response) => {
 		.then(result => {
 			if (result.rows.length > 0) {
 				const payload = {'email': requestQuery.email};
-				const token = jwt.sign(payload, verificationKey, {expiresIn: "3d"});
+				const token = jwt.sign(payload, resetKey, {expiresIn: "3d"});
 				const link = "http://" + serverURL + "/resetpassword?token=" + token;
 
 				const mailOptions = {
@@ -474,42 +476,10 @@ resetPasswordRequest = (request, response) => {
 		});
 };
 
-resetPassword = (request, response) => {
-	const token = request.query.token;
-
-	jwt.verify(token, verificationKey, (error, decoded) => {
-		if (error) {
-			response.status(400).json({'success': false, 'message': 'Password reset failed.'});
-		}
-		else {
-			const payload = jwt.decode(token);
-
-			var query = `
-				SELECT *
-				FROM users
-				WHERE LOWER(email) = $1
-			`;
-
-			db.client
-				.query(query, [payload.email])
-				.then(result => {
-					if (result.rowCount > 0)
-						response.status(200).redirect("password.html");
-					else
-						response.status(400).json({'success': false, 'message': 'Problem with resetting password.'});
-				})
-				.catch(error => {
-					response.status(400).json({'success': false, 'message': error.toString()});
-				});
-		}
-	});
-};
-
 changePassword = (request, response) => {
 	const body = request.body;
 	var errors = validationResult(request);
-	const payload = jwt.decode(request.headers['x-access-token']);
-	var new_password = request.body.new_password;
+	const payload = jwt.decode(body.token);
 
 	if (!errors.isEmpty()) {
 		return response.status(422).json({'success': false, 'errors': errors.array()});
@@ -520,11 +490,11 @@ changePassword = (request, response) => {
 		var query = `
 			UPDATE users
 			SET password = $2
-			WHERE user_id = $1
+			WHERE email = $1
 		`;
 
 		db.client
-			.query(query, [payload.user_id, new_password])
+			.query(query, [payload.email, new_password])
 			.then(result => {
 				response.status(200).json({'success': true, 'message': 'Password has been changed.'});
 			})
@@ -547,6 +517,5 @@ module.exports = {
 	adminLogin,
 	searchUser,
 	resetPasswordRequest,
-	resetPassword,
 	changePassword
 };

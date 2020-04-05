@@ -127,9 +127,15 @@ app.get('/verify', users.verifyEmail);
 app.get('/api/sendverification', users.sendVerification);
 
 // Password Reset
-app.get('/resetpassword', users.resetPassword);
 app.get('/api/resetpasswordrequest', users.resetPasswordRequest);
-app.post('/api/changepassword', users.validateUser, users.changePassword);
+app.post(
+	'/api/changepassword',
+	[
+		check('new_password').isLength({min: 6}).withMessage('Password must be at least 6 characters.'),
+		check('confirmation_new_password').custom((value, {req}) => (value === req.body.new_password)).withMessage('Passwords do not match.')
+	],
+	users.changePassword
+);
 
 // User routes
 app.get('/api/user', users.validateUser, users.getUserInfo);
