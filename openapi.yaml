@@ -11,6 +11,8 @@ paths:
   /api/signup:
     post:
       summary: Register a new user
+      tags:
+        - Registration/Login
       requestBody:
         content:
           application/json:
@@ -28,6 +30,8 @@ paths:
                 last_name:
                   type: string
                 display_name:
+                  type: string
+                school_id:
                   type: string
       responses:
         '200':
@@ -77,6 +81,8 @@ paths:
   /api/login:
     post:
       summary: Log in a user
+      tags:
+        - Registration/Login
       requestBody:
         content:
           application/json:
@@ -149,9 +155,84 @@ paths:
                           type: string
                         location:
                           type: string
+  /api/admin/login:
+    post:
+      summary: Log in an admin user
+      tags:
+        - Registration/Login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  x-access-token:
+                    type: string
+        '401':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '403':
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '422':
+          description: Input errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        values:
+                          type: string
+                        msg:
+                          type: string
+                        param:
+                          type: string
+                        location:
+                          type: string
   /api/user:
     get:
       summary: Get the current user's information
+      tags:
+        - User
       parameters:
         - in: header
           name: x-access-token
@@ -177,6 +258,8 @@ paths:
                     type: string
                   last_logged_in:
                     type: string
+                  school_id:
+                    type: string
         '400':
           description: Failed
           content:
@@ -189,8 +272,10 @@ paths:
                   message:
                     type: string
     post:
-      summary: Update the current user's info
-      description: The new password is not required in the request body.
+      summary: Update the current user's information
+      description: The new password and confirmation new password is not required in the request body.
+      tags:
+        - User
       requestBody:
         content:
           application/json:
@@ -203,7 +288,7 @@ paths:
                   type: string
                 display_name:
                   type: string
-                location:
+                school_id:
                   type: string
                 password:
                   type: string
@@ -258,7 +343,14 @@ paths:
                           type: string
   /api/sendverification:
     get:
-      summary: Send verification email
+      summary: Send a verification email
+      tags:
+        - Registration/Login
+      parameters:
+        - in: query
+          name: email
+          schema:
+            type: string
       responses:
         '200':
           description: Successful
@@ -282,9 +374,11 @@ paths:
                     type: boolean
                   message:
                     type: string
-  /api/channels:
+  /api/user/channels:
     get:
-      summary: Get the current user's channels
+      summary: Get a list of the current user's channels
+      tags:
+        - Channels
       parameters:
         - in: header
           name: x-access-token
@@ -311,6 +405,69 @@ paths:
                           type: string
                         description:
                           type: string
+                        school_id:
+                          type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/channels:
+    get:
+      summary: Get a list of channels based on queries
+      description: "Supported query combinations: (1) tag_id, (2) tag_id and school_id, (3) school_id and query"
+      tags:
+        - Channels
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: all
+          schema:
+            type: string
+        - in: query
+          name: tag_id
+          schema:
+            type: string
+        - in: query
+          name: school_id
+          schema:
+            type: string
+        - in: query
+          name: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  channels:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        channel_id:
+                          type: string
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        school_id:
+                          type: string
         '400':
           description: Failed
           content:
@@ -323,7 +480,9 @@ paths:
                   message:
                     type: string
     post:
-      summary: Create a channel
+      summary: Create a channel belonging to the current user
+      tags:
+        - Channels
       parameters:
         - in: header
           name: x-access-token
@@ -341,6 +500,8 @@ paths:
                   type: string
                 description:
                   type: string
+                school_id:
+                  type: string
       responses:
         '200':
           description: Successful
@@ -364,9 +525,11 @@ paths:
                     type: boolean
                   message:
                     type: string
-  /api/join:
+  /api/channels/join:
     post:
-      summary: Join a channel
+      summary: Join the current user to a channel
+      tags:
+        - Channels
       parameters:
         - in: header
           name: x-access-token
@@ -403,9 +566,11 @@ paths:
                     type: boolean
                   message:
                     type: string
-  /api/leave:
+  /api/channels/leave:
     post:
-      summary: Leave a channel
+      summary: Unjoin the current user from a channel
+      tags:
+        - Channels
       parameters:
         - in: header
           name: x-access-token
@@ -431,6 +596,46 @@ paths:
                     type: boolean
                   message:
                     type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/user/tags:
+    get:
+      summary: Get a list of the current user's tags
+      tags:
+        - Tags
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  tags:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tag_id:
+                          type: string
+                        name:
+                          type: string
         '400':
           description: Failed
           content:
@@ -443,181 +648,143 @@ paths:
                   message:
                     type: string
   /api/tags:
+    get:
+      summary: Get a list of tags based on queries
+      description: "Supported query combinations: (1) none (displays all), (2) school_id, (3) school_id and query"
+      tags:
+        - Tags
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: school_id
+          schema:
+            type: string
+        - in: query
+          name: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  tags:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tag_id:
+                          type: string
+                        name:
+                          type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
     post:
-      summary: Create a tag
-      parameters:
-        - in: header
-          name: x-access-token
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
+        summary: Create a tag (Admin)
+        tags:
+          - Tags
+        parameters:
+          - in: header
+            name: x-access-token
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                location:
-                  type: string
-      responses:
-        '200':
-          description: Successful
+              type: string
+        requestBody:
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                  message:
+                  name:
                     type: string
-        '400':
-          description: Failed
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
+        responses:
+          '200':
+            description: Successful
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    message:
+                      type: string
+          '400':
+            description: Failed
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    message:
+                      type: string
+  /api/channels/membercount:
     get:
-      summary: Get the current user's tags
+      summary: Get the number of members belonging to a channel
+      tags:
+        - Channels
       parameters:
         - in: header
           name: x-access-token
           schema:
             type: string
-      responses:
-        '200':
-          description: Successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  tags:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        tag_id:
-                          type: string
-                        name:
-                          type: string
-                        location:
-                          type: string
-        '400':
-          description: Failed
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-  /api/channels/{tag_id}:
-    get:
-      summary: Get a list of channels based on tag id
-      parameters:
-        - in: header
-          name: x-access-token
-          schema:
-            type: string
-        - in: path
-          name: tag_id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  channels:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        channel_id:
-                          type: string
-                        name:
-                          type: string
-                        description:
-                          type: string
-        '400':
-          description: Failed
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-  /api/tags/all:
-    get:
-      summary: Get a list of all tags
-      parameters:
-        - in: header
-          name: x-access-token
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  tags:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        tag_id:
-                          type: string
-                        name:
-                          type: string
-                        location:
-                          type: string
-        '400':
-          description: Failed
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-  /api/messages/{channel_id}:
-    get:
-      summary: Get a channel's messages
-      parameters:
-        - in: header
-          name: x-access-token
-          schema:
-            type: string
-        - in: path
+        - in: query
           name: channel_id
-          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  member_count:
+                    type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/channels/messages:
+    get:
+      summary: Get all of a channel's messages
+      tags:
+        - Channels
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: channel_id
           schema:
             type: string
       responses:
@@ -654,9 +821,10 @@ paths:
                     type: boolean
                   message:
                     type: string
-  /api/messages:
     post:
-      summary: Create a tag
+      summary: Send a channel message from the current user
+      tags:
+        - Channels
       parameters:
         - in: header
           name: x-access-token
@@ -695,17 +863,18 @@ paths:
                     type: boolean
                   message:
                     type: string
-  /api/directmessages/{receiver_user_id}:
+  /api/directmessages:
     get:
-      summary: Get the current user's direct messages using the other party's user id
+      summary: Get the current user's direct messages with another user
+      tags:
+        - Direct Messages
       parameters:
         - in: header
           name: x-access-token
           schema:
             type: string
-        - in: path
+        - in: query
           name: receiver_user_id
-          required: true
           schema:
             type: string
       responses:
@@ -744,9 +913,10 @@ paths:
                     type: boolean
                   message:
                     type: string
-  /api/directmessages:
     post:
-      summary: Send a direct message
+      summary: Send a direct message from the current user to another user
+      tags:
+        - Direct Messages
       parameters:
         - in: header
           name: x-access-token
@@ -785,8 +955,11 @@ paths:
                     type: boolean
                   message:
                     type: string
+  /api/directmessages/receivers:
     get:
       summary: Get a list of users that have direct messaged with the current user
+      tags:
+        - Direct Messages
       parameters:
         - in: header
           name: x-access-token
@@ -811,6 +984,130 @@ paths:
                           type: string
                         display_name:
                           type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/schools:
+    get:
+      summary: Get a list of schools based on queries
+      description: "Supported query combinations: (1) none (displays all), (2) school_id, (3) query"
+      tags:
+        - Schools
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: school_id
+          schema:
+            type: string
+        - in: query
+          name: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  schools:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        school_id:
+                          type: string
+                        location_id:
+                          type: string
+                        name:
+                          type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/resetpasswordrequest:
+    get:
+      summary: Send password reset email
+      tags:
+        - Registration/Login
+      parameters:
+        - in: query
+          name: email
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/changepassword:
+    post:
+      summary: Change a user's password
+      tags:
+        - Registration/Login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                new_password:
+                  type: string
+                confirmation_new_password:
+                  type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
         '400':
           description: Failed
           content:
