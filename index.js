@@ -127,7 +127,7 @@ app.post(
 	users.adminLogin
 );
 
-app.get('/verify', users.verifyEmail);
+app.get('/api/verify', users.verifyEmail);
 app.get('/api/sendverification', users.sendVerification);
 
 // User routes

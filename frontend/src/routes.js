@@ -3,6 +3,7 @@ import Register from './components/Register.vue';
 import Login from './components/Login.vue';
 import Forgot from './components/Forgot.vue';
 import Newpassword from './components/Newpassword.vue';
+import Verify from './components/Verify.vue';
 
 
 const routes = [
@@ -11,7 +12,7 @@ const routes = [
     { path: '/forgot', component: Forgot },
     { path: '/login', component: Login },
     { path: '/newpassword', component: Newpassword },
-    
+    { path: '/verify', component: Verify }
 ];
 
 export default routes;
