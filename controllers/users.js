@@ -334,6 +334,7 @@ getUserInfo = (request, response) => {
 			response.status(200).json({
 				'success': true,
 				'email': user.email,
+				'user_id': user.user_id,
 				'first_name': user.first_name,
 				'last_name': user.last_name,
 				'display_name': user.display_name,
@@ -413,6 +414,26 @@ updateUser = (request, response) => {
 	}
 };
 
+searchUser = (request, response) => {
+	const requestQuery = request.query;
+	console.log(requestQuery.query);
+
+	const query = `
+		SELECT user_id, first_name, last_name, display_name
+		FROM users
+		WHERE display_name ILIKE $1
+	`;
+
+	db.client
+		.query(query, [requestQuery.query + "%"])
+		.then(result => {
+			response.status(200).json({'success': true, 'users': result.rows});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+}
+
 module.exports = {
 	signup,
 	checkEmail,
@@ -423,5 +444,6 @@ module.exports = {
 	verifyEmail,
 	getUserInfo,
 	updateUser,
-	adminLogin
+	adminLogin,
+	searchUser
 };

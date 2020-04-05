@@ -1,0 +1,23 @@
+runtime: nodejs
+env: flex
+
+skip_files:
+  - ^node_modules/.*$
+
+manual_scaling:
+  instances: 1
+
+resources:
+  cpu: .5
+  memory_gb: 0.5
+  disk_size_gb: 10
+
+handlers:
+  - url: /
+    static_files: frontend/build/index.html
+    upload: frontend/build/index.html
+  - url: /
+    static_dir: frontend/build
+
+network:
+  session_affinity: true

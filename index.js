@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const multer = require('multer')
 const cors = require('cors');
 const path = require('path');
 const app = express();
@@ -14,7 +15,17 @@ const tags = require('./controllers/tags');
 const channels = require('./controllers/channels');
 const messages = require('./controllers/messages');
 const schools = require('./controllers/schools');
+const uploadImage = require('./images.js');
 
+const multerMid = multer({
+	storage: multer.memoryStorage(),
+	limits: {
+		fileSize: 5 * 1024 * 1024,
+	},
+})
+  
+app.disable('x-powered-by')
+app.use(multerMid.single('file'))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors());
@@ -54,7 +65,11 @@ function joinRoom(socket, data) {
 		});
 	}
 	else if (!(data.receiver_user_id === undefined)) {
-		socket.join(payload.user_id + ":" + data.receiver_user_id);
+		if (parseInt(payload.user_id) <= parseInt(data.receiver_user_id)) {
+			socket.join(payload.user_id + ":" + data.receiver_user_id);
+		} else {
+			socket.join(data.receiver_user_id + ":" + payload.user_id);
+		}
 	}
 }
 
@@ -117,6 +132,7 @@ app.get('/api/sendverification', users.sendVerification);
 
 // User routes
 app.get('/api/user', users.validateUser, users.getUserInfo);
+app.get('/api/user/search', users.validateUser, users.searchUser);
 
 app.post(
 	'/api/user',
@@ -162,7 +178,31 @@ app.get('/api/schools', users.validateUser, schools.getSchools);
 // Code to generate frontend build directory
 app.use(express.static(path.join(__dirname, "frontend/dist")));
 app.get("/*", (req, res) => {
-	res.sendFile(path.join(__dirname, "frontend/dist/index.html"));
+	res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+});
+
+// Storage API
+app.post('/api/uploads', async (req, res, next) => {
+	try {
+		const myFile = req.file
+		const imageUrl = await uploadImage(myFile);
+		res
+			.status(200)
+			.json({
+			message: "Upload was successful",
+			data: imageUrl
+		})
+	} catch (error) {
+		next(error)
+	}
+});
+
+app.use((err, req, res, next) => {
+	res.status(500).json({
+		error: err,
+		message: 'Internal server error!',
+	})
+	next()
 });
 
 server.listen(port, () => {
