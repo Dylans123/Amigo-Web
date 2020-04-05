@@ -413,6 +413,26 @@ updateUser = (request, response) => {
 	}
 };
 
+searchUser = (request, response) => {
+	const requestQuery = request.query;
+	console.log(requestQuery.query);
+
+	const query = `
+		SELECT user_id, first_name, last_name, display_name
+		FROM users
+		WHERE display_name ILIKE $1
+	`;
+
+	db.client
+		.query(query, [requestQuery.query + "%"])
+		.then(result => {
+			response.status(200).json({'success': true, 'users': result.rows});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+}
+
 resetPasswordRequest = (request, response) => {
 	const requestQuery = request.query;
 
@@ -525,6 +545,7 @@ module.exports = {
 	getUserInfo,
 	updateUser,
 	adminLogin,
+	searchUser,
 	resetPasswordRequest,
 	resetPassword,
 	changePassword
