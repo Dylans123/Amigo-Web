@@ -391,6 +391,39 @@ paths:
                     type: boolean
                   message:
                     type: string
+  /api/verify:
+    get:
+      summary: Verify an email
+      tags:
+        - Registration/Login
+      parameters:
+        - in: query
+          name: token
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
   /api/user/channels:
     get:
       summary: Get a list of the current user's channels
