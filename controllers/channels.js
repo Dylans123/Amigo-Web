@@ -270,6 +270,26 @@ getChannels = (request, response) => {
 	}
 };
 
+// Get channels controller
+getChannelInfo = (request, response) => {
+	const requestQuery = request.query;
+
+	const query = `
+		SELECT channel_id, name, description, school_id, member_count
+		FROM channels
+		WHERE channel_id = $1
+	`;
+
+	db.client
+		.query(query, [requestQuery.channel_id])
+		.then(result => {
+			return response.status(200).json({'success': true, 'channels': result.rows[0]});
+		})
+		.catch(error => {
+			return response.status(400).json({'success': true, 'message': 'Not successful.'});
+		});
+};
+
 module.exports = {
 	getUserChannels,
 	getChannelUsers,
@@ -279,5 +299,6 @@ module.exports = {
 	getChannelMemberCount,
 	checkChannelJoin,
 	getChannels,
-	removeChannelUser
+	removeChannelUser,
+	getChannelInfo
 };

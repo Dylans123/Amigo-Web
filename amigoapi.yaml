@@ -1189,3 +1189,48 @@ paths:
                     type: boolean
                   message:
                     type: string
+  /api/channel:
+    get:
+      summary: Get a channel's information
+      tags:
+        - Channels
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: channel_id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  channel_id:
+                    type: string
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  school_id:
+                    type: string
+                  member_count:
+                    type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
