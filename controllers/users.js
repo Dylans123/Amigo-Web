@@ -22,8 +22,8 @@ signup = (request, response) => {
 		const password = bcrypt.hashSync(body.password, saltRounds);
 
 		query = `
-			INSERT INTO users (email, password, first_name, last_name, display_name, school_id, last_logged_in, verified)
-			VALUES ($1, $2, $3, $4, $5, $6, NULL, false)
+			INSERT INTO users (email, password, first_name, last_name, display_name, school_id, last_logged_in, verified, active)
+			VALUES ($1, $2, $3, $4, $5, $6, NULL, false, true)
 			RETURNING user_id
 		`;
 
@@ -74,7 +74,7 @@ login = (request, response) => {
 		var query = `
 			SELECT *
 			FROM users
-			WHERE LOWER(email) = LOWER($1)
+			WHERE LOWER(email) = LOWER($1) AND active = true
 		`;
 
 		db.client
@@ -361,7 +361,7 @@ getUsers = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	const query = `
-		SELECT user_id, email, first_name, last_name, display_name, last_logged_in, created_on, verified, access_level, school_id, photo
+		SELECT user_id, email, first_name, last_name, display_name, last_logged_in, created_on, verified, access_level, school_id, photo, active
 		FROM users
 	`;
 
@@ -390,6 +390,26 @@ makeAdmin = (request, response) => {
 		.query(query, [body.user_id])
 		.then(result => {
 			response.status(200).json({'success': true, 'message': 'User was made admin.'});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+};
+
+// Enable/Disable user
+setActive = (request, response) => {
+	const body = request.body;
+
+	const query = `
+		UPDATE users
+		SET active = $2
+		WHERE user_id = $1
+	`;
+
+	db.client
+		.query(query, [body.user_id, body.active])
+		.then(result => {
+			response.status(200).json({'success': true, 'message': 'Active was set.'});
 		})
 		.catch(error => {
 			response.status(400).json({'success': false, 'message': error.toString()});
@@ -516,5 +536,6 @@ module.exports = {
 	updateUser,
 	adminLogin,
 	getUsers,
-	makeAdmin
+	makeAdmin,
+	setActive
 };

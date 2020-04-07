@@ -147,6 +147,7 @@ app.post(
 
 app.get('/api/users', users.validateAdminUser, users.getUsers);
 app.post('/api/users/makeadmin', users.validateAdminUser, users.makeAdmin);
+app.post('/api/users/setactive', users.validateAdminUser, users.setActive);
 
 // Channel routes
 app.get('/api/user/channels', users.validateUser, channels.getUserChannels);
