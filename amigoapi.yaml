@@ -234,7 +234,7 @@ paths:
     get:
       summary: Get the current user's information
       tags:
-        - User
+        - Users
       parameters:
         - in: header
           name: x-access-token
@@ -277,7 +277,7 @@ paths:
       summary: Update the current user's information
       description: The new password and confirmation new password is not required in the request body.
       tags:
-        - User
+        - Users
       parameters:
         - in: header
           name: x-access-token
@@ -358,6 +358,64 @@ paths:
                           type: string
                         location:
                           type: string
+  /api/users:
+    get:
+      summary: Get a list of all users (Admin)
+      tags:
+        - Users
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user_id:
+                          type: string
+                        email:
+                          type: string
+                        first_name:
+                          type: string
+                        last_name:
+                          type: string
+                        display_name:
+                          type: string
+                        last_logged_in:
+                          type: string
+                        created_on:
+                          type: string
+                        verified:
+                          type: string
+                        access_level:
+                          type: string
+                        school_id:
+                          type: string
+                        photo:
+                          type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
   /api/sendverification:
     get:
       summary: Send a verification email
@@ -401,6 +459,47 @@ paths:
           name: token
           schema:
             type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/users/makeadmin:
+    post:
+      summary: Make a user an admin (Admin)
+      tags:
+        - Users
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
       responses:
         '200':
           description: Successful

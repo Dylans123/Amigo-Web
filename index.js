@@ -145,6 +145,9 @@ app.post(
 	users.updateUser
 );
 
+app.get('/api/users', users.validateAdminUser, users.getUsers);
+app.post('/api/users/makeadmin', users.validateAdminUser, users.makeAdmin);
+
 // Channel routes
 app.get('/api/user/channels', users.validateUser, channels.getUserChannels);
 app.get('/api/channels', users.validateUser, channels.getChannels);
