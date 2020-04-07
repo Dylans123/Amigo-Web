@@ -264,6 +264,25 @@ getChannels = (request, response) => {
 				response.status(400).json({'success': false, 'message': error.toString()});
 			});
 	}
+	// By tag_id and search query
+	else if (!(requestQuery.tag_id === undefined) && requestQuery.school_id === undefined && !(requestQuery.query === undefined)) {
+		const requestQuery = request.query;
+
+		const query = `
+			SELECT channel_id, name, description, school_id, member_count
+			FROM channels
+			WHERE tag_id = $1 AND name ILIKE $2
+		`;
+
+		db.client
+			.query(query, [requestQuery.tag_id, requestQuery.query + "%"])
+			.then(result => {
+				response.status(200).json({'success': true, 'channels': result.rows});
+			})
+			.catch(error => {
+				response.status(400).json({'success': false, 'message': error.toString()});
+			});
+	}
 	// Invalid
 	else {
 		response.status(400).json({'success': false, 'message': 'Set of queries provided is not valid.'});

@@ -562,7 +562,7 @@ paths:
   /api/channels:
     get:
       summary: Get a list of channels based on queries
-      description: "Supported query combinations: (1) tag_id, (2) tag_id and school_id, (3) school_id and query, (4) none (displays all)"
+      description: "Supported query combinations: (1) tag_id, (2) tag_id and school_id, (3) school_id and query, (4) none (displays all), (5) tag_id and query"
       tags:
         - Channels
       parameters:
