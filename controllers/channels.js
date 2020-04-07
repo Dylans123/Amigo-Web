@@ -283,10 +283,17 @@ getChannelInfo = (request, response) => {
 	db.client
 		.query(query, [requestQuery.channel_id])
 		.then(result => {
-			return response.status(200).json({'success': true, 'channels': result.rows[0]});
+			response.status(200).json({
+				'success': true,
+				'channel_id': result.rows[0].channel_id,
+				'name': result.rows[0].name,
+				'description': result.rows[0].description,
+				'school_id': result.rows[0].school_id,
+				'member_count': result.rows[0].member_count
+			});
 		})
 		.catch(error => {
-			return response.status(400).json({'success': true, 'message': 'Not successful.'});
+			return response.status(400).json({'success': true, 'message': error.toString()});
 		});
 };
 
