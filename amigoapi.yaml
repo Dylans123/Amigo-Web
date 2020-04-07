@@ -523,6 +523,49 @@ paths:
                     type: boolean
                   message:
                     type: string
+  /api/users/setactive:
+    post:
+      summary: Enable/Disable a user (Admin)
+      tags:
+        - Users
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                active:
+                  type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
   /api/user/channels:
     get:
       summary: Get a list of the current user's channels
