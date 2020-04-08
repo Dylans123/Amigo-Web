@@ -172,6 +172,7 @@ app.post('/api/channels/messages', users.validateUser, messages.sendMessage);
 app.get('/api/tags', users.validateUser, tags.getTags);
 app.get('/api/user/tags', users.validateUser, tags.getUserTags);
 app.post('/api/tags', users.validateAdminUser, tags.createTag);
+app.post('/api/updatetags', users.validateAdminUser, tags.updateTags);
 
 // Direct message routes
 app.get('/api/directmessages', users.validateUser, messages.getDirectMessages);
