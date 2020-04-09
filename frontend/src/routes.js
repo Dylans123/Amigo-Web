@@ -8,7 +8,7 @@ import Wrapper from './components/Wrapper.vue';
 
 
 const routes = [
-    { path: '/', component: Wrapper },
+    { path: '/', component: Wrapper, props: { page: 'dashboard' } },
     { path: '/register', component: Register },
     { path: '/forgot', component: Forgot },
     { path: '/login', component: Login },

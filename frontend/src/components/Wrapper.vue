@@ -20,10 +20,8 @@
         </md-toolbar>
         <md-list>
           <md-list-item class="admin-drawer-item">
-            <router-link class="login-register" to="/register">
-              <md-icon>home</md-icon>
-              <span class="md-list-item-text">Home</span>
-            </router-link>
+            <md-icon>home</md-icon>
+            <span class="md-list-item-text">Home</span>
           </md-list-item>
           <md-list-item class="admin-drawer-item">
             <md-icon>account_circle</md-icon>
@@ -44,16 +42,38 @@
         </md-list>
       </md-app-drawer>
       <md-app-content>
-        <router-view />
+        <template v-if="this.page === 'dashboard'">
+          
+        </template>
+        <template v-if="this.page === 'groups'">
+          <Groups />
+        </template>
       </md-app-content>
     </md-app>
   </div>
 </template>
 <script>
+import Groups from './Groups'
 export default {
   name: "App",
+  components: {
+    Groups
+  },
+  props: {
+    page: String
+  },
+  created () {
+    switch(this.page) {
+      case 'groups':
+        // this.curPage = Groups;
+        break;
+      default:
+        break;
+    }
+  },
   data: () => ({
-    menuVisible: false
+    menuVisible: false,
+    curPage: null,
   }),
   methods: {
     toggleMenu () {
