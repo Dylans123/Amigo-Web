@@ -2,11 +2,11 @@
   <div id="#app">
     <md-app>
       <md-app-toolbar class="md-primary" md-elevation="0">
-        <md-button class="md-icon-button" @click="toggleMenu" v-if="!menuVisible">
-          <md-icon style="color: white">menu</md-icon>
-        </md-button>
-        <div class="container d-flex justify-content-end align-items-center w-100">
-          <button type="button" class="btn" @click="logout()" style="color: white"><h4>Logout</h4></button>
+        <div class="d-flex align-items-center w-100">
+          <md-button class="md-icon-button justify-self-start" @click="toggleMenu" v-if="!menuVisible">
+            <md-icon style="color: white">menu</md-icon>
+          </md-button>
+          <button type="button" class="btn justify-self-end" @click="logout()" style="color: white"><h4>Logout</h4></button>
         </div>
       </md-app-toolbar>
       <md-app-drawer :md-active.sync="menuVisible" md-persistent="mini">
@@ -27,10 +27,12 @@
             <md-icon>account_circle</md-icon>
             <span class="md-list-item-text">Users</span>
           </md-list-item>
-          <md-list-item class="admin-drawer-item">
-            <md-icon>group</md-icon>
-            <span class="md-list-item-text">Groups</span>
-          </md-list-item>
+          <div class="admin-list-button btn" v-on:click="page='groups'">
+            <md-list-item class="admin-drawer-item">
+              <md-icon>group</md-icon>
+              <span class="md-list-item-text">Groups</span>
+            </md-list-item>
+          </div>
           <md-list-item class="admin-drawer-item">
             <md-icon>label</md-icon>
             <span class="md-list-item-text">Tags</span>
@@ -120,5 +122,8 @@ export default {
   }
   .admin-drawer-item {
     cursor: pointer;
+  }
+  .admin-list-button {
+    padding: 0;
   }
 </style>
