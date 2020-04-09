@@ -173,7 +173,7 @@ app.post('/api/directmessages', users.validateUser, messages.sendDirectMessage);
 app.get('/api/directmessages/receivers', users.validateUser, messages.getDirectMessageReceivers);
 
 // School routes
-app.get('/api/schools', users.validateUser, schools.getSchools);
+app.get('/api/schools', schools.getSchools);
 
 // Code to generate frontend build directory
 app.use(express.static(path.join(__dirname, "frontend/dist")));
