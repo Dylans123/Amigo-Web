@@ -73,7 +73,7 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style>
   .md-app-toolbar {
     border-bottom: 1px solid black;
     background-color: #F65D62;
@@ -81,6 +81,14 @@ export default {
   }
   .md-app-content {
     background-color: #F4F3F0;
+  }
+  .md-app-content .md-card {
+    margin-right: 0;
+    margin-left: 0;
+    overflow: visible;
+  }
+  .md-drawer {
+    width: 300px;
   }
   .md-toolbar {
     border-bottom: 1px solid black;

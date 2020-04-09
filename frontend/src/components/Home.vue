@@ -41,50 +41,54 @@
           </md-dialog-actions>
         </md-dialog>
         <div class="container">
-          <div class="d-flex justify-content-between align-items-center w-100 my-3">
-            <h3><b>Groups</b></h3>
-            <button type="button" class="btn btn-outline-primary" @click="showGroupDialog=true">New Group +</button>
-          </div>
-          <div class="row">
-            <div class="col-3 home-data">
-              <p class="my-3"><b>Admin Groups</b></p>
-              <template v-for="group in groups" @click.native="updateCurChannel(group)">
-                <md-card :key="group.name" @click.native="updateCurChannel(group)" v-bind:class="{ 'active': curChannel['channel_id']==group['channel_id'] }" class="my-2 md-elevation-4" md-with-hover>
-                  <md-card-media>
-                    <div class="red-circle"></div>
-                  </md-card-media>
-                  <md-card-header>
-                    <md-card-header-text>
-                      <div><h6>{{ group.name }}</h6></div>
-                      <!-- <div>{{ group.description }} members</div> -->
-                    </md-card-header-text>
-                  </md-card-header>
-                </md-card>
-              </template>
-            </div>
-            <div class="col-9 home-data">
-              <md-table>
-                <md-table-row>
-                  <md-table-head>First Name</md-table-head>
-                  <md-table-head>Last Name</md-table-head>
-                  <md-table-head>Display Name</md-table-head>
-                  <md-table-head>Date Joined</md-table-head>
-                  <md-table-head></md-table-head>
-                </md-table-row>
-                <template v-for="user in users">
-                  <md-table-row :key="user.display_name">
-                    <md-table-cell>{{ user.first_name }}</md-table-cell>
-                    <md-table-cell>{{ user.last_name }}</md-table-cell>
-                    <md-table-cell>{{ user.display_name }}</md-table-cell>
-                    <md-table-cell>{{ user.created_on }}</md-table-cell>
-                    <md-table-cell>
-                      <button type="button" class="btn btn-outline-primary" @click="updateCurUser(user)">Remove</button>
-                    </md-table-cell>
-                  </md-table-row>
+          <md-card class="md-elevation-15">
+            <div class="row admin-content">
+              <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center w-100 my-3">
+                  <h3><b>Groups</b></h3>
+                  <button type="button" class="btn btn-outline-primary" @click="showGroupDialog=true">New Group +</button>
+                </div>
+              </div>
+              <div class="col-3 home-data">
+                <p class="my-3"><b>Admin Groups</b></p>
+                <template v-for="group in groups" @click.native="updateCurChannel(group)">
+                  <md-card :key="group.name" @click.native="updateCurChannel(group)" v-bind:class="{ 'active': curChannel['channel_id']==group['channel_id'] }" class="my-2 md-elevation-4" md-with-hover>
+                    <md-card-media>
+                      <div class="red-circle"></div>
+                    </md-card-media>
+                    <md-card-header>
+                      <md-card-header-text>
+                        <div><h6>{{ group.name }}</h6></div>
+                        <!-- <div>{{ group.description }} members</div> -->
+                      </md-card-header-text>
+                    </md-card-header>
+                  </md-card>
                 </template>
-              </md-table>
+              </div>
+              <div class="col-9 home-data">
+                <md-table>
+                  <md-table-row>
+                    <md-table-head>First Name</md-table-head>
+                    <md-table-head>Last Name</md-table-head>
+                    <md-table-head>Display Name</md-table-head>
+                    <md-table-head>Date Joined</md-table-head>
+                    <md-table-head></md-table-head>
+                  </md-table-row>
+                  <template v-for="user in users">
+                    <md-table-row :key="user.display_name">
+                      <md-table-cell>{{ user.first_name }}</md-table-cell>
+                      <md-table-cell>{{ user.last_name }}</md-table-cell>
+                      <md-table-cell>{{ user.display_name }}</md-table-cell>
+                      <md-table-cell>{{ user.created_on }}</md-table-cell>
+                      <md-table-cell>
+                        <button type="button" class="btn btn-outline-primary" @click="updateCurUser(user)">Remove</button>
+                      </md-table-cell>
+                    </md-table-row>
+                  </template>
+                </md-table>
+              </div>
             </div>
-          </div>
+          </md-card>
         </div>
       </div>
     </template>
@@ -234,6 +238,9 @@ export default {
     display: flex;
     justify-content: space-between;
     border-bottom: 3px solid black;
+  }
+  .admin-content {
+    padding: 20px;
   }
   .admin-text {
     color: #F65D62;
