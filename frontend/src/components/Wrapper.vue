@@ -1,12 +1,5 @@
 <template>
   <div>
-    <!-- <md-toolbar md-elevation="0">
-      <div class="container d-flex justify-content-between align-items-center w-100 my-3">
-        <h3 class="admin-text"><b>Amigo Admin Dashboard</b></h3>
-        <button type="button" class="btn" @click="logout()"><h4>Logout</h4></button>
-      </div>
-    </md-toolbar>
-    <md-divider></md-divider> -->
     <md-app>
       <md-app-toolbar class="md-primary" md-elevation="0">
         <md-button class="md-icon-button" @click="toggleMenu" v-if="!menuVisible">
@@ -28,40 +21,45 @@
         </md-toolbar>
 
         <md-list>
-          <md-list-item>
-            <md-icon>move_to_inbox</md-icon>
-            <span class="md-list-item-text">Inbox</span>
+          <md-list-item class="admin-drawer-item">
+            <md-icon>home</md-icon>
+            <span class="md-list-item-text">Home</span>
           </md-list-item>
 
-          <md-list-item>
-            <md-icon>send</md-icon>
-            <span class="md-list-item-text">Sent Mail</span>
+          <md-list-item class="admin-drawer-item">
+            <md-icon>account_circle</md-icon>
+            <span class="md-list-item-text">Users</span>
           </md-list-item>
 
-          <md-list-item>
-            <md-icon>delete</md-icon>
-            <span class="md-list-item-text">Trash</span>
+          <md-list-item class="admin-drawer-item">
+            <md-icon>group</md-icon>
+            <span class="md-list-item-text">Groups</span>
           </md-list-item>
 
-          <md-list-item>
-            <md-icon>error</md-icon>
-            <span class="md-list-item-text">Spam</span>
+          <md-list-item class="admin-drawer-item">
+            <md-icon>label</md-icon>
+            <span class="md-list-item-text">Tags</span>
+          </md-list-item>
+
+          <md-list-item class="admin-drawer-item">
+            <md-icon>supervised_user_circle</md-icon>
+            <span class="md-list-item-text">Administrators</span>
           </md-list-item>
         </md-list>
       </md-app-drawer>
 
       <md-app-content>
-        <Home></Home>
+        <!-- <router-view> -->
       </md-app-content>
     </md-app>
   </div>
 </template>
 <script>
-import Home from './Home.vue';
+// import Home from './Home.vue';
 export default {
   name: "Wrapper",
   components: {
-    Home
+    // Home
   },
   data: () => ({
     menuVisible: false
@@ -69,7 +67,12 @@ export default {
   methods: {
     toggleMenu () {
       this.menuVisible = !this.menuVisible
-    }
+    },
+    logout: function() {
+      // Code to remove the cookie that is storing the jwt
+      document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
+      this.$router.push('/login');
+    },
   }
 }
 </script>
@@ -95,5 +98,8 @@ export default {
   }
   .md-app {
     height: 100vh;
+  }
+  .admin-drawer-item {
+    cursor: pointer;
   }
 </style>

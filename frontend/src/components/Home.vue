@@ -129,11 +129,6 @@ export default {
     }
   },
   methods: {
-    logout: function() {
-      // Code to remove the cookie that is storing the jwt
-      document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
-      this.$router.push('/login');
-    },
     updateCurChannel: function(channel) {
       this.curChannel = channel;
       this.getUsers();
