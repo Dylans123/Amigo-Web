@@ -86,6 +86,7 @@ export default {
     padding: 50px;
     vertical-align: top;
     background-color: white !important;
+    border-radius:8px;
   }
 
   .md-icon {

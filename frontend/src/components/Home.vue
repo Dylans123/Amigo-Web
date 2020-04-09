@@ -178,7 +178,7 @@ export default {
     getGroups: function() {
       axios({
         method: 'get',
-        url: '/api/channels?all=true',
+        url: '/api/channels',
         headers: {'x-access-token': this.jwt}
       }).then((res) => {  
         this.groups = res.data.channels;

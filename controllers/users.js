@@ -322,9 +322,12 @@ getUserInfo = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	const query = `
-		SELECT *
+		SELECT users.*, schools.name as school_name, COUNT(users_channels.*) as channel_count
 		FROM users
-		WHERE user_id = $1
+		INNER JOIN schools ON users.user_id = $1
+		AND schools.school_id = users.school_id
+		INNER JOIN users_channels ON users.user_id = users_channels.user_id
+		GROUP BY users.user_id, schools.name
 	`;
 
 	db.client
@@ -339,7 +342,11 @@ getUserInfo = (request, response) => {
 				'last_name': user.last_name,
 				'display_name': user.display_name,
 				'last_logged_in': user.last_logged_in,
-				'school_id': user.school_id
+				'school_id': user.school_id,
+				'school_name': user.school_name,
+				'channel_count': user.channel_count,
+				'created_on': user.created_on,
+				'photo': user.photo
 			});
 		})
 		.catch(error => {
@@ -348,13 +355,26 @@ getUserInfo = (request, response) => {
 };
 
 // Update user controller
+const Cloud = require('@google-cloud/storage');
+const path = require('path');
+const serviceKey = path.join(__dirname, '../keys.json');
+const {Storage} = Cloud;
+const storage = new Storage({keyFilename: serviceKey});
+const bucket = storage.bucket('amigo-bucket');
+
 updateUser = (request, response) => {
+	const file = request.file;
 	const body = request.body;
-	var errors = validationResult(request);
 	const payload = jwt.decode(request.headers['x-access-token']);
+	var errors = validationResult(request);
+	var fileTypeError = request.fileValidationError;
+	var imageURL;
 
 	if (!errors.isEmpty()) {
 		return response.status(422).json({'success': false, 'errors': errors.array()});
+	}
+	else if (fileTypeError) {
+		return response.status(422).json({'success': false, 'errors': [{'msg': fileTypeError}]});
 	}
 	else {
 		var query = `
@@ -380,11 +400,8 @@ updateUser = (request, response) => {
 						.query(query, [payload.user_id, body.first_name, body.last_name, body.display_name, body.school_id])
 						.then(result => {
 							var new_password = request.body.new_password;
-							
-							if (new_password == undefined) {
-								response.status(200).json({'success': true, 'message': 'User info was successfully updated.'});
-							}
-							else {
+
+							if (!(new_password == undefined || new_password == "")) {
 								new_password = bcrypt.hashSync(body.new_password, saltRounds);
 
 								query = `
@@ -395,9 +412,6 @@ updateUser = (request, response) => {
 
 								db.client
 									.query(query, [payload.user_id, new_password])
-									.then(result => {
-										response.status(200).json({'success': true, 'message': 'User info was successfully updated.'});
-									})
 									.catch(error => {
 										response.status(400).json({'success': false, 'message': error.toString()});
 									});
@@ -406,6 +420,40 @@ updateUser = (request, response) => {
 						.catch(error => {
 							response.status(400).json({'success': false, 'message': error.toString()});
 						});
+				}
+			})
+			.then(() => {
+				if (file != undefined) {
+					const {originalname, buffer} = file;
+					const blob = bucket.file("users/" + payload.user_id + originalname.replace(/^.*\./, "."));
+					const blobStream = blob.createWriteStream({resumable: false});
+
+					blobStream
+						.on('finish', () => {
+							imageURL = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+
+							query = `
+								UPDATE users
+								SET photo = $2
+								WHERE user_id = $1
+							`;
+
+							db.client
+								.query(query, [payload.user_id, imageURL])
+								.then(result => {
+									response.status(200).json({'success': true, 'message': 'User info was successfully updated.'});
+								})
+								.catch(error => {
+									response.status(400).json({'success': false, 'message': error.toString()});
+								});
+							})
+							.on('error', () => {
+								response.status(400).json({'success': false, 'message': error.toString()});
+							})
+							.end(buffer)
+				}
+				else {
+					response.status(200).json({'success': true, 'message': 'User info was successfully updated.'});
 				}
 			})
 			.catch(error => {
