@@ -40,13 +40,6 @@
             <md-button class="md-primary" @click="removeUser(curUser['user_id'], curChannel['channel_id'])">Yes</md-button>
           </md-dialog-actions>
         </md-dialog>
-        <md-toolbar md-elevation="0">
-          <div class="container d-flex justify-content-between align-items-center w-100 my-3">
-            <h3 class="admin-text"><b>Amigo Admin Dashboard</b></h3>
-            <button type="button" class="btn" @click="logout()"><h4>Logout</h4></button>
-          </div>
-        </md-toolbar>
-        <md-divider></md-divider>
         <div class="container">
           <div class="d-flex justify-content-between align-items-center w-100 my-3">
             <h3><b>Groups</b></h3>
@@ -98,8 +91,6 @@
   </div>
 </template>
 <script>
-// import generateUsers from "../users.js"
-// import generateGroups from "../groups.js"
 import axios from 'axios';
 export default {
   created () {

@@ -1,13 +1,14 @@
-import Home from './components/Home.vue';
+// import Home from './components/Home.vue';
 import Register from './components/Register.vue';
 import Login from './components/Login.vue';
 import Forgot from './components/Forgot.vue';
 import Newpassword from './components/Newpassword.vue';
 import Verify from './components/Verify.vue';
+import Wrapper from './components/Wrapper.vue';
 
 
 const routes = [
-    { path: '/', component: Home },
+    { path: '/', component: Wrapper },
     { path: '/register', component: Register },
     { path: '/forgot', component: Forgot },
     { path: '/login', component: Login },
