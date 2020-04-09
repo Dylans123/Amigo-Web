@@ -1,4 +1,4 @@
-<template>
+<template v-if="this.jwt">
   <div id="#app">
     <md-app>
       <md-app-toolbar class="md-primary" md-elevation="0">
@@ -43,7 +43,16 @@
       </md-app-drawer>
       <md-app-content>
         <template v-if="this.page === 'dashboard'">
-          
+          <Dashboard />
+        </template>
+        <template v-if="this.page === 'administrators'">
+          <Administrators />
+        </template>
+        <template v-if="this.page === 'users'">
+          <Users />
+        </template>
+        <template v-if="this.page === 'tags'">
+          <Tags />
         </template>
         <template v-if="this.page === 'groups'">
           <Groups />
@@ -53,23 +62,22 @@
   </div>
 </template>
 <script>
-import Groups from './Groups'
+import Groups from './Groups';
+import Users from './Users';
+import Dashboard from './Dashboard';
+import Tags from './Tags';
+import Administrators from './Administrators';
 export default {
   name: "App",
   components: {
-    Groups
+    Groups,
+    Users,
+    Dashboard,
+    Tags,
+    Administrators
   },
   props: {
     page: String
-  },
-  created () {
-    switch(this.page) {
-      case 'groups':
-        // this.curPage = Groups;
-        break;
-      default:
-        break;
-    }
   },
   data: () => ({
     menuVisible: false,
