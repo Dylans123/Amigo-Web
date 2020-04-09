@@ -57,7 +57,7 @@
 <script>
 // import Home from './Home.vue';
 export default {
-  name: "Wrapper",
+  name: "App",
   components: {
     // Home
   },

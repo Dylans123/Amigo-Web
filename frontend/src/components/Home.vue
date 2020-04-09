@@ -59,7 +59,7 @@
                     <md-card-header>
                       <md-card-header-text>
                         <div><h6>{{ group.name }}</h6></div>
-                        <!-- <div>{{ group.description }} members</div> -->
+                        <div>{{ group.member_count }} members</div>
                       </md-card-header-text>
                     </md-card-header>
                   </md-card>
