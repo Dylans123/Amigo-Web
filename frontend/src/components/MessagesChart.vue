@@ -25,6 +25,10 @@ export default {
       }
     }
   },
+  props: {
+    chartdata: Object,
+    options: Object
+  }
   mounted () {
     this.renderChart(this.chartdata, this.options)
   }

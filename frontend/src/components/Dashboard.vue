@@ -66,10 +66,10 @@ export default {
     return {
       data: {
         responsive: true,
-        numberUsers: null,
-        numberChannels: null,
-        numberDirect: null,
-        numberMessages: null,
+        numberUsers: '',
+        numberChannels: '',
+        numberDirect: '',
+        numberMessages: '',
       }
     }
   },
@@ -80,7 +80,7 @@ export default {
         url: '/api/admin/dashboard/metrics',
         headers: {'x-access-token': this.jwt}
       }).then((res) => {  
-        console.log(res.data)
+        console.log(res.data);
         this.numberUsers = res.data.metrics['user_count'];
         this.numberChannels = res.data.metrics['channel_count'];
         this.numberDirect = res.data.metrics['direct_message_count'];
@@ -96,11 +96,25 @@ export default {
         headers: {'x-access-token': this.jwt}
       }).then((res) => {  
         console.log(res.data);
+        const obj = {};
+        res.data.messages.forEach((message) => {
+          const month = new Date(message['created_on']).getMonth();
+          const day = new Date(message['created_on']).getDate();
+          const year = new Date(message['created_on']).getFullYear();
+          const date = (month + 1) + "/" + day + "/" + year
+          if (obj[date]) {
+            obj[date] = obj[date] + 1;
+          } else {
+            obj[date] = 1;
+          }
+        })
+        console.log(obj)
+        console.log(Object.keys(obj));
+        console.log(Object.values(obj))
         // this.numberUsers = res.data.metrics['user_count'];
         // this.numberChannels = res.data.metrics['channel_count'];
         // this.numberDirect = res.data.metrics['direct_message_count'];
         // this.numberMessages = res.data.metrics['channel_message_count'];
-
         // this.curChannel = res.data.channels[0];
       }).catch((err) => {
         console.log(err);
