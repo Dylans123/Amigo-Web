@@ -11,11 +11,11 @@
           <h3 class="admin-text"><b>Amigo Admin</b></h3>
         </md-toolbar>
         <md-list>
-          <md-list-item class="admin-drawer-item my-2" to="/dashboard" exact>
+          <md-list-item class="admin-drawer-item my-2" to="/" exact>
             <md-icon>home</md-icon>
             <span class="md-list-item-text">Home</span>
           </md-list-item>
-          <md-list-item class="admin-drawer-item my-2" v-on:click="page='users'" md-expand>
+          <md-list-item class="admin-drawer-item my-2" md-expand>
             <md-icon>account_circle</md-icon>
             <span class="md-list-item-text">Users</span>
             <md-list slot="md-expand">
@@ -42,11 +42,11 @@
               <md-list-item to="/tags/delete" exact class="md-inset">Delete Tags</md-list-item>
             </md-list>
           </md-list-item>
-          <md-list-item class="admin-drawer-item my-2" v-on:click="page='administrators'">
+          <md-list-item class="admin-drawer-item my-2" md-expand>
             <md-icon>supervised_user_circle</md-icon>
             <span class="md-list-item-text">Administrators</span>
             <md-list slot="md-expand">
-              <md-list-item to="/tags/delete" exact class="md-inset">Edit Administrators</md-list-item>
+              <md-list-item to="/administrators/edit" exact class="md-inset">Edit Administrators</md-list-item>
             </md-list>
           </md-list-item>
         </md-list>
@@ -58,16 +58,8 @@
   </div>
 </template>
 <script>
-// import Groups from './Groups';
-// import Users from './Users';
-// import Dashboard from './Dashboard';
-// import Tags from './Tags';
-// import Administrators from './Administrators';
 export default {
   name: "App",
-  data: () => ({
-    curPage: null,
-  }),
   methods: {
     logout: function() {
       // Code to remove the cookie that is storing the jwt
@@ -81,6 +73,9 @@ export default {
   .md-app-toolbar {
     border-bottom: 1px solid black;
     background-color: #F4F3F0;
+  }
+  .md-list-item {
+    color: black;
   }
   .md-list-item-content {
     font-size: 25px;
