@@ -64,13 +64,13 @@ export default {
   },
   data: function() {
     return {
-      data: {
         responsive: true,
-        numberUsers: '',
-        numberChannels: '',
-        numberDirect: '',
-        numberMessages: '',
-      }
+        numberUsers: null,
+        numberChannels: null,
+        numberDirect: null,
+        numberMessages: null,
+        data: null,
+        labels: null
     }
   },
   methods: {
@@ -109,8 +109,8 @@ export default {
           }
         })
         console.log(obj)
-        console.log(Object.keys(obj));
-        console.log(Object.values(obj))
+        this.labels = Object.keys(obj);
+        this.data = Object.values(obj);
         // this.numberUsers = res.data.metrics['user_count'];
         // this.numberChannels = res.data.metrics['channel_count'];
         // this.numberDirect = res.data.metrics['direct_message_count'];
