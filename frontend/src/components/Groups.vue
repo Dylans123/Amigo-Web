@@ -255,4 +255,7 @@ export default {
   .active {
     border: #F65D62 solid 5px;
   }
+  .md-card {
+    background-color: white;
+  }
 </style>

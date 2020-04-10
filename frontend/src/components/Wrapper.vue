@@ -2,43 +2,33 @@
   <div id="#app">
     <md-app>
       <md-app-toolbar class="md-primary" md-elevation="0">
-        <div class="d-flex align-items-center w-100">
-          <md-button class="md-icon-button justify-self-start" @click="toggleMenu" v-if="!menuVisible">
-            <md-icon style="color: white">menu</md-icon>
-          </md-button>
-          <button type="button" class="btn justify-self-end" @click="logout()" style="color: white"><h4>Logout</h4></button>
+        <div class="container logout-button">
+          <button type="button" class="btn justify-self-end" @click="logout()"><h4>Logout</h4></button>
         </div>
       </md-app-toolbar>
-      <md-app-drawer :md-active.sync="menuVisible" md-persistent="mini">
+      <md-app-drawer md-permanent="full">
         <md-toolbar class="md-transparent" md-elevation="0">
           <h3 class="admin-text"><b>Amigo Admin</b></h3>
-          <div class="md-toolbar-section-end">
-            <md-button class="md-icon-button md-dense" @click="toggleMenu">
-              <md-icon>keyboard_arrow_left</md-icon>
-            </md-button>
-          </div>
         </md-toolbar>
         <md-list>
-          <md-list-item class="admin-drawer-item">
-            <md-icon>home</md-icon>
+          <md-list-item class="admin-drawer-item my-2" v-on:click="page='dashboard'">
+            <md-icon class="md-size-2x">home</md-icon>
             <span class="md-list-item-text">Home</span>
           </md-list-item>
-          <md-list-item class="admin-drawer-item">
-            <md-icon>account_circle</md-icon>
+          <md-list-item class="admin-drawer-item my-2" v-on:click="page='users'">
+            <md-icon class="md-size-2x">account_circle</md-icon>
             <span class="md-list-item-text">Users</span>
           </md-list-item>
-          <div class="admin-list-button btn" v-on:click="page='groups'">
-            <md-list-item class="admin-drawer-item">
-              <md-icon>group</md-icon>
-              <span class="md-list-item-text">Groups</span>
-            </md-list-item>
-          </div>
-          <md-list-item class="admin-drawer-item">
-            <md-icon>label</md-icon>
+          <md-list-item class="admin-drawer-item my-2" v-on:click="page='groups'">
+            <md-icon class="md-size-2x">group</md-icon>
+            <span class="md-list-item-text">Groups</span>
+          </md-list-item>
+          <md-list-item class="admin-drawer-item my-2" v-on:click="page='tags'">
+            <md-icon class="md-size-2x">label</md-icon>
             <span class="md-list-item-text">Tags</span>
           </md-list-item>
-          <md-list-item class="admin-drawer-item">
-            <md-icon>supervised_user_circle</md-icon>
+          <md-list-item class="admin-drawer-item my-2" v-on:click="page='administrators'">
+            <md-icon class="md-size-2x">supervised_user_circle</md-icon>
             <span class="md-list-item-text">Administrators</span>
           </md-list-item>
         </md-list>
@@ -82,13 +72,9 @@ export default {
     page: String
   },
   data: () => ({
-    menuVisible: false,
     curPage: null,
   }),
   methods: {
-    toggleMenu () {
-      this.menuVisible = !this.menuVisible
-    },
     logout: function() {
       // Code to remove the cookie that is storing the jwt
       document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
@@ -100,8 +86,11 @@ export default {
 <style>
   .md-app-toolbar {
     border-bottom: 1px solid black;
-    background-color: #F65D62;
-    color: white !important
+    background-color: #F4F3F0;
+  }
+  .md-list-item-content {
+    font-size: 25px;
+    font-weight: bold;
   }
   .md-app-content {
     background-color: #F4F3F0;
@@ -125,5 +114,14 @@ export default {
   }
   .admin-list-button {
     padding: 0;
+  }
+  .admin-text {
+    font-size: 30px
+  }
+  .logout-button {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
   }
 </style>
