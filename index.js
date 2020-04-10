@@ -162,6 +162,10 @@ app.post(
 	users.updateUser
 );
 
+app.get('/api/users', users.validateAdminUser, users.getUsers);
+app.post('/api/users/makeadmin', users.validateAdminUser, users.makeAdmin);
+app.post('/api/users/setactive', users.validateAdminUser, users.setActive);
+
 // Channel routes
 app.get('/api/user/channels', users.validateUser, channels.getUserChannels);
 app.get('/api/channels', users.validateUser, channels.getChannels);
@@ -173,6 +177,7 @@ app.post('/api/channels/users/remove', users.validateAdminUser, channels.removeC
 app.get('/api/channels/membercount', users.validateUser, channels.getChannelMemberCount);
 app.get('/api/channels/messages', users.validateUser, messages.getMessages);
 app.post('/api/channels/messages', users.validateUser, messages.sendMessage);
+app.get('/api/channel', users.validateUser, channels.getChannelInfo);
 
 // Tag routes
 app.get('/api/tags', users.validateUser, tags.getTags);

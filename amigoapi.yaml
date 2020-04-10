@@ -234,7 +234,7 @@ paths:
     get:
       summary: Get the current user's information
       tags:
-        - User
+        - Users
       parameters:
         - in: header
           name: x-access-token
@@ -277,7 +277,7 @@ paths:
       summary: Update the current user's information
       description: The new password and confirmation new password is not required in the request body.
       tags:
-        - User
+        - Users
       parameters:
         - in: header
           name: x-access-token
@@ -358,6 +358,64 @@ paths:
                           type: string
                         location:
                           type: string
+  /api/users:
+    get:
+      summary: Get a list of all users (Admin)
+      tags:
+        - Users
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user_id:
+                          type: string
+                        email:
+                          type: string
+                        first_name:
+                          type: string
+                        last_name:
+                          type: string
+                        display_name:
+                          type: string
+                        last_logged_in:
+                          type: string
+                        created_on:
+                          type: string
+                        verified:
+                          type: string
+                        access_level:
+                          type: string
+                        school_id:
+                          type: string
+                        photo:
+                          type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
   /api/sendverification:
     get:
       summary: Send a verification email
@@ -368,6 +426,123 @@ paths:
           name: email
           schema:
             type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/verify:
+    get:
+      summary: Verify an email
+      tags:
+        - Registration/Login
+      parameters:
+        - in: query
+          name: token
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/users/makeadmin:
+    post:
+      summary: Make a user an admin (Admin)
+      tags:
+        - Users
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/users/setactive:
+    post:
+      summary: Enable/Disable a user (Admin)
+      tags:
+        - Users
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                active:
+                  type: string
       responses:
         '200':
           description: Successful
@@ -529,7 +704,7 @@ paths:
   /api/channels:
     get:
       summary: Get a list of channels based on queries
-      description: "Supported query combinations: (1) tag_id, (2) tag_id and school_id, (3) school_id and query, (4) none (displays all)"
+      description: "Supported query combinations: (1) tag_id, (2) tag_id and school_id, (3) school_id and query, (4) none (displays all), (5) tag_id and query"
       tags:
         - Channels
       parameters:
@@ -756,7 +931,7 @@ paths:
   /api/tags:
     get:
       summary: Get a list of tags based on queries
-      description: "Supported query combinations: (1) none (displays all), (2) school_id, (3) school_id and query, (4) school_id, query, and exact (true or false)"
+      description: "Supported query combinations: (1) none (displays all), (2) school_id, (3) school_id and query, (4) school_id, query, and exact (true or false), (5) query, (6) query and exact (true or false)"
       tags:
         - Tags
       parameters:
@@ -1145,6 +1320,51 @@ paths:
                           type: string
                         name:
                           type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+  /api/channel:
+    get:
+      summary: Get a channel's information
+      tags:
+        - Channels
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: channel_id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  channel_id:
+                    type: string
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  school_id:
+                    type: string
+                  member_count:
+                    type: string
         '400':
           description: Failed
           content:

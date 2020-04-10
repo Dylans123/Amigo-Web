@@ -264,10 +264,56 @@ getChannels = (request, response) => {
 				response.status(400).json({'success': false, 'message': error.toString()});
 			});
 	}
+	// By tag_id and search query
+	else if (!(requestQuery.tag_id === undefined) && requestQuery.school_id === undefined && !(requestQuery.query === undefined)) {
+		const requestQuery = request.query;
+
+		const query = `
+			SELECT channel_id, name, description, school_id, member_count
+			FROM channels
+			WHERE tag_id = $1 AND name ILIKE $2
+		`;
+
+		db.client
+			.query(query, [requestQuery.tag_id, requestQuery.query + "%"])
+			.then(result => {
+				response.status(200).json({'success': true, 'channels': result.rows});
+			})
+			.catch(error => {
+				response.status(400).json({'success': false, 'message': error.toString()});
+			});
+	}
 	// Invalid
 	else {
 		response.status(400).json({'success': false, 'message': 'Set of queries provided is not valid.'});
 	}
+};
+
+// Get channels controller
+getChannelInfo = (request, response) => {
+	const requestQuery = request.query;
+
+	const query = `
+		SELECT channel_id, name, description, school_id, member_count
+		FROM channels
+		WHERE channel_id = $1
+	`;
+
+	db.client
+		.query(query, [requestQuery.channel_id])
+		.then(result => {
+			response.status(200).json({
+				'success': true,
+				'channel_id': result.rows[0].channel_id,
+				'name': result.rows[0].name,
+				'description': result.rows[0].description,
+				'school_id': result.rows[0].school_id,
+				'member_count': result.rows[0].member_count
+			});
+		})
+		.catch(error => {
+			return response.status(400).json({'success': true, 'message': error.toString()});
+		});
 };
 
 module.exports = {
@@ -279,5 +325,6 @@ module.exports = {
 	getChannelMemberCount,
 	checkChannelJoin,
 	getChannels,
-	removeChannelUser
+	removeChannelUser,
+	getChannelInfo
 };

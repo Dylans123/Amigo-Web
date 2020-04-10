@@ -22,8 +22,8 @@ signup = (request, response) => {
 		const password = bcrypt.hashSync(body.password, saltRounds);
 
 		query = `
-			INSERT INTO users (email, password, first_name, last_name, display_name, school_id, last_logged_in, verified)
-			VALUES ($1, $2, $3, $4, $5, $6, NULL, false)
+			INSERT INTO users (email, password, first_name, last_name, display_name, school_id, last_logged_in, verified, active)
+			VALUES ($1, $2, $3, $4, $5, $6, NULL, false, true)
 			RETURNING user_id
 		`;
 
@@ -74,7 +74,7 @@ login = (request, response) => {
 		var query = `
 			SELECT *
 			FROM users
-			WHERE LOWER(email) = LOWER($1)
+			WHERE LOWER(email) = LOWER($1) AND active = true
 		`;
 
 		db.client
@@ -213,6 +213,15 @@ validateAdminUser = (request, response, next) => {
 	});
 }
 
+isAdmin = (token) => {
+	jwt.verify(token, adminKey, (error, decoded) => {
+		if (error)
+			return false;
+		else
+			return true;
+	});
+}
+
 // Email verification controllers
 const nodemailer = require("nodemailer");
 const mailUsername = process.env['MAIL_USERNAME'];
@@ -242,7 +251,7 @@ sendVerification = (request, response) => {
 			if (result.rows.length > 0) {
 				const payload = {'email': requestQuery.email};
 				const token = jwt.sign(payload, verificationKey, {expiresIn: "3d"});
-				const link = "http://" + serverURL + "/verify?token=" + token;
+				const link = "http://" + serverURL + "/api/verify?token=" + token;
 
 				const mailOptions = {
 					'to': requestQuery.email,
@@ -348,6 +357,66 @@ getUserInfo = (request, response) => {
 				'created_on': user.created_on,
 				'photo': user.photo
 			});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+};
+
+// Get all users
+getUsers = (request, response) => {
+	const payload = jwt.decode(request.headers['x-access-token']);
+
+	const query = `
+		SELECT user_id, email, first_name, last_name, display_name, last_logged_in, created_on, verified, access_level, school_id, photo, active
+		FROM users
+	`;
+
+	db.client
+		.query(query)
+		.then(result => {
+			const user = result.rows[0];
+			response.status(200).json({'success': true, 'users': result.rows});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+};
+
+// Make admin
+makeAdmin = (request, response) => {
+	const body = request.body;
+
+	const query = `
+		UPDATE users
+		SET access_level = 10
+		WHERE user_id = $1
+	`;
+
+	db.client
+		.query(query, [body.user_id])
+		.then(result => {
+			response.status(200).json({'success': true, 'message': 'User was made admin.'});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+};
+
+// Enable/Disable user
+setActive = (request, response) => {
+	const body = request.body;
+
+	const query = `
+		UPDATE users
+		SET active = $2
+		WHERE user_id = $1
+	`;
+
+	db.client
+		.query(query, [body.user_id, body.active])
+		.then(result => {
+			response.status(200).json({'success': true, 'message': 'Active was set.'});
 		})
 		.catch(error => {
 			response.status(400).json({'success': false, 'message': error.toString()});
@@ -493,5 +562,8 @@ module.exports = {
 	getUserInfo,
 	updateUser,
 	adminLogin,
-	searchUser
+	searchUser,
+	getUsers,
+	makeAdmin,
+	setActive
 };
