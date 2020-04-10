@@ -22,7 +22,7 @@ if (cookie.length != 0) {
 if (!jwt) {
   window.location.href = "/login"
 } else {
-  console.log("Were cookin now");
+  console.log("Logged in");
 }
 
 const routes = [
