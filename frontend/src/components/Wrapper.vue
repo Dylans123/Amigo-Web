@@ -52,43 +52,19 @@
         </md-list>
       </md-app-drawer>
       <md-app-content>
-        <template v-if="this.page === 'dashboard'">
-          <Dashboard />
-        </template>
-        <template v-if="this.page === 'administrators'">
-          <Administrators />
-        </template>
-        <template v-if="this.page === 'users'">
-          <Users />
-        </template>
-        <template v-if="this.page === 'tags'">
-          <Tags />
-        </template>
-        <template v-if="this.page === 'groups'">
-          <Groups />
-        </template>
+        <router-view />
       </md-app-content>
     </md-app>
   </div>
 </template>
 <script>
-import Groups from './Groups';
-import Users from './Users';
-import Dashboard from './Dashboard';
-import Tags from './Tags';
-import Administrators from './Administrators';
+// import Groups from './Groups';
+// import Users from './Users';
+// import Dashboard from './Dashboard';
+// import Tags from './Tags';
+// import Administrators from './Administrators';
 export default {
   name: "App",
-  components: {
-    Groups,
-    Users,
-    Dashboard,
-    Tags,
-    Administrators
-  },
-  props: {
-    page: String
-  },
   data: () => ({
     curPage: null,
   }),
