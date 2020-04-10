@@ -75,7 +75,7 @@ export default {
       school: '',
       password: '',
       confirmPassword: '',
-      showCompleteDialog: true,
+      showCompleteDialog: false,
       errors: null,
       schools: null
     }
@@ -111,6 +111,7 @@ export default {
         headers: {'x-access-token': this.jwt},
         data
       }).then((res) => {
+        console.log(res);
         this.showCompleteDialog = true
       })
       .catch((err) => {
