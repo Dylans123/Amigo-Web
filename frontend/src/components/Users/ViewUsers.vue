@@ -2,31 +2,26 @@
   <div class="container">
     <md-card class="md-elevation-15" style="background-color: white">
       <div class="row admin-content">
-        <div class="col-12">
-          <div class="d-flex justify-content-start align-items-center w-100 my-3">
-            <h3><b>Users</b></h3>
-          </div>
-        </div>
-        <div class="col-12">
-          <md-table>
-            <md-table-row>
-              <md-table-head>First Name</md-table-head>
-              <md-table-head>Last Name</md-table-head>
-              <md-table-head>Display Name</md-table-head>
-              <md-table-head>Date Joined</md-table-head>
-              <md-table-head></md-table-head>
+        <div class="col-12" style="height: 80vh; overflow: scroll">
+          <md-table v-model="searched" md-sort="first_name" md-sort-order="asc" class="md-elevation-0">
+            <md-table-toolbar>
+              <div class="md-toolbar-section-start">
+                <h3><b>Users</b></h3>
+              </div>
+              <md-field md-clearable class="md-toolbar-section-end">
+                <md-input placeholder="Search by name..." v-model="search" @input="searchOnTable" />
+              </md-field>
+            </md-table-toolbar>
+            <md-table-empty-state
+              md-label="No users found"
+              :md-description="`No user found for this '${search}' query. Try a different search term or create a new user.`">
+            </md-table-empty-state>
+            <md-table-row :key="item.display_name" slot="md-table-row" slot-scope="{ item }">
+              <md-table-cell md-label="First Name" md-sort-by="first_name">{{ item.first_name }}</md-table-cell>
+              <md-table-cell md-label="Last Name" md-sort-by="last_name">{{ item.last_name }}</md-table-cell>
+              <md-table-cell md-label="Display Name" md-sort-by="display_name">{{ item.display_name }}</md-table-cell>
+              <md-table-cell md-label="Date Joined" md-sort-by="created_on">{{ convertToDate(item.created_on) }}</md-table-cell>
             </md-table-row>
-            <template v-for="user in users">
-              <md-table-row :key="user.display_name">
-                <md-table-cell>{{ user.first_name }}</md-table-cell>
-                <md-table-cell>{{ user.last_name }}</md-table-cell>
-                <md-table-cell>{{ user.display_name }}</md-table-cell>
-                <md-table-cell>{{ convertToDate(user.created_on) }}</md-table-cell>
-                <md-table-cell>
-                  <button type="button" class="btn btn-outline-primary" @click="updateCurUser(user)">Remove</button>
-                </md-table-cell>
-              </md-table-row>
-            </template>
           </md-table>
         </div>
       </div>
@@ -35,8 +30,20 @@
 </template>
 <script>
 import axios from 'axios';
+const searchByName = (items, term) => {
+  console.log('ow')
+  if (term) {
+    return items.filter(item => toLower(item.first_name).includes(toLower(term)))
+  }
+
+  return items
+}
+const toLower = (text) => {
+  return text.toString().toLowerCase()
+}
 export default {
   created () {
+    this.searched = [];
     this.getUsers();
   },
   methods: {
@@ -48,6 +55,7 @@ export default {
       }).then((res) => {
         console.log(res.data);
         this.users = res.data.users;
+        this.searched = this.users
       }).catch((err) => {
         console.log(err);
       })
@@ -58,11 +66,19 @@ export default {
       const year = new Date(date).getFullYear();
       const retDate = (month + 1) + "/" + day + "/" + year;
       return retDate;
+    },
+    newUser: function() {
+      window.alert('Noop')
+    },
+    searchOnTable: function() {
+      this.searched = searchByName(this.users, this.search)
     }
   },
   data: function() {
     return {
-      users: null
+      search: null,
+      users: null,
+      searched: [],
     }
   },
   props: {
