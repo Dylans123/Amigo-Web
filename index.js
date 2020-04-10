@@ -16,6 +16,7 @@ const channels = require('./controllers/channels');
 const messages = require('./controllers/messages');
 const schools = require('./controllers/schools');
 const images = require('./controllers/images');
+const admin = require('./contorllers/admin');
 
 const multerMid = multer({
 	storage: multer.memoryStorage(),
@@ -185,6 +186,10 @@ app.get('/api/directmessages/receivers', users.validateUser, messages.getDirectM
 
 // School routes
 app.get('/api/schools', schools.getSchools);
+
+// Admin routes
+app.get('/api/admin/dashboard/metrics', users.validateUser, admin.getDashboardMetrics);
+// app.get('/api/admin/dashboard/metrics', users.validateUser,);
 
 // Code to generate frontend build directory
 app.use(express.static(path.join(__dirname, "frontend/dist")));
