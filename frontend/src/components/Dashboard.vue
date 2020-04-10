@@ -40,14 +40,27 @@
               <div><h6>Messages Sent Over Time</h6></div>
             </md-card-header-text>
           </md-card-header>
+          <div style="height: 100%; width: 100%">
+            <MessagesChart :options="{ responsive: true }" />
+          </div>
         </md-card>
       </div>
     </div>
   </div>
 </template>
 <script>
+import MessagesChart from './MessagesChart';
 export default {
-  
+  components: {
+    MessagesChart
+  },
+  data: function() {
+    return {
+      data: {
+        responsive: true,
+      }
+    }
+  }
 }
 </script>
 <style scoped>
