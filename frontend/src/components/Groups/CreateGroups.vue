@@ -17,7 +17,7 @@
             <div class="form-group">
               <label for="groupPhoto">Group Image</label>
               <div class="custom-file">
-                <label class="custom-file-label" for="groupPhoto">Choose file</label>
+                <label class="custom-file-label" for="groupPhoto"></label>
                 <input type="file" class="custom-file-input" id="groupPhoto" @change="fileChange($event.target.files)" />
               </div>
             </div>
@@ -59,13 +59,21 @@
   </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
+  created () {
+    this.getSchools();
+    this.getTags();
+  },
   data: function() {
     return {
       groupTag: null,
       groupSchool: null,
       groupName: null,
       groupDescription: null,
+      schools: null,
+      tags: null,
+      errors: null,
       showCompleteDialog: false
     }
   },
@@ -96,6 +104,28 @@ export default {
       })
       .catch((err) => {
         this.errors = err.response.data.errors;
+      })
+    },
+    getSchools: function() {
+      axios({
+        method: 'get',
+        url: '/api/schools',
+        headers: {'x-access-token': this.jwt}
+      }).then((res) => {  
+        this.schools = res.data.schools;
+      }).catch((err) => {
+        console.log(err);
+      })
+    },
+    getTags: function() {
+      axios({
+        method: 'get',
+        url: '/api/tags',
+        headers: {'x-access-token': this.jwt}
+      }).then((res) => {  
+        this.tags = res.data.tags;
+      }).catch((err) => {
+        console.log(err);
       })
     },
     fileChange: function(files) {
