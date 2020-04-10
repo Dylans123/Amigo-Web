@@ -6,7 +6,7 @@ import Newpassword from './components/Newpassword.vue';
 import Verify from './components/Verify.vue';
 import Wrapper from './components/Wrapper.vue';
 import Groups from './components/Groups.vue';
-import ViewUsers from './components/Users/Users.vue';
+import ViewUsers from './components/Users/ViewUsers.vue';
 import CreateUser from './components/Users/CreateUser.vue';
 import Tags from './components/Tags.vue';
 import Dashboard from './components/Dashboard.vue';
