@@ -27,7 +27,6 @@ getDashboardMetrics = (request, response) => {
 	db.client
 		.query(query)
 		.then(result => {
-            console.log(result);
 			response.status(200).json({'success': true, 'metrics': result.rows[0]});
 		})
 		.catch(error => {
@@ -35,6 +34,29 @@ getDashboardMetrics = (request, response) => {
 		});
 }
 
+getMessageInfo = (request, response) => {
+    const requestQuery = request.query;
+
+    const query = `
+        SELECT message_id, created_on
+        FROM channel_messages
+        UNION
+        SELECT message_id, created_on::timestamp with time zone at time zone 'Etc/UTC' as direct_created_on
+        FROM direct_messages    
+    `
+
+    db.client
+        .query(query)
+        .then(result => {
+            console.log(result)
+            response.status(200).json({'success': true, 'messages': result.rows});
+        })
+        .catch(error => {
+            response.status(400).json({'success': false, 'message': error.toString()});
+        });
+}
+
 module.exports = {
-    getDashboardMetrics
+    getDashboardMetrics,
+    getMessageInfo
 }

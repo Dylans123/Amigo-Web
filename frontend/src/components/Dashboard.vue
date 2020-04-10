@@ -5,7 +5,7 @@
         <md-card class="md-elevation-15" style="height: 25vh; background-color: white">
           <div class="metric-card">
             <h5>Number of Users</h5>
-            <h1>{{ this.numberUsers }}</h1>
+            <h1>{{ numberUsers }}</h1>
           </div>
         </md-card>
       </div>
@@ -13,7 +13,7 @@
         <md-card class="md-elevation-15" style="height: 25vh; background-color: white">
           <div class="metric-card">
             <h5>Number of Channels</h5>
-            <h1>{{ this.numberChannels }}</h1>
+            <h1>{{ numberChannels }}</h1>
           </div>
         </md-card>
       </div>
@@ -21,7 +21,7 @@
         <md-card class="md-elevation-15" style="height: 25vh; background-color: white">
           <div class="metric-card">
             <h5>Total Direct Messages</h5>
-            <h1>{{ this.numberDirect }}</h1>
+            <h1>{{ numberDirect }}</h1>
           </div>
         </md-card>
       </div>
@@ -29,7 +29,7 @@
         <md-card class="md-elevation-15" style="height: 25vh; background-color: white; text-align: center">
           <div class="metric-card">
             <h5>Number of Channel Messages</h5>
-            <h1>{{ this.numberMessages }}</h1>
+            <h1>{{ numberMessages }}</h1>
           </div>
         </md-card>
       </div>
@@ -54,6 +54,7 @@ import axios from 'axios';
 export default {
   created () {
     this.getMetrics();
+    this.getMessages();
   },
   components: {
     MessagesChart
@@ -84,12 +85,27 @@ export default {
         this.numberChannels = res.data.metrics['channel_count'];
         this.numberDirect = res.data.metrics['direct_message_count'];
         this.numberMessages = res.data.metrics['channel_message_count'];
+      }).catch((err) => {
+        console.log(err);
+      })
+    },
+    getMessages: function() {
+      axios({
+        method: 'get',
+        url: '/api/admin/dashboard/messages',
+        headers: {'x-access-token': this.jwt}
+      }).then((res) => {  
+        console.log(res.data);
+        // this.numberUsers = res.data.metrics['user_count'];
+        // this.numberChannels = res.data.metrics['channel_count'];
+        // this.numberDirect = res.data.metrics['direct_message_count'];
+        // this.numberMessages = res.data.metrics['channel_message_count'];
 
         // this.curChannel = res.data.channels[0];
       }).catch((err) => {
         console.log(err);
       })
-    },
+    }
   }
 }
 </script>

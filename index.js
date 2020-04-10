@@ -189,7 +189,7 @@ app.get('/api/schools', schools.getSchools);
 
 // Admin routes
 app.get('/api/admin/dashboard/metrics', users.validateUser, admin.getDashboardMetrics);
-// app.get('/api/admin/dashboard/metrics', users.validateUser,);
+app.get('/api/admin/dashboard/messages', users.validateUser, admin.getMessageInfo);
 
 // Code to generate frontend build directory
 app.use(express.static(path.join(__dirname, "frontend/dist")));
