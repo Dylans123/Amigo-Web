@@ -10,40 +10,38 @@
     <md-card class="md-elevation-15" style="background-color: white">
       <div class="row admin-content">
         <div class="col-12">
-          <h1><b>Create User</b></h1>
+          <h1><b>Create Group</b></h1>
         </div>
         <div class="col-12">
           <form v-on:submit.prevent="onSubmit">
             <div class="form-group">
-              <label for="emailAddress">Email address</label>
-              <input v-model="email" type="email" class="form-control" id="emailAddress">
+              <label for="groupPhoto">Group Image</label>
+              <div class="custom-file">
+                <label class="custom-file-label" for="groupPhoto">Choose file</label>
+                <input type="file" class="custom-file-input" id="groupPhoto" @change="fileChange($event.target.files)" />
+              </div>
             </div>
             <div class="form-group">
-              <label for="firstName">First Name</label>
-              <input v-model="firstName" type="text" class="form-control" id="firstName">
-            </div>
-            <div class="form-group">
-              <label for="lastName">Last Name</label>
-              <input v-model="lastName" type="text" class="form-control" id="lastName">
-            </div>
-            <div class="form-group">
-              <label for="displayName">Display Name</label>
-              <input v-model="displayName" type="text" class="form-control" id="displayName">
+              <label for="tag">Tag</label>
+              <select class="custom-select" name="tag" v-model="groupTag">
+                <option selected></option>
+                <option v-for="tag in tags" :key="tag['tag_id']" v-bind:value="tag['tag_id']">{{ tag.name }}</option>
+              </select>
             </div>
             <div class="form-group">
               <label for="school">School</label>
-              <select class="form-control" name="school" v-model="school">
+              <select class="custom-select" name="school" v-model="groupSchool">
                 <option selected></option>
                 <option v-for="school in schools" :key="school.name" v-bind:value="school['school_id']">{{ school.name }}</option>
               </select>
             </div>
             <div class="form-group">
-              <label for="password">Password</label>
-              <input v-model="password" type="password" class="form-control" id="password">
+              <label for="name">Name</label>
+              <input type="text" class="form-control" v-model="groupName" value="" required>
             </div>
             <div class="form-group">
-              <label for="confirmPassword">Confirm Password</label>
-              <input v-model="confirmPassword" type="password" class="form-control" id="confirmPassword">
+              <label for="description">Description</label>
+              <input type="text" class="form-control" v-model="groupDescription" value="" required>
             </div>
             <div style="color: red;" class="py-2" v-if="errors !== null">
               <h6>Errors:</h6>
@@ -62,7 +60,53 @@
 </template>
 <script>
 export default {
-  
+  data: function() {
+    return {
+      groupTag: null,
+      groupSchool: null,
+      groupName: null,
+      groupDescription: null,
+      showCompleteDialog: false
+    }
+  },
+  props: {
+    jwt: String
+  },
+  methods: {
+    onSubmit: function() {
+      const formData = new FormData();
+      formData.append("name", this.groupName);
+      formData.append("description", this.groupDescription);
+      formData.append("school_id", this.groupSchool);
+      formData.append("tag_id", this.groupTag);
+      formData.append("file", this.groupPhoto);
+      console.log(formData);
+      axios.post(
+        '/api/tags',
+        formData,
+        {
+          headers: {
+            'x-access-token': this.jwt,
+            'content-type': 'multipart/form-data'
+          }
+        }
+      ).then((res) => {
+        console.log(res);
+        this.showCompleteDialog = true
+      })
+      .catch((err) => {
+        this.errors = err.response.data.errors;
+      })
+    },
+    fileChange: function(files) {
+      console.log(files[0]);
+      this.groupPhoto = files[0];
+    },
+    complete: function() {
+      this.showCompleteDialog = false;
+      window.location.reload();
+    }
+  }
 }
 </script>
 <style scoped>
