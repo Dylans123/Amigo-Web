@@ -467,7 +467,7 @@ searchUser = (request, response) => {
 	console.log(requestQuery.query);
 
 	const query = `
-		SELECT user_id, first_name, last_name, display_name
+		SELECT user_id, first_name, last_name, display_name, created_on
 		FROM users
 		WHERE display_name ILIKE $1
 	`;
