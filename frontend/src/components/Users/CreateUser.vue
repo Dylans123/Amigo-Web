@@ -38,6 +38,12 @@
               <label for="confirmPassword">Confirm Password</label>
               <input v-model="confirmPassword" type="password" class="form-control" id="confirmPassword">
             </div>
+            <div style="color: red;" class="py-2" v-if="errors !== null">
+              <h6>Errors:</h6>
+              <div v-for="error in errors" v-bind:key="error.msg">
+                Error: {{ error.msg }}
+              </div>
+            </div>
             <div class="form-group">
               <button type="submit" class="btn btn-block btn-primary">Create User</button>
             </div>
@@ -62,6 +68,7 @@ export default {
       school: '',
       password: '',
       confirmPassword: '',
+      errors: null,
       schools: null
     }
   },
@@ -98,9 +105,10 @@ export default {
         data
       }).then((res) => {
         console.log(res)
-        // this.schools = res.data.schools;
-      }).catch((err) => {
-        console.log(err);
+      })
+      .catch((err) => {
+        console.log(err.response.data.errors);
+        this.errors = err.response.data.errors;
       })
     }
   }
