@@ -5,12 +5,14 @@ import Forgot from './components/Forgot.vue';
 import Newpassword from './components/Newpassword.vue';
 import Verify from './components/Verify.vue';
 import Wrapper from './components/Wrapper.vue';
-import Groups from './components/Groups.vue';
+import EditGroups from './components/Groups/EditGroups.vue';
+import CreateGroups from './components/Groups/CreateGroups.vue';
 import EditUsers from './components/Users/EditUsers.vue';
 import CreateUser from './components/Users/CreateUser.vue';
-import Tags from './components/Tags.vue';
+import EditTags from './components/Tags/EditTags.vue';
+import CreateTags from './components/Tags/CreateTags.vue';
+import Administrators from './components/Administrators/EditAdministrators.vue';
 import Dashboard from './components/Dashboard.vue';
-import Administrators from './components/Administrators.vue';
 
 const cookie = document.cookie;
 let jwt = null;
@@ -31,8 +33,8 @@ const routes = [
   },
   { path: '/groups/', component: Wrapper,
       children: [
-        {path: 'edit', component: Groups, props: { jwt: jwt }},
-        {path: 'create', component: Groups, props: { jwt: jwt }},
+        {path: 'edit', component: EditGroups, props: { jwt: jwt }},
+        {path: 'create', component: CreateGroups, props: { jwt: jwt }},
       ]
   },
   { path: '/users/', component: Wrapper,
@@ -43,14 +45,8 @@ const routes = [
   },
   { path: '/tags/', component: Wrapper,
       children: [
-        {path: 'edit', component: Tags, props: { jwt: jwt }},
-        {path: 'create', component: Tags, props: { jwt: jwt }},
-      ]
-  },
-  { path: '/groups/', component: Wrapper,
-      children: [
-        {path: 'edit', component: Groups, props: { jwt: jwt }},
-        {path: 'create', component: Groups, props: { jwt: jwt }},
+        {path: 'edit', component: EditTags, props: { jwt: jwt }},
+        {path: 'create', component: CreateTags, props: { jwt: jwt }},
       ]
   },
   { path: '/administrators/', component: Wrapper,
