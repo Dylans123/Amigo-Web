@@ -11,7 +11,7 @@ import EditUsers from './components/Users/EditUsers.vue';
 import CreateUser from './components/Users/CreateUser.vue';
 import EditTags from './components/Tags/EditTags.vue';
 import CreateTags from './components/Tags/CreateTags.vue';
-import Administrators from './components/Administrators/EditAdministrators.vue';
+import EditAdministrators from './components/Administrators/EditAdministrators.vue';
 import Dashboard from './components/Dashboard.vue';
 
 const cookie = document.cookie;
@@ -51,7 +51,7 @@ const routes = [
   },
   { path: '/administrators/', component: Wrapper,
       children: [
-        {path: 'edit', component: Administrators, props: { jwt: jwt }}
+        {path: 'edit', component: EditAdministrators, props: { jwt: jwt }}
       ]
   },
   { path: '/register', component: Register },
