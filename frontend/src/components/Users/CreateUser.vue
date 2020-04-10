@@ -6,7 +6,7 @@
           <h1><b>Create User</b></h1>
         </div>
         <div class="col-12">
-          <form>
+          <form v-on:submit.prevent="onSubmit">
             <div class="form-group">
               <label for="emailAddress">Email address</label>
               <input v-model="email" type="email" class="form-control" id="emailAddress">
@@ -39,7 +39,7 @@
               <input v-model="confirmdPassword" type="text" class="form-control" id="confirmPassword">
             </div>
             <div class="form-group">
-              <button type="button" class="btn btn-block btn-primary">Create User</button>
+              <button type="submit" class="btn btn-block btn-primary">Create User</button>
             </div>
           </form>
         </div>
@@ -80,6 +80,9 @@ export default {
         console.log(err);
       })
     },
+    onSubmit: function() {
+      console.log('YA BOI')
+    }
   }
 }
 </script>

@@ -34,7 +34,7 @@
         </md-card>
       </div>
       <div class="col-12">
-        <md-card class="md-elevation-15" style="height: 50vh; background-color: white">
+        <md-card class="md-elevation-15 admin-content" style="height: 50vh; background-color: white">
           <md-card-header>
             <md-card-header-text>
               <div><h6>Messages Sent Over Time</h6></div>
@@ -131,6 +131,9 @@ export default {
 }
 </script>
 <style scoped>
+.admin-content {
+  padding: 20px;
+}
 .metric-card {
   width: 100%;
   height: 100%;
