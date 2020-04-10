@@ -11,25 +11,43 @@
           <h3 class="admin-text"><b>Amigo Admin</b></h3>
         </md-toolbar>
         <md-list>
-          <md-list-item class="admin-drawer-item my-2" v-on:click="page='dashboard'">
-            <md-icon class="md-size-2x">home</md-icon>
+          <md-list-item class="admin-drawer-item my-2" to="/dashboard" exact>
+            <md-icon>home</md-icon>
             <span class="md-list-item-text">Home</span>
           </md-list-item>
-          <md-list-item class="admin-drawer-item my-2" v-on:click="page='users'">
-            <md-icon class="md-size-2x">account_circle</md-icon>
+          <md-list-item class="admin-drawer-item my-2" v-on:click="page='users'" md-expand>
+            <md-icon>account_circle</md-icon>
             <span class="md-list-item-text">Users</span>
+            <md-list slot="md-expand">
+              <md-list-item to="/users/view" exact class="md-inset">View Users</md-list-item>
+              <md-list-item to="/users/create" exact class="md-inset">Create Users</md-list-item>
+              <md-list-item to="/users/delete" exact class="md-inset">Delete Users</md-list-item>
+            </md-list>
           </md-list-item>
-          <md-list-item class="admin-drawer-item my-2" v-on:click="page='groups'">
-            <md-icon class="md-size-2x">group</md-icon>
+          <md-list-item class="admin-drawer-item my-2" md-expand>
+            <md-icon>group</md-icon>
             <span class="md-list-item-text">Groups</span>
+            <md-list slot="md-expand">
+              <md-list-item to="/groups/view" exact class="md-inset">View Groups</md-list-item>
+              <md-list-item to="/groups/create" exact class="md-inset">Create Group</md-list-item>
+              <md-list-item to="/groups/delete" exact class="md-inset">Delete Group</md-list-item>
+            </md-list>
           </md-list-item>
-          <md-list-item class="admin-drawer-item my-2" v-on:click="page='tags'">
-            <md-icon class="md-size-2x">label</md-icon>
+          <md-list-item class="admin-drawer-item my-2" md-expand>
+            <md-icon>label</md-icon>
             <span class="md-list-item-text">Tags</span>
+            <md-list slot="md-expand">
+              <md-list-item to="/tags/view" exact class="md-inset">View Tags</md-list-item>
+              <md-list-item to="/tags/create" exact class="md-inset">Create Tags</md-list-item>
+              <md-list-item to="/tags/delete" exact class="md-inset">Delete Tags</md-list-item>
+            </md-list>
           </md-list-item>
           <md-list-item class="admin-drawer-item my-2" v-on:click="page='administrators'">
-            <md-icon class="md-size-2x">supervised_user_circle</md-icon>
+            <md-icon>supervised_user_circle</md-icon>
             <span class="md-list-item-text">Administrators</span>
+            <md-list slot="md-expand">
+              <md-list-item to="/tags/delete" exact class="md-inset">Edit Administrators</md-list-item>
+            </md-list>
           </md-list-item>
         </md-list>
       </md-app-drawer>
