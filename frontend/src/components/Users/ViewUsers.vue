@@ -21,7 +21,7 @@
                 <md-table-cell>{{ user.first_name }}</md-table-cell>
                 <md-table-cell>{{ user.last_name }}</md-table-cell>
                 <md-table-cell>{{ user.display_name }}</md-table-cell>
-                <md-table-cell>{{ user.created_on }}</md-table-cell>
+                <md-table-cell>{{ convertToDate(user.created_on) }}</md-table-cell>
                 <md-table-cell>
                   <button type="button" class="btn btn-outline-primary" @click="updateCurUser(user)">Remove</button>
                 </md-table-cell>
@@ -52,6 +52,13 @@ export default {
         console.log(err);
       })
     },
+    convertToDate: function(date) {
+      const month = new Date(date).getMonth();
+      const day = new Date(date).getDate();
+      const year = new Date(date).getFullYear();
+      const retDate = (month + 1) + "/" + day + "/" + year;
+      return retDate;
+    }
   },
   data: function() {
     return {
