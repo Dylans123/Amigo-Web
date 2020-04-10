@@ -1,5 +1,12 @@
 <template>
   <div class="container">
+    <md-dialog :md-active.sync="showCompleteDialog" style="background: white">
+      <md-dialog-title>You've succesfully added this user. Check {{ email }} for a verification email to complete the process.</md-dialog-title>
+      <md-dialog-actions>
+        <md-button class="md-primary" @click="showCompleteDialog=false">Close</md-button>
+        <md-button class="md-primary" @click="complete()">Add another user</md-button>
+      </md-dialog-actions>
+    </md-dialog>
     <md-card class="md-elevation-15" style="background-color: white">
       <div class="row admin-content">
         <div class="col-12">
@@ -68,6 +75,7 @@ export default {
       school: '',
       password: '',
       confirmPassword: '',
+      showCompleteDialog: true,
       errors: null,
       schools: null
     }
@@ -97,20 +105,22 @@ export default {
         display_name: this.displayName,
         school_id: this.school
       }
-      console.log(data);
       axios({
         method: 'post',
         url: '/api/signup',
         headers: {'x-access-token': this.jwt},
         data
       }).then((res) => {
-        console.log(res)
+        this.showCompleteDialog = true
       })
       .catch((err) => {
-        console.log(err.response.data.errors);
         this.errors = err.response.data.errors;
       })
     }
+  },
+  complete: function() {
+    this.showCompleteDialog = false;
+    window.location.reload();
   }
 }
 </script>
