@@ -6,7 +6,8 @@ import Newpassword from './components/Newpassword.vue';
 import Verify from './components/Verify.vue';
 import Wrapper from './components/Wrapper.vue';
 import Groups from './components/Groups.vue';
-import Users from './components/Users.vue';
+import ViewUsers from './components/Users/Users.vue';
+import CreateUser from './components/Users/CreateUser.vue';
 import Tags from './components/Tags.vue';
 import Dashboard from './components/Dashboard.vue';
 import Administrators from './components/Administrators.vue';
@@ -32,9 +33,9 @@ const routes = [
     },
     { path: '/users/', component: Wrapper,
         children: [
-          {path: 'view', component: Users, props: { jwt: jwt }},
-          {path: 'create', component: Users, props: { jwt: jwt }},
-          {path: 'delete', component: Users, props: { jwt: jwt }}
+          {path: 'view', component: ViewUsers, props: { jwt: jwt }},
+          {path: 'create', component: CreateUser, props: { jwt: jwt }},
+          {path: 'delete', component: ViewUsers, props: { jwt: jwt }}
         ]
     },
     { path: '/tags/', component: Wrapper,
