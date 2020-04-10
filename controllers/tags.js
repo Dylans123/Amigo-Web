@@ -150,8 +150,75 @@ getUserTags = (request, response) => {
 		});
 };
 
+const Cloud = require('@google-cloud/storage');
+const path = require('path');
+const serviceKey = path.join(__dirname, '../keys.json');
+const {Storage} = Cloud;
+const storage = new Storage({keyFilename: serviceKey});
+const bucket = storage.bucket('amigo-bucket');
+
+// Updates user tags controller
+updateTags = (request, response) => {
+	const body = request.body;
+	const file = request.file;
+	var fileTypeError = request.fileValidationError;
+	var imageURL;
+
+	if (fileTypeError) {
+		return response.status(422).json({'success': false, 'errors': [{'msg': fileTypeError}]});
+	}
+	else {
+		query = `
+			UPDATE tags
+			SET name = $2
+			WHERE tag_id = $1
+		`;
+
+		db.client
+			.query(query, [body.tag_id, body.name])
+			.then(result => {
+				if (file != undefined) {
+					const {originalname, buffer} = file;
+					const blob = bucket.file("tags/" + body.tag_id + originalname.replace(/^.*\./, "."));
+					const blobStream = blob.createWriteStream({resumable: false});
+
+					blobStream
+						.on('finish', () => {
+							imageURL = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+
+							query = `
+								UPDATE tags
+								SET photo = $2
+								WHERE tag_id = $1
+							`;
+
+							db.client
+								.query(query, [body.tag_id, imageURL])
+								.then(result => {
+									response.status(200).json({'success': true, 'message': 'Tag info was successfully updated.'});
+								})
+								.catch(error => {
+									response.status(400).json({'success': false, 'message': error.toString()});
+								});
+						})
+						.on('error', () => {
+							response.status(400).json({'success': false, 'message': error.toString()});
+						})
+						.end(buffer)
+				}
+				else {
+					response.status(200).json({'success': true, 'message': 'Tag info was successfully updated.'});
+				}
+			})
+			.catch(error => {
+				response.status(400).json({'success': false, 'message': error.toString()});
+			});
+	}
+};
+
 module.exports = {
 	createTag,
 	getTags,
 	getUserTags,
+	updateTags
 };

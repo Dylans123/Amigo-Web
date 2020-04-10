@@ -142,6 +142,17 @@ app.post(
 app.get('/api/verify', users.verifyEmail);
 app.get('/api/sendverification', users.sendVerification);
 
+// Password Reset
+app.get('/api/resetpasswordrequest', users.resetPasswordRequest);
+app.post(
+	'/api/changepassword',
+	[
+		check('new_password').isLength({min: 6}).withMessage('Password must be at least 6 characters.'),
+		check('confirmation_new_password').custom((value, {req}) => (value === req.body.new_password)).withMessage('Passwords do not match.')
+	],
+	users.changePassword
+);
+
 // User routes
 app.get('/api/user', users.validateUser, users.getUserInfo);
 app.get('/api/user/search', users.validateUser, users.searchUser);
@@ -183,6 +194,7 @@ app.get('/api/channel', users.validateUser, channels.getChannelInfo);
 app.get('/api/tags', users.validateUser, tags.getTags);
 app.get('/api/user/tags', users.validateUser, tags.getUserTags);
 app.post('/api/tags', users.validateAdminUser, tags.createTag);
+app.post('/api/updatetags', users.validateAdminUser, tags.updateTags);
 
 // Direct message routes
 app.get('/api/directmessages', users.validateUser, messages.getDirectMessages);
