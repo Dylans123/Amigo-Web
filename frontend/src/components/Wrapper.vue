@@ -12,41 +12,81 @@
         </md-toolbar>
         <md-list>
           <md-list-item class="admin-drawer-item my-2" to="/" exact>
-            <md-icon>home</md-icon>
-            <span class="md-list-item-text">Home</span>
+            <md-icon v-bind:style="{ color: getWindow() === '/' ? '#F65D62' : 'black' }">home</md-icon>
+            <span class="md-list-item-text" v-bind:style="{ color: getWindow() === '/' ? '#F65D62' : 'black' }">Home</span>
           </md-list-item>
           <md-list-item class="admin-drawer-item my-2" md-expand>
-            <md-icon>account_circle</md-icon>
-            <span class="md-list-item-text">Users</span>
+            <md-icon v-bind:style="{ color: getWindow().includes('users') ? '#F65D62' : 'black' }">account_circle</md-icon>
+            <span class="md-list-item-text" v-bind:style="{ color: getWindow().includes('users') ? '#F65D62' : 'black' }">Users</span>
             <md-list slot="md-expand">
-              <md-list-item to="/users/view" exact class="md-inset">View Users</md-list-item>
-              <md-list-item to="/users/create" exact class="md-inset">Create Users</md-list-item>
-              <md-list-item to="/users/delete" exact class="md-inset">Delete Users</md-list-item>
+              <md-list-item to="/users/view" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/users/view' ? '#F65D62' : 'black' }">
+                  View Users
+                </div>
+              </md-list-item>
+              <md-list-item to="/users/create" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/users/create' ? '#F65D62' : 'black' }">
+                  Create Users
+                </div>
+              </md-list-item>
+              <md-list-item to="/users/delete" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/users/delete' ? '#F65D62' : 'black' }">
+                  Delete Users
+                </div>
+              </md-list-item>
             </md-list>
           </md-list-item>
           <md-list-item class="admin-drawer-item my-2" md-expand>
-            <md-icon>group</md-icon>
-            <span class="md-list-item-text">Groups</span>
+            <md-icon v-bind:style="{ color: getWindow().includes('groups') ? '#F65D62' : 'black' }">group</md-icon>
+            <span class="md-list-item-text" v-bind:style="{ color: getWindow().includes('groups') ? '#F65D62' : 'black' }">Groups</span>
             <md-list slot="md-expand">
-              <md-list-item to="/groups/view" exact class="md-inset">View Groups</md-list-item>
-              <md-list-item to="/groups/create" exact class="md-inset">Create Group</md-list-item>
-              <md-list-item to="/groups/delete" exact class="md-inset">Delete Group</md-list-item>
+              <md-list-item to="/groups/view" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/groups/view' ? '#F65D62' : 'black' }">  
+                  View Groups
+                </div>
+              </md-list-item>
+              <md-list-item to="/groups/create" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/groups/create' ? '#F65D62' : 'black' }">  
+                  Create Group
+                </div>
+              </md-list-item>
+              <md-list-item to="/groups/delete" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/groups/delete' ? '#F65D62' : 'black' }">  
+                  Delete Group
+                </div>
+              </md-list-item>
             </md-list>
           </md-list-item>
           <md-list-item class="admin-drawer-item my-2" md-expand>
-            <md-icon>label</md-icon>
-            <span class="md-list-item-text">Tags</span>
+            <md-icon v-bind:style="{ color: getWindow().includes('tags') ? '#F65D62' : 'black' }">label</md-icon>
+            <span class="md-list-item-text" v-bind:style="{ color: getWindow().includes('tags') ? '#F65D62' : 'black' }">Tags</span>
             <md-list slot="md-expand">
-              <md-list-item to="/tags/view" exact class="md-inset">View Tags</md-list-item>
-              <md-list-item to="/tags/create" exact class="md-inset">Create Tags</md-list-item>
-              <md-list-item to="/tags/delete" exact class="md-inset">Delete Tags</md-list-item>
+              <md-list-item to="/tags/view" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/tags/view' ? '#F65D62' : 'black' }">  
+                  View Tags
+                </div>
+              </md-list-item>
+              <md-list-item to="/tags/create" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/tags/create' ? '#F65D62' : 'black' }">  
+                  Create Tags
+                </div>
+              </md-list-item>
+              <md-list-item to="/tags/delete" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/tags/delete' ? '#F65D62' : 'black' }">  
+                  Delete Tags
+                </div>
+              </md-list-item>
             </md-list>
           </md-list-item>
           <md-list-item class="admin-drawer-item my-2" md-expand>
-            <md-icon>supervised_user_circle</md-icon>
-            <span class="md-list-item-text">Administrators</span>
+            <md-icon v-bind:style="{ color: getWindow().includes('administrators') ? '#F65D62' : 'black' }">supervised_user_circle</md-icon>
+            <span class="md-list-item-text" v-bind:style="{ color: getWindow().includes('administrators') ? '#F65D62' : 'black' }">Administrators</span>
             <md-list slot="md-expand">
-              <md-list-item to="/administrators/edit" exact class="md-inset">Edit Administrators</md-list-item>
+              <md-list-item to="/administrators/edit" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/administrators/edit' ? '#F65D62' : 'black' }">  
+                  Edit Administrators
+                </div>
+              </md-list-item>
             </md-list>
           </md-list-item>
         </md-list>
@@ -66,6 +106,10 @@ export default {
       document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
       this.$router.push('/login');
     },
+    getWindow: function() {
+      console.log(window.location.pathname)
+      return window.location.pathname;
+    }
   }
 }
 </script>
@@ -74,12 +118,12 @@ export default {
     border-bottom: 1px solid black;
     background-color: #F4F3F0;
   }
-  .md-list-item {
-    color: black;
-  }
   .md-list-item-content {
     font-size: 25px;
     font-weight: bold;
+  }
+  .md-list-item-container {
+    color: black;
   }
   .md-app-content {
     background-color: #F4F3F0;
