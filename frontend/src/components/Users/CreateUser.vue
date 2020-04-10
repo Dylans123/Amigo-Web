@@ -5,43 +5,54 @@
         <div class="col-12">
           <h1><b>Create User</b></h1>
         </div>
-        <div class="col-12 my-2">
-          <label for="emailAddress">Email address</label>
-          <input v-model="email" type="email" class="form-control" id="emailAddress">
-        </div>
-        <div class="col-12 my-2">
-          <label for="firstName">First Name</label>
-          <input v-model="firstName" type="text" class="form-control" id="firstName">
-        </div>
-        <div class="col-12 my-2">
-          <label for="lastName">Last Name</label>
-          <input v-model="lastName" type="text" class="form-control" id="lastName">
-        </div>
-        <div class="col-12 my-2">
-          <label for="displayName">Display Name</label>
-          <input v-model="displayName" type="text" class="form-control" id="displayName">
-        </div>
-        <div class="col-12 my-2">
-          <label for="">School</label>
-          <input type="text" class="form-control" id="emailAddress">
-        </div>
-        <div class="col-12 my-2">
-          <label for="password">Password</label>
-          <input v-model="password" type="password" class="form-control" id="password">
-        </div>
-        <div class="col-12 my-2">
-          <label for="confirmPassword">Confirm Password</label>
-          <input v-model="confirmdPassword" type="text" class="form-control" id="confirmPassword">
-        </div>
-        <div class="col-12 my-2">
-          <button type="button" class="btn btn-block btn-primary">Create User</button>
+        <div class="col-12">
+          <form>
+            <div class="form-group">
+              <label for="emailAddress">Email address</label>
+              <input v-model="email" type="email" class="form-control" id="emailAddress">
+            </div>
+            <div class="form-group">
+              <label for="firstName">First Name</label>
+              <input v-model="firstName" type="text" class="form-control" id="firstName">
+            </div>
+            <div class="form-group">
+              <label for="lastName">Last Name</label>
+              <input v-model="lastName" type="text" class="form-control" id="lastName">
+            </div>
+            <div class="form-group">
+              <label for="displayName">Display Name</label>
+              <input v-model="displayName" type="text" class="form-control" id="displayName">
+            </div>
+            <div class="form-group">
+              <label for="school">School</label>
+              <select class="form-control" name="school" v-model="school">
+                <option selected></option>
+                <option v-for="school in schools" :key="school.name" v-bind:value="school['school_id']">{{ school.name }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input v-model="password" type="password" class="form-control" id="password">
+            </div>
+            <div class="form-group">
+              <label for="confirmPassword">Confirm Password</label>
+              <input v-model="confirmdPassword" type="text" class="form-control" id="confirmPassword">
+            </div>
+            <div class="form-group">
+              <button type="button" class="btn btn-block btn-primary">Create User</button>
+            </div>
+          </form>
         </div>
       </div>
     </md-card>
   </div>
 </template>
 <script>
+import axios from 'axios';
 export default {
+  created () {
+    this.getSchools();
+  },
   data: function() {
     return {
       email: '',
@@ -50,8 +61,25 @@ export default {
       displayName: '',
       school: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      schools: null
     }
+  },
+  props: {
+    jwt: String,
+  },
+  methods: {
+    getSchools: function() {
+      axios({
+        method: 'get',
+        url: '/api/schools',
+        headers: {'x-access-token': this.jwt}
+      }).then((res) => {  
+        this.schools = res.data.schools;
+      }).catch((err) => {
+        console.log(err);
+      })
+    },
   }
 }
 </script>
