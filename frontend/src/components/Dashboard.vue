@@ -41,7 +41,7 @@
             </md-card-header-text>
           </md-card-header>
           <div style="height: 100%; width: 100%">
-            <MessagesChart :options="{ responsive: true }" />
+            <MessagesChart :options="options" :chartData="chartData" />
           </div>
         </md-card>
       </div>
@@ -64,13 +64,15 @@ export default {
   },
   data: function() {
     return {
+      numberUsers: null,
+      numberChannels: null,
+      numberDirect: null,
+      numberMessages: null,
+      chartData: null,
+      options: {
         responsive: true,
-        numberUsers: null,
-        numberChannels: null,
-        numberDirect: null,
-        numberMessages: null,
-        data: null,
-        labels: null
+        maintainAspectRatio: false
+      }
     }
   },
   methods: {
@@ -80,7 +82,6 @@ export default {
         url: '/api/admin/dashboard/metrics',
         headers: {'x-access-token': this.jwt}
       }).then((res) => {  
-        console.log(res.data);
         this.numberUsers = res.data.metrics['user_count'];
         this.numberChannels = res.data.metrics['channel_count'];
         this.numberDirect = res.data.metrics['direct_message_count'];
@@ -95,7 +96,6 @@ export default {
         url: '/api/admin/dashboard/messages',
         headers: {'x-access-token': this.jwt}
       }).then((res) => {  
-        console.log(res.data);
         const obj = {};
         res.data.messages.forEach((message) => {
           const month = new Date(message['created_on']).getMonth();
@@ -108,14 +108,21 @@ export default {
             obj[date] = 1;
           }
         })
-        console.log(obj)
-        this.labels = Object.keys(obj);
-        this.data = Object.values(obj);
-        // this.numberUsers = res.data.metrics['user_count'];
-        // this.numberChannels = res.data.metrics['channel_count'];
-        // this.numberDirect = res.data.metrics['direct_message_count'];
-        // this.numberMessages = res.data.metrics['channel_message_count'];
-        // this.curChannel = res.data.channels[0];
+        const labels = Object.keys(obj);
+        const data = Object.values(obj);
+        this.chartData = {
+          labels,
+          datasets: [
+            {
+              label: 'Messages',
+              backgroundColor: '#f87979',
+              pointBackgroundColor: 'white',
+              borderWidth: 1,
+              pointBorderColor: '#249EBF',
+              data
+            }
+          ]
+        }
       }).catch((err) => {
         console.log(err);
       })

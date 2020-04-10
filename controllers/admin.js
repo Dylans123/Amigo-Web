@@ -42,7 +42,8 @@ getMessageInfo = (request, response) => {
         FROM channel_messages
         UNION
         SELECT message_id, created_on::timestamp with time zone at time zone 'Etc/UTC' as direct_created_on
-        FROM direct_messages    
+        FROM direct_messages
+        ORDER BY created_on ASC
     `
 
     db.client
