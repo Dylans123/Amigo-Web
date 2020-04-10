@@ -16,7 +16,7 @@ const channels = require('./controllers/channels');
 const messages = require('./controllers/messages');
 const schools = require('./controllers/schools');
 const images = require('./controllers/images');
-const admin = require('./contorllers/admin');
+const admin = require('./controllers/admin');
 
 const multerMid = multer({
 	storage: multer.memoryStorage(),

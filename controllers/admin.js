@@ -27,7 +27,8 @@ getDashboardMetrics = (request, response) => {
 	db.client
 		.query(query)
 		.then(result => {
-			response.status(200).json({'success': true, 'result': result.rows});
+            console.log(result);
+			response.status(200).json({'success': true, 'metrics': result.rows[0]});
 		})
 		.catch(error => {
 			response.status(400).json({'success': false, 'message': error.toString()});

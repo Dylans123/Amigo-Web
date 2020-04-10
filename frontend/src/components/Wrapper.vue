@@ -100,6 +100,17 @@
 <script>
 export default {
   name: "App",
+  created () {
+    const cookie = document.cookie;
+    if (cookie.length != 0) {
+      this.jwt = cookie.split("jwt=")[1];
+    }
+    if (!this.jwt) {
+      window.location.href = "/login"
+    } else {
+      console.log("Were cookin now");
+    }
+  },
   methods: {
     logout: function() {
       // Code to remove the cookie that is storing the jwt

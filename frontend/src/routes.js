@@ -11,44 +11,54 @@ import Tags from './components/Tags.vue';
 import Dashboard from './components/Dashboard.vue';
 import Administrators from './components/Administrators.vue';
 
+const cookie = document.cookie;
+let jwt = null;
+if (cookie.length != 0) {
+  jwt = cookie.split("jwt=")[1];
+}
+if (!jwt) {
+  window.location.href = "/login"
+} else {
+  console.log("Were cookin now");
+}
 
 const routes = [
     { path: '/groups/', component: Wrapper,
         children: [
-          {path: 'view', component: Groups},
-          {path: 'create', component: Groups},
-          {path: 'delete', component: Groups}
+          {path: 'view', component: Groups, props: { jwt: jwt }},
+          {path: 'create', component: Groups, props: { jwt: jwt }},
+          {path: 'delete', component: Groups, props: { jwt: jwt }}
         ]
     },
     { path: '/users/', component: Wrapper,
         children: [
-          {path: 'view', component: Users},
-          {path: 'create', component: Users},
-          {path: 'delete', component: Users}
+          {path: 'view', component: Users, props: { jwt: jwt }},
+          {path: 'create', component: Users, props: { jwt: jwt }},
+          {path: 'delete', component: Users, props: { jwt: jwt }}
         ]
     },
     { path: '/tags/', component: Wrapper,
         children: [
-          {path: 'view', component: Tags},
-          {path: 'create', component: Tags},
-          {path: 'delete', component: Tags}
+          {path: 'view', component: Tags, props: { jwt: jwt }},
+          {path: 'create', component: Tags, props: { jwt: jwt }},
+          {path: 'delete', component: Tags, props: { jwt: jwt }}
         ]
     },
     { path: '/groups/', component: Wrapper,
         children: [
-          {path: 'view', component: Groups},
-          {path: 'create', component: Groups},
-          {path: 'delete', component: Groups}
+          {path: 'view', component: Groups, props: { jwt: jwt }},
+          {path: 'create', component: Groups, props: { jwt: jwt }},
+          {path: 'delete', component: Groups, props: { jwt: jwt }}
         ]
     },
     { path: '/', component: Wrapper,
         children: [
-          {path: '', component: Dashboard}
+          {path: '', component: Dashboard, props: { jwt: jwt }}
         ]
     },
     { path: '/administrators/', component: Wrapper,
         children: [
-          {path: 'edit', component: Administrators}
+          {path: 'edit', component: Administrators, props: { jwt: jwt }}
         ]
     },
     { path: '/register', component: Register },

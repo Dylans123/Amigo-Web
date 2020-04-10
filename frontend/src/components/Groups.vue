@@ -94,15 +94,6 @@
 import axios from 'axios';
 export default {
   created () {
-    const cookie = document.cookie;
-    if (cookie.length != 0) {
-      this.jwt = cookie.split("jwt=")[1];
-    }
-    if (!this.jwt) {
-      window.location.href = "/login"
-    } else {
-      console.log("Were cookin now");
-    }
     this.getGroups();
     this.getSchools();
     this.getTags();
@@ -121,8 +112,10 @@ export default {
       groups: null,
       schools: null,
       tags: null,
-      jwt: null
     }
+  },
+  props: {
+    jwt: String,
   },
   methods: {
     updateCurChannel: function(channel) {

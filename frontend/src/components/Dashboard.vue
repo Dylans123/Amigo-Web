@@ -3,33 +3,33 @@
     <div class="row justify-content-center align-items-center" style="height: 90vh;">
       <div class="col-3">
         <md-card class="md-elevation-15" style="height: 25vh; background-color: white">
-          <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column">
+          <div class="metric-card">
             <h5>Number of Users</h5>
-            <h1>101</h1>
+            <h1>{{ this.numberUsers }}</h1>
           </div>
         </md-card>
       </div>
       <div class="col-3">
         <md-card class="md-elevation-15" style="height: 25vh; background-color: white">
-          <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column">
+          <div class="metric-card">
             <h5>Number of Channels</h5>
-            <h1>101</h1>
+            <h1>{{ this.numberChannels }}</h1>
           </div>
         </md-card>
       </div>
       <div class="col-3">
         <md-card class="md-elevation-15" style="height: 25vh; background-color: white">
-          <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column">
+          <div class="metric-card">
             <h5>Total Direct Messages</h5>
-            <h1>101</h1>
+            <h1>{{ this.numberDirect }}</h1>
           </div>
         </md-card>
       </div>
       <div class="col-3">
         <md-card class="md-elevation-15" style="height: 25vh; background-color: white; text-align: center">
-          <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column">
+          <div class="metric-card">
             <h5>Number of Channel Messages</h5>
-            <h1>101</h1>
+            <h1>{{ this.numberMessages }}</h1>
           </div>
         </md-card>
       </div>
@@ -50,19 +50,57 @@
 </template>
 <script>
 import MessagesChart from './MessagesChart';
+import axios from 'axios';
 export default {
+  created () {
+    this.getMetrics();
+  },
   components: {
     MessagesChart
+  },
+  props: {
+    jwt: String
   },
   data: function() {
     return {
       data: {
         responsive: true,
+        numberUsers: null,
+        numberChannels: null,
+        numberDirect: null,
+        numberMessages: null,
       }
     }
+  },
+  methods: {
+    getMetrics: function() {
+      axios({
+        method: 'get',
+        url: '/api/admin/dashboard/metrics',
+        headers: {'x-access-token': this.jwt}
+      }).then((res) => {  
+        console.log(res.data)
+        this.numberUsers = res.data.metrics['user_count'];
+        this.numberChannels = res.data.metrics['channel_count'];
+        this.numberDirect = res.data.metrics['direct_message_count'];
+        this.numberMessages = res.data.metrics['channel_message_count'];
+
+        // this.curChannel = res.data.channels[0];
+      }).catch((err) => {
+        console.log(err);
+      })
+    },
   }
 }
 </script>
 <style scoped>
-
+.metric-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center
+}
 </style>
