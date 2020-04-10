@@ -36,7 +36,7 @@
             </div>
             <div class="form-group">
               <label for="confirmPassword">Confirm Password</label>
-              <input v-model="confirmdPassword" type="text" class="form-control" id="confirmPassword">
+              <input v-model="confirmPassword" type="password" class="form-control" id="confirmPassword">
             </div>
             <div class="form-group">
               <button type="submit" class="btn btn-block btn-primary">Create User</button>
@@ -81,7 +81,27 @@ export default {
       })
     },
     onSubmit: function() {
-      console.log('YA BOI')
+      const data = {
+        email: this.email,
+        password: this.password,
+        confirmation_password: this.confirmPassword,
+        first_name: this.firstName,
+        last_name: this.lastName,
+        display_name: this.displayName,
+        school_id: this.school
+      }
+      console.log(data);
+      axios({
+        method: 'post',
+        url: '/api/signup',
+        headers: {'x-access-token': this.jwt},
+        data
+      }).then((res) => {
+        console.log(res)
+        // this.schools = res.data.schools;
+      }).catch((err) => {
+        console.log(err);
+      })
     }
   }
 }

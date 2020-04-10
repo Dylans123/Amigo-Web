@@ -3,7 +3,7 @@
     <md-card class="md-elevation-15" style="background-color: white">
       <div class="row admin-content">
         <div class="col-12" style="height: 80vh; overflow: scroll">
-          <md-table v-model="searched" md-sort="first_name" md-sort-order="asc" class="md-elevation-0">
+          <md-table v-model="searched" md-sort="user_id" md-sort-order="asc" class="md-elevation-0">
             <md-table-toolbar>
               <div class="md-toolbar-section-start">
                 <h1><b>Edit Users</b></h1>
@@ -16,7 +16,8 @@
               md-label="No users found"
               :md-description="`No user found for this '${search}' query. Try a different search term or create a new user.`">
             </md-table-empty-state>
-            <md-table-row :key="item.display_name" slot="md-table-row" slot-scope="{ item }">
+            <md-table-row :key="item.display_name" slot="md-table-row" :class="getBgRowColor()" slot-scope="{ item }">
+              <md-table-cell md-label="User Id" md-sort-by="user_id">{{ item.user_id }}</md-table-cell>
               <md-table-cell md-label="First Name" md-sort-by="first_name">{{ item.first_name }}</md-table-cell>
               <md-table-cell md-label="Last Name" md-sort-by="last_name">{{ item.last_name }}</md-table-cell>
               <md-table-cell md-label="Display Name" md-sort-by="display_name">{{ item.display_name }}</md-table-cell>
@@ -72,6 +73,14 @@ export default {
     },
     searchOnTable: function() {
       this.searched = searchByName(this.users, this.search)
+    },
+    getBgRowColor: function() {
+      // this.bgRowColor = this.bgRowColor + 1;
+      if(this.bgRowColor % 2 == 0) {
+        return 'md-primary';
+      } else {
+        return 'md-accent';
+      }
     }
   },
   data: function() {
@@ -79,6 +88,7 @@ export default {
       search: null,
       users: null,
       searched: [],
+      bgRowColor: 0
     }
   },
   props: {

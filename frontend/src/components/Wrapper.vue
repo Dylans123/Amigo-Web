@@ -111,7 +111,7 @@ export default {
 </script>
 <style>
   .md-app-toolbar {
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid #9E9D9D;
     background-color: #F4F3F0;
   }
   .md-list-item-content {
@@ -133,7 +133,7 @@ export default {
     width: 300px;
   }
   .md-toolbar {
-    border-bottom: 1px solid black;
+    border-bottom: 2px solid #9E9D9D;
   }
   .md-app {
     height: 100vh;
