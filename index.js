@@ -174,7 +174,7 @@ app.post(
 );
 
 app.get('/api/users', users.validateAdminUser, users.getUsers);
-app.get('/api/users/admin', users.validateAdminUser, users.getAdminUsers);
+app.get('/api/users/admins', users.validateAdminUser, users.getAdminUsers);
 app.post('/api/users/makeadmin', users.validateAdminUser, users.makeAdmin);
 app.post('/api/users/setactive', users.validateAdminUser, users.setActive);
 
