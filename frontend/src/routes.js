@@ -15,24 +15,17 @@ import EditAdministrators from './components/Administrators/EditAdministrators.v
 import Dashboard from './components/Dashboard.vue';
 
 const cookie = document.cookie;
-let jwt = null;
-if (cookie.length != 0) {
-  jwt = cookie.split("jwt=")[1];
-}
-if (!jwt) {
-  window.location.href = "/login"
-} else {
-  console.log("Logged in");
-}
+const jwt = cookie.split("jwt=")[1];
+console.log(jwt);
 
 const routes = [
-  { path: '/', component: Home},
+  { path: '', component: Home},
   { path: '/register', component: Register },
   { path: '/forgot', component: Forgot },
   { path: '/login', component: Login },
   { path: '/newpassword', component: Newpassword },
   { path: '/verify', component: Verify },
-  { path: '/admin', component: Wrapper, 
+  { path: '/admin', component: Wrapper, props: { jwt: jwt },
     children: [
       {path: '/', component: Dashboard, props: { jwt: jwt }},
       {path: 'groups/edit', component: EditGroups, props: { jwt: jwt }},

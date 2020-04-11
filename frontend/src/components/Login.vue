@@ -46,16 +46,13 @@ import api from "../api";
 export default {
   methods: {
     login: function (username, password) {
-      console.log('hello this is an event handler');
-      console.log('Username: ' + username);
-      console.log('Password: ' + password);
       api.login(username, password).then((res, err) => {
         if (err) {
           console.log('there was an error ' + err);
         } else {
           console.log(res);
           document.cookie = `jwt=${res.data["x-access-token"]}`;
-          this.$router.push('/');
+          this.$router.push({ path: '/admin', props: {jwt: document.cookie.split('jwt=')[1]} });
         }
       });
     }

@@ -1,5 +1,5 @@
 <template v-if="this.jwt">
-  <div id="#app">
+  <div>
     <md-app>
       <md-app-toolbar class="md-primary" md-elevation="0">
         <div class="container logout-button">
@@ -84,16 +84,10 @@
 </template>
 <script>
 export default {
-  name: "App",
+  name: "Wrapper",
   created () {
-    const cookie = document.cookie;
-    if (cookie.length != 0) {
-      this.jwt = cookie.split("jwt=")[1];
-    }
-    if (!this.jwt) {
-      window.location.href = "/login"
-    } else {
-      console.log("Were cookin now");
+    if (!this.jwt || this.jwt == null) {
+      this.$router.push('/login');
     }
   },
   methods: {
@@ -106,6 +100,9 @@ export default {
       console.log(window.location.pathname)
       return window.location.pathname;
     }
+  },
+  props: {
+    jwt: String
   }
 }
 </script>
