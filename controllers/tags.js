@@ -89,7 +89,7 @@ getTags = (request, response) => {
 	// All
 	if (requestQuery.school_id === undefined && requestQuery.query === undefined && requestQuery.exact === undefined) {
 		query = `
-			SELECT tag_id, name
+			SELECT tag_id, name, created_on
 			FROM tags
 		`;
 
