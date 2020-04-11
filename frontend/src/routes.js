@@ -7,7 +7,7 @@ import Verify from './components/Verify.vue';
 import Wrapper from './components/Wrapper.vue';
 import EditGroups from './components/Groups/EditGroups.vue';
 import CreateGroups from './components/Groups/CreateGroups.vue';
-import EditUsers from './components/Users/EditUsers.vue';
+import ViewUsers from './components/Users/ViewUsers.vue';
 import CreateUser from './components/Users/CreateUser.vue';
 import EditTags from './components/Tags/EditTags.vue';
 import CreateTags from './components/Tags/CreateTags.vue';
@@ -39,7 +39,7 @@ const routes = [
   },
   { path: '/users/', component: Wrapper,
       children: [
-        {path: 'edit', component: EditUsers, props: { jwt: jwt }},
+        {path: 'view', component: ViewUsers, props: { jwt: jwt }},
         {path: 'create', component: CreateUser, props: { jwt: jwt }},
       ]
   },

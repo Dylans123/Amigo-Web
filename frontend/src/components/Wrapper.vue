@@ -19,9 +19,9 @@
             <md-icon v-bind:style="{ color: getWindow().includes('users') ? '#F65D62' : 'black' }">account_circle</md-icon>
             <span class="md-list-item-text" v-bind:style="{ color: getWindow().includes('users') ? '#F65D62' : 'black' }">Users</span>
             <md-list slot="md-expand">
-              <md-list-item to="/users/edit" exact class="md-inset">
-                <div v-bind:style="{ color: getWindow() === '/users/edit' ? '#F65D62' : 'black' }">
-                  Edit Users
+              <md-list-item to="/users/view" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/users/view' ? '#F65D62' : 'black' }">
+                  View Users
                 </div>
               </md-list-item>
               <md-list-item to="/users/create" exact class="md-inset">
