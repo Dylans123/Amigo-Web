@@ -383,6 +383,27 @@ getUsers = (request, response) => {
 		});
 };
 
+// Get all admin users
+getAdminUsers = (request, response) => {
+	const payload = jwt.decode(request.headers['x-access-token']);
+
+	const query = `
+		SELECT user_id, email, first_name, last_name, display_name, last_logged_in, created_on, verified, access_level, school_id, photo, active
+		FROM users
+		WHERE access_level = 10
+	`;
+
+	db.client
+		.query(query)
+		.then(result => {
+			const user = result.rows[0];
+			response.status(200).json({'success': true, 'users': result.rows});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+};
+
 // Make admin
 makeAdmin = (request, response) => {
 	const body = request.body;
@@ -655,6 +676,7 @@ module.exports = {
 	adminLogin,
 	searchUser,
 	getUsers,
+	getAdminUsers,
 	makeAdmin,
 	setActive,
 	resetPasswordRequest,
