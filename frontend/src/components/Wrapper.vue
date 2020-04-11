@@ -11,21 +11,21 @@
           <h3 class="admin-text"><b>Amigo Admin</b></h3>
         </md-toolbar>
         <md-list>
-          <md-list-item class="admin-drawer-item my-2" to="/" exact>
-            <md-icon v-bind:style="{ color: getWindow() === '/' ? '#F65D62' : 'black' }">home</md-icon>
-            <span class="md-list-item-text" v-bind:style="{ color: getWindow() === '/' ? '#F65D62' : 'black' }">Home</span>
+          <md-list-item class="admin-drawer-item my-2" to="admin" exact>
+            <md-icon v-bind:style="{ color: getWindow() === '/admin' || getWindow() === '/admin/' ? '#F65D62' : 'black' }">home</md-icon>
+            <span class="md-list-item-text" v-bind:style="{ color: getWindow() === '/admin' || getWindow() === '/admin/' ? '#F65D62' : 'black' }">Home</span>
           </md-list-item>
           <md-list-item class="admin-drawer-item my-2" md-expand>
             <md-icon v-bind:style="{ color: getWindow().includes('users') ? '#F65D62' : 'black' }">account_circle</md-icon>
             <span class="md-list-item-text" v-bind:style="{ color: getWindow().includes('users') ? '#F65D62' : 'black' }">Users</span>
             <md-list slot="md-expand">
-              <md-list-item to="/users/view" exact class="md-inset">
-                <div v-bind:style="{ color: getWindow() === '/users/view' ? '#F65D62' : 'black' }">
+              <md-list-item to="/admin/users/view" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/admin/users/view' ? '#F65D62' : 'black' }">
                   View Users
                 </div>
               </md-list-item>
-              <md-list-item to="/users/create" exact class="md-inset">
-                <div v-bind:style="{ color: getWindow() === '/users/create' ? '#F65D62' : 'black' }">
+              <md-list-item to="/admin/users/create" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/admin/users/create' ? '#F65D62' : 'black' }">
                   Create Users
                 </div>
               </md-list-item>
@@ -35,13 +35,13 @@
             <md-icon v-bind:style="{ color: getWindow().includes('groups') ? '#F65D62' : 'black' }">group</md-icon>
             <span class="md-list-item-text" v-bind:style="{ color: getWindow().includes('groups') ? '#F65D62' : 'black' }">Groups</span>
             <md-list slot="md-expand">
-              <md-list-item to="/groups/edit" exact class="md-inset">
-                <div v-bind:style="{ color: getWindow() === '/groups/edit' ? '#F65D62' : 'black' }">  
+              <md-list-item to="/admin/groups/edit" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/admin/groups/edit' ? '#F65D62' : 'black' }">  
                   Edit Groups
                 </div>
               </md-list-item>
-              <md-list-item to="/groups/create" exact class="md-inset">
-                <div v-bind:style="{ color: getWindow() === '/groups/create' ? '#F65D62' : 'black' }">  
+              <md-list-item to="/admin/groups/create" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/admin/groups/create' ? '#F65D62' : 'black' }">  
                   Create Group
                 </div>
               </md-list-item>
@@ -51,13 +51,13 @@
             <md-icon v-bind:style="{ color: getWindow().includes('tags') ? '#F65D62' : 'black' }">label</md-icon>
             <span class="md-list-item-text" v-bind:style="{ color: getWindow().includes('tags') ? '#F65D62' : 'black' }">Tags</span>
             <md-list slot="md-expand">
-              <md-list-item to="/tags/edit" exact class="md-inset">
-                <div v-bind:style="{ color: getWindow() === '/tags/edit' ? '#F65D62' : 'black' }">  
+              <md-list-item to="/admin/tags/edit" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/admin/tags/edit' ? '#F65D62' : 'black' }">  
                   Edit Tags
                 </div>
               </md-list-item>
-              <md-list-item to="/tags/create" exact class="md-inset">
-                <div v-bind:style="{ color: getWindow() === '/tags/create' ? '#F65D62' : 'black' }">  
+              <md-list-item to="/admin/tags/create" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/admin/tags/create' ? '#F65D62' : 'black' }">  
                   Create Tags
                 </div>
               </md-list-item>
@@ -67,8 +67,8 @@
             <md-icon v-bind:style="{ color: getWindow().includes('administrators') ? '#F65D62' : 'black' }">supervised_user_circle</md-icon>
             <span class="md-list-item-text" v-bind:style="{ color: getWindow().includes('administrators') ? '#F65D62' : 'black' }">Administrators</span>
             <md-list slot="md-expand">
-              <md-list-item to="/administrators/edit" exact class="md-inset">
-                <div v-bind:style="{ color: getWindow() === '/administrators/edit' ? '#F65D62' : 'black' }">  
+              <md-list-item to="/admin/administrators/edit" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/admin/administrators/edit' ? '#F65D62' : 'black' }">  
                   Edit Administrators
                 </div>
               </md-list-item>
