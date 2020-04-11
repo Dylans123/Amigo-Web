@@ -1,9 +1,16 @@
 const db = require('../database');
 const jwt = require('jsonwebtoken');
+const Cloud = require('@google-cloud/storage');
+const path = require('path');
+const serviceKey = path.join(__dirname, '../keys.json');
+const {Storage} = Cloud;
+const storage = new Storage({keyFilename: serviceKey});
+const bucket = storage.bucket('amigo-bucket');
 
 // Create channel controller
 createChannel = (request, response) => {
 	const body = request.body;
+	const file = request.file;
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	var query = `
@@ -16,6 +23,7 @@ createChannel = (request, response) => {
 		.query(query, [payload.user_id, body.tag_id, body.name, body.description, body.school_id])
 		.then(result => {
 			if (result.rowCount > 0) {
+				const channel_id = result.rows[0].channel_id
 				// Join channel
 				query = `
 					INSERT INTO users_channels (user_id, channel_id)
@@ -23,7 +31,7 @@ createChannel = (request, response) => {
 				`;
 
 				db.client
-					.query(query, [payload.user_id, result.rows[0].channel_id])
+					.query(query, [payload.user_id, channel_id])
 					.then(result => {
 						if (result.rowCount > 0)
 							response.status(200).json({'success': true, 'message': "Channel created successfully!"});
@@ -33,6 +41,37 @@ createChannel = (request, response) => {
 					.catch(error => {
 						response.status(400).json({'success': false, 'message': error.toString()});
 					});
+				
+				// Add the channel image
+				if (file !== undefined) {
+					const {originalname, buffer} = file;
+					const blob = bucket.file("channels/" + channel_id + originalname.replace(/^.*\./, "."));
+					const blobStream = blob.createWriteStream({resumable: false});
+	
+					blobStream
+						.on('finish', () => {
+							imageURL = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+	
+							const query = `
+								UPDATE channels
+								SET photo = $2
+								WHERE channel_id = $1
+							`;
+	
+							db.client
+								.query(query, [channel_id, imageURL])
+								.then(result => {
+									response.status(200).json({'success': true, 'message': 'Channel photo added succesfully!'});
+								})
+								.catch(error => {
+									response.status(400).json({'success': false, 'message': error.toString()});
+								});
+						})
+						.on('error', () => {
+							response.status(400).json({'success': false, 'message': error.toString()});
+						})
+						.end(buffer)
+				}
 			}
 			else {
 				response.status(400).json({'success': false, 'message': "Channel creation unsuccessful."});

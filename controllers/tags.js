@@ -1,5 +1,11 @@
 const db = require('../database');
 const jwt = require('jsonwebtoken');
+const Cloud = require('@google-cloud/storage');
+const path = require('path');
+const serviceKey = path.join(__dirname, '../keys.json');
+const {Storage} = Cloud;
+const storage = new Storage({keyFilename: serviceKey});
+const bucket = storage.bucket('amigo-bucket');
 
 // Create tag controller
 createTag = (request, response) => {
@@ -97,7 +103,7 @@ getTags = (request, response) => {
 			});
 	}
 	// By search query
-	if (requestQuery.school_id === undefined && !(requestQuery.query === undefined)) {
+	else if (requestQuery.school_id === undefined && !(requestQuery.query === undefined)) {
 		if (requestQuery.exact === undefined || requestQuery.exact === "false") {
 			query = `
 				SELECT tag_id, name
@@ -200,13 +206,6 @@ getUserTags = (request, response) => {
 			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
-
-const Cloud = require('@google-cloud/storage');
-const path = require('path');
-const serviceKey = path.join(__dirname, '../keys.json');
-const {Storage} = Cloud;
-const storage = new Storage({keyFilename: serviceKey});
-const bucket = storage.bucket('amigo-bucket');
 
 // Updates user tags controller
 updateTags = (request, response) => {

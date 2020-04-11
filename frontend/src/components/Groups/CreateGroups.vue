@@ -71,6 +71,7 @@ export default {
       groupSchool: null,
       groupName: null,
       groupDescription: null,
+      groupPhoto: null,
       schools: null,
       tags: null,
       errors: null,
@@ -83,6 +84,7 @@ export default {
   methods: {
     onSubmit: function() {
       const formData = new FormData();
+      console.log(this.groupPhoto);
       formData.append("name", this.groupName);
       formData.append("description", this.groupDescription);
       formData.append("school_id", this.groupSchool);
@@ -90,7 +92,7 @@ export default {
       formData.append("file", this.groupPhoto);
       console.log(formData);
       axios.post(
-        '/api/tags',
+        '/api/channels',
         formData,
         {
           headers: {
@@ -123,6 +125,7 @@ export default {
         url: '/api/tags',
         headers: {'x-access-token': this.jwt}
       }).then((res) => {  
+        console.log(res.data);
         this.tags = res.data.tags;
       }).catch((err) => {
         console.log(err);
