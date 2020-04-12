@@ -26,6 +26,12 @@
                   </div>
                   <input type="password" class="form-control" placeholder="Password" v-model="password" aria-label="Username" aria-describedby="basic-addon2">
                 </div>
+                <div style="color: red; text-align: left" class="py-2" v-if="errors !== null">
+                  <h6>Errors:</h6>
+                  <div v-for="error in errors" v-bind:key="error.msg">
+                    Error: {{ error.msg }}
+                  </div>
+                </div>
                 <div>
                   <button type="button" class="btn btn-block btn-primary" v-on:click="login(username,password)">Login</button>
                 </div>
@@ -43,17 +49,26 @@
 <script>
 import api from "../api";
 export default {
+  data: function() {
+    return {
+      errors: null,
+      username: null,
+      password: null
+    }
+  },
   methods: {
     login: function (username, password) {
-      api.login(username, password).then((res, err) => {
-        if (err) {
-          console.log('there was an error ' + err);
-        } else {
+      api.login(username, password)
+        .then((res) => {
           console.log(res);
+          this.errors = null;
           document.cookie = `jwt=${res.data["x-access-token"]}`;
-          window.location.href = '/admin'
-        }
-      });
+          window.location.href = '/admin';
+        })
+        .catch((err) => {
+          console.log(err);
+          this.errors = err.response.data.errors;
+        })
     }
   }
 }
