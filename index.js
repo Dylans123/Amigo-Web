@@ -197,6 +197,7 @@ app.get('/api/tags', users.validateUser, tags.getTags);
 app.get('/api/user/tags', users.validateUser, tags.getUserTags);
 app.post('/api/tags', users.validateAdminUser, tags.createTag);
 app.post('/api/tags/update', users.validateAdminUser, tags.updateTags);
+app.get('/api/tags/popular', users.validateUser, tags.getPopularTags);
 
 // Direct message routes
 app.get('/api/directmessages', users.validateUser, messages.getDirectMessages);

@@ -266,9 +266,39 @@ updateTags = (request, response) => {
 	}
 };
 
+// Get popular tags controller
+getPopularTags = (request, response) => {
+	const requestQuery = request.query;
+
+	if (requestQuery.limit === undefined)
+		requestQuery.limit = 100;
+
+	const query = `
+		SELECT tags.tag_id, tags.name, P.member_count
+		FROM tags,
+		     (SELECT channels.tag_id, COUNT(*) AS member_count
+		     FROM users_channels, channels
+		     WHERE users_channels.channel_id = channels.channel_id
+		     GROUP BY channels.tag_id) AS P
+		WHERE tags.tag_id = P.tag_id
+		ORDER BY P.member_count DESC
+		LIMIT $1
+	`;
+
+	db.client
+		.query(query, [requestQuery.limit])
+		.then(result => {
+			response.status(200).json({'success': true, 'tags': result.rows});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+};
+
 module.exports = {
 	createTag,
 	getTags,
 	getUserTags,
-	updateTags
+	updateTags,
+	getPopularTags
 };
