@@ -52,7 +52,7 @@ export default {
         } else {
           console.log(res);
           document.cookie = `jwt=${res.data["x-access-token"]}`;
-          this.$router.push({ path: '/admin', props: {jwt: document.cookie.split('jwt=')[1]} });
+          window.location.href = '/admin'
         }
       });
     }
@@ -72,6 +72,7 @@ export default {
 
   .admin-text {
     color: #F65D62;
+    font-size: 2.5rem;
   }
 
   .description-text {
