@@ -5,9 +5,11 @@ const api = axios.create({
 });
 
 export const login = (email, password) => api.post('/login', { email, password });
+export const verify = (jwt) => api.get(`/verify?${jwt}`);
 
 const apis = {
-  login
+  login,
+  verify
 }
 
 export default apis
