@@ -213,15 +213,6 @@ validateAdminUser = (request, response, next) => {
 	});
 }
 
-isAdmin = (token) => {
-	jwt.verify(token, adminKey, (error, decoded) => {
-		if (error)
-			return false;
-		else
-			return true;
-	});
-}
-
 // Email verification controllers
 const nodemailer = require("nodemailer");
 const mailUsername = process.env['MAIL_USERNAME'];
