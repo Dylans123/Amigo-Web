@@ -5,7 +5,7 @@ const api = axios.create({
 });
 
 export const login = (email, password) => api.post('/login', { email, password });
-export const verify = (jwt) => api.get(`/verify?${jwt}`);
+export const verify = (jwt) => api.get(`/verify?token=${jwt}`);
 
 const apis = {
   login,
