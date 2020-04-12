@@ -1,6 +1,9 @@
 runtime: nodejs
 env: flex
 
+skip_files:
+  - ^node_modules/.*$
+
 manual_scaling:
   instances: 1
 
@@ -15,3 +18,6 @@ handlers:
     upload: frontend/build/index.html
   - url: /
     static_dir: frontend/build
+
+network:
+  session_affinity: true

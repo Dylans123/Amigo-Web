@@ -322,9 +322,12 @@ getUserInfo = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	const query = `
-		SELECT *
+		SELECT users.*, schools.name as school_name, COUNT(users_channels.*) as channel_count
 		FROM users
-		WHERE user_id = $1
+		INNER JOIN schools ON users.user_id = $1
+		AND schools.school_id = users.school_id
+		INNER JOIN users_channels ON users.user_id = users_channels.user_id
+		GROUP BY users.user_id, schools.name
 	`;
 
 	db.client
@@ -334,11 +337,15 @@ getUserInfo = (request, response) => {
 			response.status(200).json({
 				'success': true,
 				'email': user.email,
+				'user_id': user.user_id,
 				'first_name': user.first_name,
 				'last_name': user.last_name,
 				'display_name': user.display_name,
 				'last_logged_in': user.last_logged_in,
 				'school_id': user.school_id,
+				'school_name': user.school_name,
+				'channel_count': user.channel_count,
+				'created_on': user.created_on,
 				'photo': user.photo
 			});
 		})
@@ -354,6 +361,27 @@ getUsers = (request, response) => {
 	const query = `
 		SELECT user_id, email, first_name, last_name, display_name, last_logged_in, created_on, verified, access_level, school_id, photo, active
 		FROM users
+	`;
+
+	db.client
+		.query(query)
+		.then(result => {
+			const user = result.rows[0];
+			response.status(200).json({'success': true, 'users': result.rows});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+};
+
+// Get all admin users
+getAdminUsers = (request, response) => {
+	const payload = jwt.decode(request.headers['x-access-token']);
+
+	const query = `
+		SELECT user_id, email, first_name, last_name, display_name, last_logged_in, created_on, verified, access_level, school_id, photo, active
+		FROM users
+		WHERE access_level = 10
 	`;
 
 	db.client
@@ -515,6 +543,117 @@ updateUser = (request, response) => {
 	}
 };
 
+searchUser = (request, response) => {
+	const requestQuery = request.query;
+	console.log(requestQuery.query);
+
+	const query = `
+		SELECT user_id, first_name, last_name, display_name
+		FROM users
+		WHERE display_name ILIKE $1
+	`;
+
+	db.client
+		.query(query, [requestQuery.query + "%"])
+		.then(result => {
+			response.status(200).json({'success': true, 'users': result.rows});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+}
+
+const resetKey = process.env['PASSWORD_RESET_JWT_KEY'];
+
+resetPasswordRequest = (request, response) => {
+	const requestQuery = request.query;
+
+	const query = `
+		SELECT *
+		FROM users
+		WHERE LOWER(email) = LOWER($1)
+	`;
+
+	db.client
+		.query(query, [requestQuery.email])
+		.then(result => {
+			if (result.rows.length > 0) {
+				const payload = {'email': requestQuery.email};
+				const token = jwt.sign(payload, resetKey, {expiresIn: "3d"});
+				const link = "http://" + serverURL + "/resetpassword?token=" + token;
+
+				const mailOptions = {
+					'to': requestQuery.email,
+					'subject': "Amigo: Reset your password",
+					'html': "Hello,<br><br>Please click on the link to reset your password.<br><a href=" + link + ">Click here to reset password</a>"
+				}
+
+				smtpTransport.sendMail(mailOptions, (error, transportResponse) => {
+					if (error) {
+						response.status(400).json({'success': false, 'message': error.toString()});
+					}
+					else {
+						response.status(200).json({'success': true, 'message': 'Reset password request sent.'});
+					}
+				});
+			}
+			else {
+				response.status(400).json({'success': false, 'message': 'Email not registered.'});
+			}
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+};
+
+changePassword = (request, response) => {
+	const body = request.body;
+	var errors = validationResult(request);
+	const payload = jwt.decode(body.token);
+
+	if (!errors.isEmpty()) {
+		return response.status(422).json({'success': false, 'errors': errors.array()});
+	}
+	else {
+		new_password = bcrypt.hashSync(body.new_password, saltRounds);
+
+		var query = `
+			UPDATE users
+			SET password = $2
+			WHERE email = $1
+		`;
+
+		db.client
+			.query(query, [payload.email, new_password])
+			.then(result => {
+				response.status(200).json({'success': true, 'message': 'Password has been changed.'});
+			})
+			.catch(error => {
+				response.status(400).json({'success': false, 'message': error.toString()});
+			});
+	}
+};
+
+searchUser = (request, response) => {
+	const requestQuery = request.query;
+	console.log(requestQuery.query);
+
+	const query = `
+		SELECT user_id, first_name, last_name, display_name, created_on
+		FROM users
+		WHERE display_name ILIKE $1
+	`;
+
+	db.client
+		.query(query, [requestQuery.query + "%"])
+		.then(result => {
+			response.status(200).json({'success': true, 'users': result.rows});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+}
+
 module.exports = {
 	signup,
 	checkEmail,
@@ -526,7 +665,11 @@ module.exports = {
 	getUserInfo,
 	updateUser,
 	adminLogin,
+	searchUser,
 	getUsers,
+	getAdminUsers,
 	makeAdmin,
-	setActive
+	setActive,
+	resetPasswordRequest,
+	changePassword
 };
