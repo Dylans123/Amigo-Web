@@ -7,7 +7,7 @@
       </md-dialog-actions>
     </md-dialog>
     <md-dialog :md-active.sync="showEditDialog" v-if="curGroup !== null" style="background: white">
-      <md-dialog-title>Edit {{ this.curGroup.name }}</md-dialog-title>
+      <md-dialog-title>Edit Group</md-dialog-title>
       <md-dialog-content>
         <div class="form-group">
           <label for="groupPhoto">Group Image</label>

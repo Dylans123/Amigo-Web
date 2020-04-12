@@ -196,7 +196,7 @@ app.get('/api/channel', users.validateUser, channels.getChannelInfo);
 app.get('/api/tags', users.validateUser, tags.getTags);
 app.get('/api/user/tags', users.validateUser, tags.getUserTags);
 app.post('/api/tags', users.validateAdminUser, tags.createTag);
-app.post('/api/updatetags', users.validateAdminUser, tags.updateTags);
+app.post('/api/tags/update', users.validateAdminUser, tags.updateTags);
 
 // Direct message routes
 app.get('/api/directmessages', users.validateUser, messages.getDirectMessages);
