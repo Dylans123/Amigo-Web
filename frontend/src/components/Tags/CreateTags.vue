@@ -1,4 +1,4 @@
-  <template>
+<template>
   <div class="container">
     <md-dialog :md-active.sync="showCompleteDialog" style="background: white">
       <md-dialog-title>You've succesfully added the tag {{ tag }}</md-dialog-title>

@@ -6,7 +6,7 @@
           <md-table v-model="searched" md-sort="user_id" md-sort-order="asc" class="md-elevation-0">
             <md-table-toolbar>
               <div class="md-toolbar-section-start">
-                <h1><b>Edit Administrators</b></h1>
+                <h1><b>View Admins</b></h1>
               </div>
               <md-field md-clearable class="md-toolbar-section-end">
                 <md-input placeholder="Search by name..." v-model="search" @input="searchOnTable" />
