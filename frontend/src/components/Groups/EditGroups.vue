@@ -1,36 +1,5 @@
 <template>
   <div>
-    <md-dialog :md-active.sync="showGroupDialog" style="background: white">
-      <md-dialog-title>New Group Information</md-dialog-title>
-      <div class="row px-5">
-        <div class="col-12 my-1">
-          <label for="tag">Tag</label>
-          <select class="custom-select" name="tag" v-model="newGroupTag">
-            <option selected></option>
-            <option v-for="tag in tags" :key="tag['tag_id']" v-bind:value="tag['tag_id']">{{ tag.name }}</option>
-          </select>
-        </div>
-        <div class="col-12 my-1">
-          <label for="school">School</label>
-          <select class="custom-select" name="school" v-model="newGroupSchool">
-            <option selected></option>
-            <option v-for="school in schools" :key="school.name" v-bind:value="school['school_id']">{{ school.name }}</option>
-          </select>
-        </div>
-        <div class="col-12 my-1">
-          <label for="name">Name</label>
-          <input type="text" class="form-control" v-model="newGroupName" value="" required>
-        </div>
-        <div class="col-12 my-1">
-          <label for="description">Description</label>
-          <input type="text" class="form-control" v-model="newGroupDescription" value="" required>
-        </div>
-      </div>
-      <md-dialog-actions>
-        <md-button class="md-primary" @click="showGroupDialog=false">Cancel</md-button>
-        <md-button class="md-primary" @click="createGroup()">Create</md-button>
-      </md-dialog-actions>
-    </md-dialog>
     <md-dialog :md-active.sync="showDeleteDialog" style="background: white">
       <md-dialog-title>Are you sure you want to remove this user from this group? This action can't be undone.</md-dialog-title>
       <md-dialog-actions>
@@ -100,7 +69,6 @@ export default {
   },
   data: function() {
     return {
-      showGroupDialog: false,
       showDeleteDialog: false,
       newGroupName: null,
       newGroupDescription: null,
