@@ -545,26 +545,6 @@ updateUser = (request, response) => {
 	}
 };
 
-searchUser = (request, response) => {
-	const requestQuery = request.query;
-	console.log(requestQuery.query);
-
-	const query = `
-		SELECT user_id, first_name, last_name, display_name
-		FROM users
-		WHERE display_name ILIKE $1
-	`;
-
-	db.client
-		.query(query, [requestQuery.query + "%"])
-		.then(result => {
-			response.status(200).json({'success': true, 'users': result.rows});
-		})
-		.catch(error => {
-			response.status(400).json({'success': false, 'message': error.toString()});
-		});
-}
-
 const resetKey = process.env['PASSWORD_RESET_JWT_KEY'];
 
 resetPasswordRequest = (request, response) => {
@@ -641,7 +621,7 @@ searchUser = (request, response) => {
 	console.log(requestQuery.query);
 
 	const query = `
-		SELECT user_id, first_name, last_name, display_name, created_on
+		SELECT user_id, first_name, last_name, display_name, created_on, photo
 		FROM users
 		WHERE display_name ILIKE $1
 	`;
