@@ -82,6 +82,63 @@ createChannel = (request, response) => {
 		});
 };
 
+// Edit channel
+updateChannel = (request, response) => {
+	const file = request.file;
+	const body = request.body;
+	const payload = jwt.decode(request.headers['x-access-token']);
+	var fileTypeError = request.fileValidationError;
+	var imageURL;
+
+	if (fileTypeError) {
+		return response.status(422).json({'success': false, 'errors': [{'msg': fileTypeError}]});
+	}
+	else {
+		var query = `
+			UPDATE channels
+			SET tag_id = $2, name = $3, description = $4, school_id = $5
+			WHERE channel_id = $1
+		`;
+
+		db.client
+		.query(query, [body.channel_id, body.tag_id, body.name, body.description, body.school_id])
+		.then(result => {
+			if (file !== undefined) {
+				const {originalname, buffer} = file;
+				const blob = bucket.file("channels/" + channel_id + originalname.replace(/^.*\./, "."));
+				const blobStream = blob.createWriteStream({resumable: false});
+
+				blobStream
+					.on('finish', () => {
+						imageURL = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+
+						const query = `
+							UPDATE channels
+							SET photo = $2
+							WHERE channel_id = $1
+						`;
+
+						db.client
+							.query(query, [channel_id, imageURL])
+							.then(result => {
+								response.status(200).json({'success': true, 'message': 'Channel photo added succesfully!'});
+							})
+							.catch(error => {
+								response.status(400).json({'success': false, 'message': error.toString()});
+							});
+					})
+					.on('error', () => {
+						response.status(400).json({'success': false, 'message': error.toString()});
+					})
+					.end(buffer)
+				}
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+	}
+}
+
 // Get user channels controller
 getUserChannels = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
@@ -365,5 +422,6 @@ module.exports = {
 	checkChannelJoin,
 	getChannels,
 	removeChannelUser,
-	getChannelInfo
+	getChannelInfo,
+	updateChannel
 };

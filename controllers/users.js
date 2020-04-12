@@ -385,7 +385,6 @@ getUsers = (request, response) => {
 
 // Get all admin users
 getAdminUsers = (request, response) => {
-	console.log("ow")
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	const query = `

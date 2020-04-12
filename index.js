@@ -182,6 +182,7 @@ app.post('/api/users/setactive', users.validateAdminUser, users.setActive);
 app.get('/api/user/channels', users.validateUser, channels.getUserChannels);
 app.get('/api/channels', users.validateUser, channels.getChannels);
 app.post('/api/channels', users.validateUser, channels.createChannel);
+app.post('/api/channels/update', users.validateUser, channels.updateChannel);
 app.post('/api/channels/join', users.validateUser, channels.joinChannel);
 app.post('/api/channels/leave', users.validateUser, channels.leaveChannel);
 app.get('/api/channels/users', users.validateUser, channels.getChannelUsers);
