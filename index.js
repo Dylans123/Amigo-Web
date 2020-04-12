@@ -16,6 +16,7 @@ const channels = require('./controllers/channels');
 const messages = require('./controllers/messages');
 const schools = require('./controllers/schools');
 const images = require('./controllers/images');
+const admin = require('./controllers/admin');
 
 const multerMid = multer({
 	storage: multer.memoryStorage(),
@@ -141,6 +142,17 @@ app.post(
 app.get('/api/verify', users.verifyEmail);
 app.get('/api/sendverification', users.sendVerification);
 
+// Password Reset
+app.get('/api/resetpasswordrequest', users.resetPasswordRequest);
+app.post(
+	'/api/changepassword',
+	[
+		check('new_password').isLength({min: 6}).withMessage('Password must be at least 6 characters.'),
+		check('confirmation_new_password').custom((value, {req}) => (value === req.body.new_password)).withMessage('Passwords do not match.')
+	],
+	users.changePassword
+);
+
 // User routes
 app.get('/api/user', users.validateUser, users.getUserInfo);
 app.get('/api/user/search', users.validateUser, users.searchUser);
@@ -161,10 +173,16 @@ app.post(
 	users.updateUser
 );
 
+app.get('/api/users', users.validateAdminUser, users.getUsers);
+app.get('/api/users/admins', users.validateAdminUser, users.getAdminUsers);
+app.post('/api/users/makeadmin', users.validateAdminUser, users.makeAdmin);
+app.post('/api/users/setactive', users.validateAdminUser, users.setActive);
+
 // Channel routes
 app.get('/api/user/channels', users.validateUser, channels.getUserChannels);
 app.get('/api/channels', users.validateUser, channels.getChannels);
 app.post('/api/channels', users.validateUser, channels.createChannel);
+app.post('/api/channels/update', users.validateUser, channels.updateChannel);
 app.post('/api/channels/join', users.validateUser, channels.joinChannel);
 app.post('/api/channels/leave', users.validateUser, channels.leaveChannel);
 app.get('/api/channels/users', users.validateUser, channels.getChannelUsers);
@@ -172,11 +190,13 @@ app.post('/api/channels/users/remove', users.validateAdminUser, channels.removeC
 app.get('/api/channels/membercount', users.validateUser, channels.getChannelMemberCount);
 app.get('/api/channels/messages', users.validateUser, messages.getMessages);
 app.post('/api/channels/messages', users.validateUser, messages.sendMessage);
+app.get('/api/channel', users.validateUser, channels.getChannelInfo);
 
 // Tag routes
 app.get('/api/tags', users.validateUser, tags.getTags);
 app.get('/api/user/tags', users.validateUser, tags.getUserTags);
 app.post('/api/tags', users.validateAdminUser, tags.createTag);
+app.post('/api/tags/update', users.validateAdminUser, tags.updateTags);
 
 // Direct message routes
 app.get('/api/directmessages', users.validateUser, messages.getDirectMessages);
@@ -185,6 +205,10 @@ app.get('/api/directmessages/receivers', users.validateUser, messages.getDirectM
 
 // School routes
 app.get('/api/schools', schools.getSchools);
+
+// Admin routes
+app.get('/api/admin/dashboard/metrics', users.validateUser, admin.getDashboardMetrics);
+app.get('/api/admin/dashboard/messages', users.validateUser, admin.getMessageInfo);
 
 // Code to generate frontend build directory
 app.use(express.static(path.join(__dirname, "frontend/dist")));

@@ -1,9 +1,16 @@
 const db = require('../database');
 const jwt = require('jsonwebtoken');
+const Cloud = require('@google-cloud/storage');
+const path = require('path');
+const serviceKey = path.join(__dirname, '../keys.json');
+const {Storage} = Cloud;
+const storage = new Storage({keyFilename: serviceKey});
+const bucket = storage.bucket('amigo-bucket');
 
 // Create channel controller
 createChannel = (request, response) => {
 	const body = request.body;
+	const file = request.file;
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	var query = `
@@ -16,6 +23,7 @@ createChannel = (request, response) => {
 		.query(query, [payload.user_id, body.tag_id, body.name, body.description, body.school_id])
 		.then(result => {
 			if (result.rowCount > 0) {
+				const channel_id = result.rows[0].channel_id
 				// Join channel
 				query = `
 					INSERT INTO users_channels (user_id, channel_id)
@@ -23,7 +31,7 @@ createChannel = (request, response) => {
 				`;
 
 				db.client
-					.query(query, [payload.user_id, result.rows[0].channel_id])
+					.query(query, [payload.user_id, channel_id])
 					.then(result => {
 						if (result.rowCount > 0)
 							response.status(200).json({'success': true, 'message': "Channel created successfully!"});
@@ -33,6 +41,37 @@ createChannel = (request, response) => {
 					.catch(error => {
 						response.status(400).json({'success': false, 'message': error.toString()});
 					});
+				
+				// Add the channel image
+				if (file !== undefined) {
+					const {originalname, buffer} = file;
+					const blob = bucket.file("channels/" + channel_id + originalname.replace(/^.*\./, "."));
+					const blobStream = blob.createWriteStream({resumable: false});
+	
+					blobStream
+						.on('finish', () => {
+							imageURL = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+	
+							const query = `
+								UPDATE channels
+								SET photo = $2
+								WHERE channel_id = $1
+							`;
+	
+							db.client
+								.query(query, [channel_id, imageURL])
+								.then(result => {
+									response.status(200).json({'success': true, 'message': 'Channel photo added succesfully!'});
+								})
+								.catch(error => {
+									response.status(400).json({'success': false, 'message': error.toString()});
+								});
+						})
+						.on('error', () => {
+							response.status(400).json({'success': false, 'message': error.toString()});
+						})
+						.end(buffer)
+				}
 			}
 			else {
 				response.status(400).json({'success': false, 'message': "Channel creation unsuccessful."});
@@ -42,6 +81,62 @@ createChannel = (request, response) => {
 			response.status(400).json({'success': false, 'message': error.toString()});
 		});
 };
+
+// Edit channel
+updateChannel = (request, response) => {
+	const file = request.file;
+	const body = request.body;
+	var fileTypeError = request.fileValidationError;
+	var imageURL;
+
+	if (fileTypeError) {
+		return response.status(422).json({'success': false, 'errors': [{'msg': fileTypeError}]});
+	}
+	else {
+		var query = `
+			UPDATE channels
+			SET tag_id = $2, name = $3, description = $4, school_id = $5
+			WHERE channel_id = $1
+		`;
+
+		db.client
+		.query(query, [body.channel_id, body.tag_id, body.name, body.description, body.school_id])
+		.then(result => {
+			if (file !== undefined) {
+				const {originalname, buffer} = file;
+				const blob = bucket.file("channels/" + body.channel_id + originalname.replace(/^.*\./, "."));
+				const blobStream = blob.createWriteStream({resumable: false});
+
+				blobStream
+					.on('finish', () => {
+						imageURL = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+
+						const query = `
+							UPDATE channels
+							SET photo = $2
+							WHERE channel_id = $1
+						`;
+
+						db.client
+							.query(query, [body.channel_id, imageURL])
+							.then(result => {
+								response.status(200).json({'success': true, 'message': 'Channel photo added succesfully!'});
+							})
+							.catch(error => {
+								response.status(400).json({'success': false, 'message': error.toString()});
+							});
+					})
+					.on('error', () => {
+						response.status(400).json({'success': false, 'message': error.toString()});
+					})
+					.end(buffer)
+				}
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+	}
+}
 
 // Get user channels controller
 getUserChannels = (request, response) => {
@@ -198,8 +293,10 @@ getChannels = (request, response) => {
 	// Get all
 	if (requestQuery.tag_id === undefined && requestQuery.school_id === undefined && requestQuery.query === undefined) {
 		query = `
-			SELECT channel_id, name, description, school_id, member_count
+			SELECT channels.channel_id, channels.name, channels.description, channels.school_id, channels.tag_id, channels.member_count, channels.created_on, tags.name as tag_name, schools.name as school_name
 			FROM channels
+			JOIN tags ON tags.tag_id = channels.tag_id
+			JOIN schools ON schools.school_id = channels.school_id
 		`;
 
 		db.client
@@ -214,7 +311,7 @@ getChannels = (request, response) => {
 	// By tag_id
 	else if (!(requestQuery.tag_id === undefined) && requestQuery.school_id === undefined && requestQuery.query === undefined) {
 		query = `
-			SELECT channel_id, name, description, school_id, member_count
+			SELECT channel_id, name, description, school_id, member_count, created_on
 			FROM channels
 			WHERE tag_id = $1
 		`;
@@ -231,7 +328,7 @@ getChannels = (request, response) => {
 	// By tag_id and school_id
 	else if (!(requestQuery.tag_id === undefined) && !(requestQuery.school_id === undefined) && requestQuery.query === undefined) {
 		query = `
-			SELECT channel_id, name, description, school_id, member_count
+			SELECT channel_id, name, description, school_id, member_count, created_on
 			FROM channels
 			WHERE tag_id = $1 and school_id = $2
 		`;
@@ -250,7 +347,7 @@ getChannels = (request, response) => {
 		const requestQuery = request.query;
 
 		const query = `
-			SELECT channel_id, name, description, school_id, member_count
+			SELECT channel_id, name, description, school_id, member_count, created_on
 			FROM channels
 			WHERE school_id = $1 AND name ILIKE $2
 		`;
@@ -264,10 +361,56 @@ getChannels = (request, response) => {
 				response.status(400).json({'success': false, 'message': error.toString()});
 			});
 	}
+	// By tag_id and search query
+	else if (!(requestQuery.tag_id === undefined) && requestQuery.school_id === undefined && !(requestQuery.query === undefined)) {
+		const requestQuery = request.query;
+
+		const query = `
+			SELECT channel_id, name, description, school_id, member_count, created_on
+			FROM channels
+			WHERE tag_id = $1 AND name ILIKE $2
+		`;
+
+		db.client
+			.query(query, [requestQuery.tag_id, requestQuery.query + "%"])
+			.then(result => {
+				response.status(200).json({'success': true, 'channels': result.rows});
+			})
+			.catch(error => {
+				response.status(400).json({'success': false, 'message': error.toString()});
+			});
+	}
 	// Invalid
 	else {
 		response.status(400).json({'success': false, 'message': 'Set of queries provided is not valid.'});
 	}
+};
+
+// Get channels controller
+getChannelInfo = (request, response) => {
+	const requestQuery = request.query;
+
+	const query = `
+		SELECT channel_id, name, description, school_id, member_count
+		FROM channels
+		WHERE channel_id = $1
+	`;
+
+	db.client
+		.query(query, [requestQuery.channel_id])
+		.then(result => {
+			response.status(200).json({
+				'success': true,
+				'channel_id': result.rows[0].channel_id,
+				'name': result.rows[0].name,
+				'description': result.rows[0].description,
+				'school_id': result.rows[0].school_id,
+				'member_count': result.rows[0].member_count
+			});
+		})
+		.catch(error => {
+			return response.status(400).json({'success': true, 'message': error.toString()});
+		});
 };
 
 module.exports = {
@@ -279,5 +422,7 @@ module.exports = {
 	getChannelMemberCount,
 	checkChannelJoin,
 	getChannels,
-	removeChannelUser
+	removeChannelUser,
+	getChannelInfo,
+	updateChannel
 };
