@@ -65,7 +65,6 @@ import axios from 'axios';
 export default {
   created () {
     this.getSchools();
-    this.showCompleteDialog = true;
   },
   data: function() {
     return {

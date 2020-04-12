@@ -229,6 +229,7 @@ const smtpTransport = nodemailer.createTransport({
 
 sendVerification = (request, response) => {
 	const requestQuery = request.query;
+	console.log(`yo im sending the verification email to ${requestQuery.email}`);
 
 	const query = `
 		SELECT *
@@ -242,7 +243,7 @@ sendVerification = (request, response) => {
 			if (result.rows.length > 0) {
 				const payload = {'email': requestQuery.email};
 				const token = jwt.sign(payload, verificationKey, {expiresIn: "3d"});
-				const link = "http://" + serverURL + "/api/verify?token=" + token;
+				const link = "http://" + serverURL + "/verify?token=" + token;
 
 				const mailOptions = {
 					'to': requestQuery.email,
@@ -270,6 +271,7 @@ sendVerification = (request, response) => {
 
 verifyEmail = (request, response) => {
 	const token = request.query.token;
+	console.log(token);
 
 	jwt.verify(token, verificationKey, (error, decoded) => {
 		if (error) {
