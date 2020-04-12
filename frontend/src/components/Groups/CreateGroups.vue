@@ -84,13 +84,11 @@ export default {
   methods: {
     onSubmit: function() {
       const formData = new FormData();
-      console.log(this.groupPhoto);
       formData.append("name", this.groupName);
       formData.append("description", this.groupDescription);
       formData.append("school_id", this.groupSchool);
       formData.append("tag_id", this.groupTag);
       formData.append("file", this.groupPhoto);
-      console.log(formData);
       axios.post(
         '/api/channels',
         formData,

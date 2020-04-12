@@ -5,13 +5,14 @@ import Forgot from './components/Forgot.vue';
 import Newpassword from './components/Newpassword.vue';
 import Verify from './components/Verify.vue';
 import Wrapper from './components/Wrapper.vue';
-import EditGroups from './components/Groups/EditGroups.vue';
+import EditGroupUsers from './components/Groups/EditGroupUsers.vue';
 import CreateGroups from './components/Groups/CreateGroups.vue';
 import ViewUsers from './components/Users/ViewUsers.vue';
 import CreateUser from './components/Users/CreateUser.vue';
 import EditTags from './components/Tags/EditTags.vue';
 import CreateTags from './components/Tags/CreateTags.vue';
 import EditAdministrators from './components/Administrators/EditAdministrators.vue';
+import EditGroups from './components/Groups/EditGroups.vue';
 import Dashboard from './components/Dashboard.vue';
 
 const cookie = document.cookie;
@@ -28,6 +29,7 @@ const routes = [
   { path: '/admin', component: Wrapper, props: { jwt: jwt },
     children: [
       {path: '/', component: Dashboard, props: { jwt: jwt }},
+      {path: 'groups/edit/users', component: EditGroupUsers, props: { jwt: jwt }},
       {path: 'groups/edit', component: EditGroups, props: { jwt: jwt }},
       {path: 'groups/create', component: CreateGroups, props: { jwt: jwt }},
       {path: 'users/view', component: ViewUsers, props: { jwt: jwt }},

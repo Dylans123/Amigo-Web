@@ -40,6 +40,11 @@
                   Edit Groups
                 </div>
               </md-list-item>
+              <md-list-item to="/admin/groups/edit/users" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/admin/groups/edit/users' ? '#F65D62' : 'black' }">  
+                  Edit Group Users
+                </div>
+              </md-list-item>
               <md-list-item to="/admin/groups/create" exact class="md-inset">
                 <div v-bind:style="{ color: getWindow() === '/admin/groups/create' ? '#F65D62' : 'black' }">  
                   Create Group
