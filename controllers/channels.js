@@ -86,7 +86,6 @@ createChannel = (request, response) => {
 updateChannel = (request, response) => {
 	const file = request.file;
 	const body = request.body;
-	const payload = jwt.decode(request.headers['x-access-token']);
 	var fileTypeError = request.fileValidationError;
 	var imageURL;
 
@@ -294,8 +293,10 @@ getChannels = (request, response) => {
 	// Get all
 	if (requestQuery.tag_id === undefined && requestQuery.school_id === undefined && requestQuery.query === undefined) {
 		query = `
-			SELECT channel_id, name, description, school_id, member_count
+			SELECT channels.channel_id, channels.name, channels.description, channels.school_id, channels.member_count, channels.created_on, tags.name as tag_name, schools.name as school_name
 			FROM channels
+			JOIN tags ON tags.tag_id = channels.tag_id
+			JOIN schools ON schools.school_id = channels.school_id
 		`;
 
 		db.client
@@ -310,7 +311,7 @@ getChannels = (request, response) => {
 	// By tag_id
 	else if (!(requestQuery.tag_id === undefined) && requestQuery.school_id === undefined && requestQuery.query === undefined) {
 		query = `
-			SELECT channel_id, name, description, school_id, member_count
+			SELECT channel_id, name, description, school_id, member_count, created_on
 			FROM channels
 			WHERE tag_id = $1
 		`;
@@ -327,7 +328,7 @@ getChannels = (request, response) => {
 	// By tag_id and school_id
 	else if (!(requestQuery.tag_id === undefined) && !(requestQuery.school_id === undefined) && requestQuery.query === undefined) {
 		query = `
-			SELECT channel_id, name, description, school_id, member_count
+			SELECT channel_id, name, description, school_id, member_count, created_on
 			FROM channels
 			WHERE tag_id = $1 and school_id = $2
 		`;
@@ -346,7 +347,7 @@ getChannels = (request, response) => {
 		const requestQuery = request.query;
 
 		const query = `
-			SELECT channel_id, name, description, school_id, member_count
+			SELECT channel_id, name, description, school_id, member_count, created_on
 			FROM channels
 			WHERE school_id = $1 AND name ILIKE $2
 		`;
@@ -365,7 +366,7 @@ getChannels = (request, response) => {
 		const requestQuery = request.query;
 
 		const query = `
-			SELECT channel_id, name, description, school_id, member_count
+			SELECT channel_id, name, description, school_id, member_count, created_on
 			FROM channels
 			WHERE tag_id = $1 AND name ILIKE $2
 		`;
