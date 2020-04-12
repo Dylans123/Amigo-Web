@@ -15,7 +15,7 @@ describe("Channels Tests", () => {
 			'password': process.env['TEST_PASSWORD']
 		};
 
-		axios.post('http://' + serverURL + '/api/login', requestBody)
+		axios.post(serverURL + '/api/login', requestBody)
 			.then(response => {
 				token = response.data['x-access-token'];
 				done();
@@ -27,7 +27,7 @@ describe("Channels Tests", () => {
 	});
 
 	describe("GET: /api/user/channels", () => {
-		const route = 'http://' + serverURL + '/api/user/channels';
+		const route = serverURL + '/api/user/channels';
 
 		it("Status 200 - Using valid token.", (done) => {
 			var data = {};
@@ -65,7 +65,7 @@ describe("Channels Tests", () => {
 	});
 
 	describe("GET: /api/channels/users", () => {
-		const route = 'http://' + serverURL + '/api/channels/users';
+		const route = serverURL + '/api/channels/users';
 
 		it("Status 200 - Using valid token.", (done) => {
 			var data = {};
@@ -103,7 +103,7 @@ describe("Channels Tests", () => {
 	});
 
 	describe("GET: /api/channels", () => {
-		const route = 'http://' + serverURL + '/api/channels';
+		const route = serverURL + '/api/channels';
 
 		it("Status 200 - Using valid token.", (done) => {
 			var data = {};
@@ -158,7 +158,7 @@ describe("Channels Tests", () => {
 	});
 
 	describe("GET: /api/channels/messages", () => {
-		const route = 'http://' + serverURL + '/api/channels/messages';
+		const route = serverURL + '/api/channels/messages';
 
 		it("Status 200 - Using valid token.", (done) => {
 			var data = {};
@@ -213,7 +213,7 @@ describe("Channels Tests", () => {
 	});
 
 	describe("GET: /api/channel", () => {
-		const route = 'http://' + serverURL + '/api/channel';
+		const route = serverURL + '/api/channel';
 
 		it("Status 200 - Using valid token.", (done) => {
 			var data = {};
@@ -268,7 +268,7 @@ describe("Channels Tests", () => {
 	});
 
 	describe("POST: /api/channels/join", () => {
-		const route = 'http://' + serverURL + '/api/channels/join';
+		const route = serverURL + '/api/channels/join';
 
 		it("Status 200 - Using valid token. Joining new channel.", (done) => {
 			var data = {};
@@ -288,7 +288,7 @@ describe("Channels Tests", () => {
 				.finally(() => {
 					expect(data.status).toBe(200);
 
-					axios.post('http://' + serverURL + '/api/channels/leave', requestBody, config)
+					axios.post(serverURL + '/api/channels/leave', requestBody, config)
 						.finally(() => {
 							done();
 						});
@@ -358,7 +358,7 @@ describe("Channels Tests", () => {
 	});
 
 	describe("POST: /api/channels/leave", () => {
-		const route = 'http://' + serverURL + '/api/channels/leave';
+		const route = serverURL + '/api/channels/leave';
 
 		it("Status 200 - Using valid token. Leaving joined channel.", (done) => {
 			var data = {};
@@ -368,7 +368,7 @@ describe("Channels Tests", () => {
 				'channel_id': '107'
 			};
 
-			axios.post('http://' + serverURL + '/api/channels/join', requestBody, config)
+			axios.post(serverURL + '/api/channels/join', requestBody, config)
 				.finally(() => {
 					axios.post(route, requestBody, config)
 						.then(response => {
@@ -447,7 +447,7 @@ describe("Channels Tests", () => {
 	});
 
 	describe("POST: /api/channels/messages", () => {
-		const route = 'http://' + serverURL + '/api/channels/messages';
+		const route = serverURL + '/api/channels/messages';
 
 		it("Status 200 - Using valid token. Sending message in joined channel.", (done) => {
 			var data = {};

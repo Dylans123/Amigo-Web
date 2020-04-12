@@ -14,7 +14,7 @@ describe("Messages Tests", () => {
 			'password': process.env['TEST_PASSWORD']
 		};
 
-		axios.post('http://' + serverURL + '/api/login', requestBody)
+		axios.post(serverURL + '/api/login', requestBody)
 			.then(response => {
 				token = response.data['x-access-token'];
 				done();
@@ -26,7 +26,7 @@ describe("Messages Tests", () => {
 	});
 
 	describe("GET: /api/directmessages", () => {
-		const route = 'http://' + serverURL + '/api/directmessages';
+		const route = serverURL + '/api/directmessages';
 
 		it("Status 200 - Using valid token.", (done) => {
 			var data = {};
@@ -64,7 +64,7 @@ describe("Messages Tests", () => {
 	});
 
 	describe("GET: /api/directmessages/receivers", () => {
-		const route = 'http://' + serverURL + '/api/directmessages/receivers';
+		const route = serverURL + '/api/directmessages/receivers';
 
 		it("Status 200 - Using valid token.", (done) => {
 			var data = {};
@@ -102,7 +102,7 @@ describe("Messages Tests", () => {
 	});
 
 	describe("POST: /api/directmessages", () => {
-		const route = 'http://' + serverURL + '/api/directmessages';
+		const route = serverURL + '/api/directmessages';
 
 		it("Status 200 - Using valid token.", (done) => {
 			var data = {};

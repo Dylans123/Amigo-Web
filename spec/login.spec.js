@@ -11,7 +11,7 @@ describe("Registration/Login Tests", () => {
 	});
 
 	describe("POST /api/login", () => {
-		const route = 'http://' + serverURL + '/api/login';
+		const route = serverURL + '/api/login';
 
 		it("Status 200 - Using valid credentials.", (done) => {
 			var data = {};
@@ -77,7 +77,7 @@ describe("Registration/Login Tests", () => {
 	});
 
 	describe("POST /api/signup", () => {
-		const route = 'http://' + serverURL + '/api/signup';
+		const route = serverURL + '/api/signup';
 
 		it("Status 422 - Missing fields.", (done) => {
 			var data = {};
