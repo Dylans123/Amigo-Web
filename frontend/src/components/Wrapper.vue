@@ -70,11 +70,11 @@
           </md-list-item>
           <md-list-item class="admin-drawer-item my-2" md-expand>
             <md-icon v-bind:style="{ color: getWindow().includes('administrators') ? '#F65D62' : 'black' }">supervised_user_circle</md-icon>
-            <span class="md-list-item-text" v-bind:style="{ color: getWindow().includes('administrators') ? '#F65D62' : 'black' }">Administrators</span>
+            <span class="md-list-item-text" v-bind:style="{ color: getWindow().includes('administrators') ? '#F65D62' : 'black' }">Admins</span>
             <md-list slot="md-expand">
               <md-list-item to="/admin/administrators/view" exact class="md-inset">
                 <div v-bind:style="{ color: getWindow() === '/admin/administrators/view' ? '#F65D62' : 'black' }">  
-                  View Administrators
+                  View Admins
                 </div>
               </md-list-item>
             </md-list>
