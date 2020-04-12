@@ -30,7 +30,6 @@
                   <button type="button" class="btn btn-block btn-primary" v-on:click="login(username,password)">Login</button>
                 </div>
                 <div class="login-links my-2">
-                  <router-link class="login-register" to="/register">Register</router-link>
                   <router-link class="login-forgot" to="/forgot">Forgot Password</router-link>
                 </div>
               </div>
@@ -113,7 +112,7 @@ export default {
 
   .login-links {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
   }
 
   .login-forgot {
