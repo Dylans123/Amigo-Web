@@ -46,7 +46,7 @@ getTags = (request, response) => {
 			});
 	}
 	// By search query
-	if (requestQuery.school_id === undefined && !(requestQuery.query === undefined)) {
+	else if (requestQuery.school_id === undefined && !(requestQuery.query === undefined)) {
 		if (requestQuery.exact === undefined || requestQuery.exact === "false") {
 			query = `
 				SELECT tag_id, name

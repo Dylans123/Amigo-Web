@@ -189,6 +189,8 @@ app.use((err, req, res, next) => {
 	next()
 });
 
-server.listen(port, () => {
+theServer = server.listen(port, () => {
 	console.log(`Listening on port ${port}.`);
 });
+
+module.exports = theServer;
