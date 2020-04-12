@@ -11,7 +11,7 @@
           <h3 class="admin-text"><b>Amigo Admin</b></h3>
         </md-toolbar>
         <md-list>
-          <md-list-item class="admin-drawer-item my-2" to="admin" exact>
+          <md-list-item class="admin-drawer-item my-2" to="/admin" exact>
             <md-icon v-bind:style="{ color: getWindow() === '/admin' || getWindow() === '/admin/' ? '#F65D62' : 'black' }">home</md-icon>
             <span class="md-list-item-text" v-bind:style="{ color: getWindow() === '/admin' || getWindow() === '/admin/' ? '#F65D62' : 'black' }">Home</span>
           </md-list-item>

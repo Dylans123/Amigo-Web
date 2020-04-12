@@ -104,7 +104,7 @@ updateChannel = (request, response) => {
 		.then(result => {
 			if (file !== undefined) {
 				const {originalname, buffer} = file;
-				const blob = bucket.file("channels/" + channel_id + originalname.replace(/^.*\./, "."));
+				const blob = bucket.file("channels/" + body.channel_id + originalname.replace(/^.*\./, "."));
 				const blobStream = blob.createWriteStream({resumable: false});
 
 				blobStream
@@ -118,7 +118,7 @@ updateChannel = (request, response) => {
 						`;
 
 						db.client
-							.query(query, [channel_id, imageURL])
+							.query(query, [body.channel_id, imageURL])
 							.then(result => {
 								response.status(200).json({'success': true, 'message': 'Channel photo added succesfully!'});
 							})
@@ -293,7 +293,7 @@ getChannels = (request, response) => {
 	// Get all
 	if (requestQuery.tag_id === undefined && requestQuery.school_id === undefined && requestQuery.query === undefined) {
 		query = `
-			SELECT channels.channel_id, channels.name, channels.description, channels.school_id, channels.member_count, channels.created_on, tags.name as tag_name, schools.name as school_name
+			SELECT channels.channel_id, channels.name, channels.description, channels.school_id, channels.tag_id, channels.member_count, channels.created_on, tags.name as tag_name, schools.name as school_name
 			FROM channels
 			JOIN tags ON tags.tag_id = channels.tag_id
 			JOIN schools ON schools.school_id = channels.school_id
