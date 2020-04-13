@@ -1438,3 +1438,48 @@ paths:
                       type: boolean
                     message:
                       type: string
+  /api/tags/popular:
+    get:
+      summary: Get a list of the most popular tags
+      description: "Default return size is 100. Specify size with limit query."
+      tags:
+        - Tags
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: limit
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  tags:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tag_id:
+                          type: string
+                        name:
+                          type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string

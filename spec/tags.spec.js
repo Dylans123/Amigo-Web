@@ -14,7 +14,7 @@ describe("Tags Tests", () => {
 			'password': process.env['TEST_PASSWORD']
 		};
 
-		axios.post('http://' + serverURL + '/api/login', requestBody)
+		axios.post(serverURL + '/api/login', requestBody)
 			.then(response => {
 				token = response.data['x-access-token'];
 				done();
@@ -26,7 +26,7 @@ describe("Tags Tests", () => {
 	});
 
 	describe("GET: /api/user/tags", () => {
-		const route = 'http://' + serverURL + '/api/user/tags';
+		const route = serverURL + '/api/user/tags';
 
 		it("Status 200 - Using valid token.", (done) => {
 			var data = {};
@@ -64,7 +64,7 @@ describe("Tags Tests", () => {
 	});
 
 	describe("GET: /api/tags", () => {
-		const route = 'http://' + serverURL + '/api/tags';
+		const route = serverURL + '/api/tags';
 
 		it("Status 200 - Using valid token.", (done) => {
 			var data = {};

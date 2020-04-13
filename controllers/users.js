@@ -229,7 +229,6 @@ const smtpTransport = nodemailer.createTransport({
 
 sendVerification = (request, response) => {
 	const requestQuery = request.query;
-	console.log(`yo im sending the verification email to ${requestQuery.email}`);
 
 	const query = `
 		SELECT *

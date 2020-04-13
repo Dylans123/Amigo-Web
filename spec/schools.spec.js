@@ -14,7 +14,7 @@ describe("Schools Tests", () => {
 			'password': process.env['TEST_PASSWORD']
 		};
 
-		axios.post('http://' + serverURL + '/api/login', requestBody)
+		axios.post(serverURL + '/api/login', requestBody)
 			.then(response => {
 				token = response.data['x-access-token'];
 				done();
@@ -26,13 +26,12 @@ describe("Schools Tests", () => {
 	});
 
 	describe("GET: /api/schools", () => {
-		const route = 'http://' + serverURL + '/api/schools';
+		const route = serverURL + '/api/schools';
 
-		it("Status 200 - Using valid token.", (done) => {
+		it("Status 200", (done) => {
 			var data = {};
-			var config = {headers: {'x-access-token': token}};
 
-			axios.get(route, config)
+			axios.get(route)
 				.then(response => {
 					data.status = response.status;
 				})
@@ -41,23 +40,6 @@ describe("Schools Tests", () => {
 				})
 				.finally(() => {
 					expect(data.status).toBe(200);
-					done();
-				});
-		});
-
-		it("Status 400 - Using invalid token.", (done) => {
-			var data = {};
-			var config = {headers: {'x-access-token': '123.456.789'}};
-
-			axios.get(route, config)
-				.then(response => {
-					data.status = response.status;
-				})
-				.catch(error => {
-					data.status = error.response.status;
-				})
-				.finally(() => {
-					expect(data.status).toBe(400);
 					done();
 				});
 		});
