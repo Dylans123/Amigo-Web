@@ -1,5 +1,11 @@
 <template>
   <div class="reset-page">
+    <md-dialog :md-active.sync="showCompleteDialog" style="background: white">
+      <md-dialog-title>Your password has been succesfully changed!</md-dialog-title>
+      <md-dialog-actions>
+        <md-button class="md-primary" @click="showCompleteDialog=false">Close</md-button>
+      </md-dialog-actions>
+    </md-dialog>
     <div class="container">
       <div class="row justify-content-center align-items-center">
         <div class="col-12 col-md-6">
@@ -16,7 +22,7 @@
                       <md-icon>lock</md-icon>
                     </span>
                   </div>
-                  <input type="text" class="form-control" placeholder="New Password" aria-label="Username" aria-describedby="basic-addon1">
+                  <input type="password" class="form-control" placeholder="New Password" aria-label="New Password" aria-describedby="basic-addon1" v-model="password">
                 </div>
                 <div class="input-group mb-3 reset-field">
                   <div class="input-group-prepend">
@@ -24,10 +30,16 @@
                       <md-icon>lock</md-icon>
                     </span>
                   </div>
-                  <input type="password" class="form-control" placeholder="Confirm New Password" aria-label="Username" aria-describedby="basic-addon2">
+                  <input type="password" class="form-control" placeholder="Confirm New Password" aria-label="New Password Confirmation" aria-describedby="basic-addon2" v-model="confirmPassword">
+                </div>
+                <div style="color: red; text-align:left" class="py-2" v-if="errors !== null">
+                  <h6>Errors:</h6>
+                  <div v-for="error in errors" v-bind:key="error.msg">
+                    Error: {{ error.msg }}
+                  </div>
                 </div>
                 <div>
-                  <button type="button" class="btn btn-block btn-primary">Reset</button>
+                  <button type="button" class="btn btn-block btn-primary" @click="changePass">Reset</button>
                 </div>
                 <div class="reset-links my-2">
                   <router-link class="reset-login" to="/login">Login to your account</router-link>
@@ -41,7 +53,43 @@
   </div>
 </template>
 <script>
+import axios from 'axios';
 export default {
+  created () {
+    const url = window.location.href;
+    const vals = url.split("?token=");
+    const token = vals[1];
+    this.token = token;
+  },
+  data: function() {
+    return {
+      password: null,
+      confirmPassword: null,
+      showCompleteDialog: false,
+      errors: null,
+      token: null,
+    }
+  },
+  methods: {
+    changePass: function() {
+      axios({
+        method: 'post',
+        url: '/api/changepassword',
+        data: {
+          new_password: this.password,
+          confirmation_new_password: this.confirmPassword,
+          token: this.token,
+        }
+      }).then((res) => {
+        this.errors = null;
+        this.showCompleteDialog = true;
+        console.log(res);
+      }).catch((err) => {
+        this.errors = err.response.data.errors;
+        console.log(err);
+      })
+    }
+  }
 }
 </script>
 

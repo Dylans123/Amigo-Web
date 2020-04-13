@@ -1,7 +1,7 @@
 import Home from './components/Home.vue';
 import Login from './components/Login.vue';
 import Forgot from './components/Forgot.vue';
-import Newpassword from './components/Newpassword.vue';
+import Resetpassword from './components/Resetpassword.vue';
 import Verify from './components/Verify.vue';
 import Wrapper from './components/Wrapper.vue';
 import EditGroupUsers from './components/Groups/EditGroupUsers.vue';
@@ -23,7 +23,7 @@ const routes = [
   { path: '', component: Home},
   { path: '/forgot', component: Forgot },
   { path: '/login', component: Login },
-  { path: '/newpassword', component: Newpassword },
+  { path: '/resetpassword', component: Resetpassword },
   { path: '/verify', component: Verify },
   { path: '/admin', component: Wrapper, props: { jwt: jwt },
     children: [
