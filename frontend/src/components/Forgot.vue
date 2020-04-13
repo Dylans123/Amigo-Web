@@ -1,5 +1,11 @@
 <template>
   <div class="new-pass-page">
+    <md-dialog :md-active.sync="showCompleteDialog"  v-if="email !== null" style="background: white">
+      <md-dialog-title>An email to reset your password has been resent to {{ this.email }}.</md-dialog-title>
+      <md-dialog-actions>
+        <md-button class="md-primary" @click="showCompleteDialog=false">Close</md-button>
+      </md-dialog-actions>
+    </md-dialog>
     <div class="container">
       <div class="row justify-content-center align-items-center">
         <div class="col-12 col-md-6">
@@ -16,11 +22,16 @@
                       <md-icon>email</md-icon>
                     </span>
                   </div>
-                  <input type="text" class="form-control" placeholder="Email">
-                                  
+                  <input type="text" class="form-control" placeholder="Email" v-model="email">     
+                </div>
+                <div style="color: red;" class="py-2" v-if="errors !== null">
+                  <h6>Errors:</h6>
+                  <div v-for="error in errors" v-bind:key="error.msg">
+                    Error: {{ error.msg }}
+                  </div>
                 </div>
                 <div>
-                  <button type="button" class="btn btn-block btn-primary">Send</button>
+                  <button type="button" class="btn btn-block btn-primary" @click="sendReset">Send</button>
                 </div>
                 <div class="new-pass-links my-2">
                   <router-link class="forgot" to="/login">Login to your account</router-link>
@@ -34,7 +45,30 @@
   </div>
 </template>
 <script>
+import axios from 'axios';
 export default {
+  data: function() {
+    return {
+      email: null,
+      showCompleteDialog: false,
+      errors: null,
+    }
+  },
+  methods: {
+    sendReset: function() {
+      axios({
+        method: 'get',
+        url: `/api/resetpasswordrequest?email=${this.email}`
+      }).then((res) => {
+        this.errors = null;
+        this.showCompleteDialog = true;
+        console.log(res);
+      }).catch((err) => {
+        this.errors = err.response.data.errors;
+        console.log(err);
+      })
+    }
+  }
 }
 </script>
 
@@ -50,6 +84,7 @@ export default {
 
   .admin-text {
     color: #F65D62;
+    font-size: 2.5rem;
   }
 
   .description-text {
