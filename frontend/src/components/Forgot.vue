@@ -1,19 +1,18 @@
 <template>
-  <div class="register-page">
+  <div class="new-pass-page">
     <div class="container">
       <div class="row justify-content-center align-items-center">
         <div class="col-12 col-md-6">
           <h1 class="mb-2">
             Forgot your <span class="admin-text">Password?</span>
           </h1>
-          <h6 class="mb-4 description-text">Resetting your password is easy, just tell us the email address you registered with Amigo.</h6>
+          <h6 class="mb-4 description-text">Resetting your password is easy, just tell us the email address you new-passed with Amigo.</h6>
           <md-card class="md-elevation-15">
             <div class="row">
-              <div class="col-12 register-text">
-                <div class="input-group mb-3 register-field">
+              <div class="col-12 new-pass-text">
+                <div class="input-group mb-3 new-pass-field">
                   <div class="input-group-prepend">
                     <span class="input-group-text">
-                      
                       <md-icon>email</md-icon>
                     </span>
                   </div>
@@ -23,7 +22,7 @@
                 <div>
                   <button type="button" class="btn btn-block btn-primary">Send</button>
                 </div>
-                <div class="register-links my-2">
+                <div class="new-pass-links my-2">
                   <router-link class="forgot" to="/login">Login to your account</router-link>
                 </div>
               </div>
@@ -40,7 +39,7 @@ export default {
 </script>
 
 <style scoped>
-  .register-page {
+  .new-pass-page {
     height: 100vh;
     background-color: #F7F7F7;
     text-align: center;
@@ -69,32 +68,32 @@ export default {
     color: #CED4DA;
   }
 
-  .register-field span {
+  .new-pass-field span {
     background: none !important;
   }
 
-  .register-field input {
+  .new-pass-field input {
     height: 50px;
   }
 
-  .register-text {
+  .new-pass-text {
     padding: 50px;
     display: flex;
     flex-direction: column;
     justify-content: center;
   }
 
-  .register-image img {
+  .new-pass-image img {
     height: 100%;
     width: 100%;
   }
 
-  .register-links {
+  .new-pass-links {
     display: flex;
     justify-content: space-between;
   }
 
-  .register-forgot {
+  .new-pass-forgot {
     color: #B0B3B5;
   }
 
