@@ -320,20 +320,22 @@ verifyEmail = (request, response) => {
 // Get user information controller
 getUserInfo = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
-
+	
 	const query = `
-		SELECT users.*, schools.name as school_name, COUNT(users_channels.*) as channel_count
-		FROM users
-		INNER JOIN schools ON users.user_id = $1
-		AND schools.school_id = users.school_id
-		INNER JOIN users_channels ON users.user_id = users_channels.user_id
-		GROUP BY users.user_id, schools.name
+		SELECT *, S.name AS school_name
+		FROM users,
+		     schools AS S,
+			 (SELECT COUNT(*) AS channel_count
+			 FROM users_channels
+			 WHERE users_channels.user_id = $1) AS C
+		WHERE users.user_id = $1 AND users.school_id = S.school_id
 	`;
 
 	db.client
 		.query(query, [payload.user_id])
 		.then(result => {
 			const user = result.rows[0];
+
 			response.status(200).json({
 				'success': true,
 				'email': user.email,
