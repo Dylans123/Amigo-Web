@@ -5,7 +5,7 @@ info:
   version: '1.0'
 
 servers:
-  - url: http://localhost:3000
+  - url: https://amigo-269801.appspot.com
 
 paths:
   /api/signup:
