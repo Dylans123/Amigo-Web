@@ -12,6 +12,7 @@ import CreateUser from './components/Users/CreateUser.vue';
 import EditTags from './components/Tags/EditTags.vue';
 import CreateTags from './components/Tags/CreateTags.vue';
 import ViewAdmins from './components/Admins/ViewAdmins.vue';
+import CreateAdmins from './components/Admins/CreateAdmins.vue';
 import EditGroups from './components/Groups/EditGroups.vue';
 import Dashboard from './components/Dashboard.vue';
 import PageNotFound from './components/PageNotFound.vue';
@@ -38,6 +39,7 @@ const routes = [
       {path: 'tags/edit', component: EditTags, props: { jwt: jwt }},
       {path: 'tags/create', component: CreateTags, props: { jwt: jwt }},
       {path: 'administrators/view', component: ViewAdmins, props: { jwt: jwt }},
+      {path: 'administrators/create', component: CreateAdmins, props: { jwt: jwt }},
       { path: "*", component: PageNotFound }
     ]
   }
