@@ -1,23 +1,25 @@
 <template>
   <div class="container">
-    
-  <md-dialog :md-active.sync="showEditDialog" v-if="curAdmin !== null" style="background: white">
-      <md-dialog-title>Edit Group</md-dialog-title>
-      
+    <md-dialog :md-active.sync="showConfirmDialog" v-if="curAdmin !== null" style="background: white">
+      <md-dialog-title>Are you sure you want to make {{  curAdmin['display_name'] }} Admin?</md-dialog-title>
       <md-dialog-actions>
-        <md-button class="md-primary" @click="showEditDialog=false">Close</md-button>
-        <md-button class="md-primary" @click="submitEdit()">Submit Edit</md-button>
+        <md-button class="md-primary" @click="showConfirmDialog=false">No</md-button>
+        <md-button class="md-primary" @click="submitConfirm()">Yes</md-button>
       </md-dialog-actions>
     </md-dialog>
-    
-     
+    <md-dialog :md-active.sync="showCompleteDialog"  v-if="curAdmin !== null" style="background: white">
+      <md-dialog-title>You have succesfully set the user {{ curAdmin['display_name'] }} as an admin.</md-dialog-title>
+      <md-dialog-actions>
+        <md-button class="md-primary" @click="complete()">Close</md-button>
+      </md-dialog-actions>
+    </md-dialog>
     <md-card class="md-elevation-15" style="background-color: white">
       <div class="row admin-content">
         <div class="col-12" style="height: 80vh; overflow: scroll">
           <md-table v-model="searched" md-sort="user_id" md-sort-order="asc" class="md-elevation-0">
             <md-table-toolbar>
               <div class="md-toolbar-section-start">
-                <h1><b>View Users</b></h1>
+                <h1><b>Create Admins</b></h1>
               </div>
               <md-field md-clearable class="md-toolbar-section-end">
                 <md-input placeholder="Search by name..." v-model="search" @input="searchOnTable" />
@@ -33,9 +35,8 @@
               <md-table-cell md-label="Last Name" md-sort-by="last_name">{{ item.last_name }}</md-table-cell>
               <md-table-cell md-label="Display Name" md-sort-by="display_name">{{ item.display_name }}</md-table-cell>
               <md-table-cell md-label="Date Joined" md-sort-by="created_on">{{ convertToDate(item.created_on) }}</md-table-cell>
-              <md-table-cell md-label="Edit">
-                <button type="button" class="btn btn-outline-primary" @click="updateCurAdmin(item)">Edit</button>
-                
+              <md-table-cell md-label="Make Admin">
+                <button type="button" class="btn btn-outline-primary" @click="updateCurAdmin(item)">Make Admin</button>
               </md-table-cell>
             </md-table-row>
           </md-table>
@@ -63,6 +64,7 @@ export default {
   created () {
     this.searched = [];
     this.getUsers();
+    console.log(this.jwt);
   },
   methods: {
     getUsers: function() {
@@ -72,7 +74,11 @@ export default {
         headers: {'x-access-token': this.jwt}
       }).then((res) => {
         console.log(res.data);
-        this.users = res.data.users;
+        const nonAdminUsers = res.data.users.filter((item) => {
+          return parseInt(item['access_level']) != 10;
+        });
+        console.log(nonAdminUsers);
+        this.users = nonAdminUsers;
         this.searched = this.users
       }).catch((err) => {
         console.log(err);
@@ -91,6 +97,34 @@ export default {
     searchOnTable: function() {
       this.searched = searchByName(this.users, this.search)
     },
+    updateCurAdmin: function(item) {
+      console.log(item);
+      this.curAdmin = item;
+      this.showConfirmDialog = true;
+    },
+    submitConfirm: function(){
+      this.showConfirmDialog = false;
+      axios({
+        method: 'post',
+        url: '/api/users/makeadmin',
+        data: {
+          user_id: this.curAdmin['user_id']
+        },
+        headers: {'x-access-token': this.jwt}
+      }).then((res) => {
+        this.errors = null;
+        this.showCompleteDialog = true;
+        this.getUsers();
+        console.log(res);
+      }).catch((err) => {
+        this.errors = err.response.data.errors;
+        console.log(err);
+      })
+    },
+    complete: function(){
+      this.curAdmin = null;
+      this.showCompleteDialog = false;
+    },
     getBgRowColor: function() {
       // this.bgRowColor = this.bgRowColor + 1;
       if(this.bgRowColor % 2 == 0) {
@@ -100,44 +134,13 @@ export default {
       }
     }
   },
-  updateCurAdmin: function(item) {
-      console.log(item);
-      this.curAdmin = item;
-      this.showEditDialog = true;
-    },
-  submitEdit: function(){
-    this.showEditDialog = false;
-    const formData = new FormData();
-    formData.append("user_id",this.curAdmin.users_id);
-    axios.post(
-      '/api/users/makeadmin',
-      formData,
-      {
-        headers:{
-          'x-acceess-token': this.jwt,
-          'content-type': 'multipart/form-data'
-        }
-      }
-      
-    ).then((res) => {
-      console.log(res);
-      this.showCompleteDialog = true
-    })
-    .catch((err) => {
-      this.errors = err.response.data.errors;
-    })
-  },
-  editComplete: function(){
-    this.curAdmin = null;
-      this.showCompleteDialog = false;
-  },
   data: function() {
     return {
       search: null,
       users: null,
       searched: [],
       curAdmin: null,
-      showEditDialog: false,
+      showConfirmDialog: false,
       showCompleteDialog: false,
       errors: null,
       bgRowColor: 0
