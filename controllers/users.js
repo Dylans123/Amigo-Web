@@ -242,7 +242,7 @@ sendVerification = (request, response) => {
 			if (result.rows.length > 0) {
 				const payload = {'email': requestQuery.email};
 				const token = jwt.sign(payload, verificationKey, {expiresIn: "3d"});
-				const link = "http://" + serverURL + "/verify?token=" + token;
+				const link = serverURL + "/verify?token=" + token;
 
 				const mailOptions = {
 					'to': requestQuery.email,
@@ -563,7 +563,7 @@ resetPasswordRequest = (request, response) => {
 			if (result.rows.length > 0) {
 				const payload = {'email': requestQuery.email};
 				const token = jwt.sign(payload, resetKey, {expiresIn: "3d"});
-				const link = "http://" + serverURL + "/resetpassword?token=" + token;
+				const link = serverURL + "/resetpassword?token=" + token;
 
 				const mailOptions = {
 					'to': requestQuery.email,
