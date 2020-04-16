@@ -364,6 +364,7 @@ getUsers = (request, response) => {
 	const query = `
 		SELECT user_id, email, first_name, last_name, display_name, last_logged_in, created_on, verified, access_level, school_id, photo, active
 		FROM users
+		WHERE active = true
 	`;
 
 	db.client
@@ -384,7 +385,7 @@ getAdminUsers = (request, response) => {
 	const query = `
 		SELECT user_id, email, first_name, last_name, display_name, last_logged_in, created_on, verified, access_level, school_id, photo, active
 		FROM users
-		WHERE access_level = 10
+		WHERE access_level = 10 AND active = true
 	`;
 
 	db.client
@@ -624,7 +625,7 @@ searchUser = (request, response) => {
 	const query = `
 		SELECT user_id, first_name, last_name, display_name, created_on, photo, access_level
 		FROM users
-		WHERE display_name ILIKE $1
+		WHERE display_name ILIKE $1 AND active = true
 	`;
 
 	db.client
