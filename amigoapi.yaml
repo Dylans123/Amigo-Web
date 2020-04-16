@@ -5,7 +5,7 @@ info:
   version: '1.0'
 
 servers:
-  - url: http://localhost:3000
+  - url: https://amigo-269801.appspot.com
 
 paths:
   /api/signup:
@@ -482,6 +482,28 @@ paths:
                     type: boolean
                   message:
                     type: string
+  /api/users/admins:
+    get:
+      summary: Get all of the users that are admins
+      tags:
+        - Users
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type:
+                      boolean
+                    
   /api/users/makeadmin:
     post:
       summary: Make a user an admin (Admin)
@@ -1331,7 +1353,6 @@ paths:
                     type: boolean
                   message:
                     type: string
-<<<<<<< HEAD
   /api/channel:
     get:
       summary: Get a channel's information
@@ -1344,7 +1365,6 @@ paths:
             type: string
         - in: query
           name: channel_id
-=======
   /api/resetpasswordrequest:
     get:
       summary: Send password reset email
@@ -1353,7 +1373,6 @@ paths:
       parameters:
         - in: query
           name: email
->>>>>>> d5b37249bd784d4a81b6e6f8b8ce5b9a32e3bc3f
           schema:
             type: string
       responses:
@@ -1366,19 +1385,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-<<<<<<< HEAD
-                  channel_id:
-                    type: string
-                  name:
-                    type: string
-                  description:
-                    type: string
-                  school_id:
-                    type: string
-                  member_count:
-=======
                   message:
->>>>>>> d5b37249bd784d4a81b6e6f8b8ce5b9a32e3bc3f
                     type: string
         '400':
           description: Failed
@@ -1390,9 +1397,6 @@ paths:
                   success:
                     type: boolean
                   message:
-<<<<<<< HEAD
-                    type: string
-=======
                     type: string
   /api/changepassword:
     post:
@@ -1434,4 +1438,48 @@ paths:
                       type: boolean
                     message:
                       type: string
->>>>>>> d5b37249bd784d4a81b6e6f8b8ce5b9a32e3bc3f
+  /api/tags/popular:
+    get:
+      summary: Get a list of the most popular tags
+      description: "Default return size is 100. Specify size with limit query."
+      tags:
+        - Tags
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: limit
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  tags:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tag_id:
+                          type: string
+                        name:
+                          type: string
+        '400':
+          description: Failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string

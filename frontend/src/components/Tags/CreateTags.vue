@@ -17,7 +17,7 @@
             <div class="form-group">
               <label for="tagPhoto">Tag Image</label>
               <div class="custom-file">
-                <label class="custom-file-label" for="tagPhoto">Choose file</label>
+                <label class="custom-file-label" for="tagPhoto">{{ this.tagPhoto !== null ? this.tagPhoto.name : "Choose image here" }}</label>
                 <input type="file" class="custom-file-input" id="tagPhoto" @change="fileChange($event.target.files)" />
               </div>
             </div>

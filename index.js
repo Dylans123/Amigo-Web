@@ -110,6 +110,7 @@ app.post(
 					});
 				});
 			}),
+		check('school_id').isAlphanumeric().withMessage('School is invalid'),
 		check('password').isLength({min: 6}).withMessage('Password must be at least 6 characters.'),
 		check('confirmation_password').custom((value, {req}) => (value === req.body.password)).withMessage('Passwords do not match.'),
 		check('first_name').isAlpha().withMessage('First name is invalid.'),
@@ -197,6 +198,7 @@ app.get('/api/tags', users.validateUser, tags.getTags);
 app.get('/api/user/tags', users.validateUser, tags.getUserTags);
 app.post('/api/tags', users.validateAdminUser, tags.createTag);
 app.post('/api/tags/update', users.validateAdminUser, tags.updateTags);
+app.get('/api/tags/popular', users.validateUser, tags.getPopularTags);
 
 // Direct message routes
 app.get('/api/directmessages', users.validateUser, messages.getDirectMessages);
@@ -209,6 +211,13 @@ app.get('/api/schools', schools.getSchools);
 // Admin routes
 app.get('/api/admin/dashboard/metrics', users.validateUser, admin.getDashboardMetrics);
 app.get('/api/admin/dashboard/messages', users.validateUser, admin.getMessageInfo);
+
+// Swagger
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./amigoapi.yaml');
+
+app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Code to generate frontend build directory
 app.use(express.static(path.join(__dirname, "frontend/dist")));
@@ -224,6 +233,8 @@ app.use((err, req, res, next) => {
 	next()
 });
 
-server.listen(port, () => {
+theServer = server.listen(port, () => {
 	console.log(`Listening on port ${port}.`);
 });
+
+module.exports = theServer;

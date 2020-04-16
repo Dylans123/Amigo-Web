@@ -213,15 +213,6 @@ validateAdminUser = (request, response, next) => {
 	});
 }
 
-isAdmin = (token) => {
-	jwt.verify(token, adminKey, (error, decoded) => {
-		if (error)
-			return false;
-		else
-			return true;
-	});
-}
-
 // Email verification controllers
 const nodemailer = require("nodemailer");
 const mailUsername = process.env['MAIL_USERNAME'];
@@ -251,7 +242,7 @@ sendVerification = (request, response) => {
 			if (result.rows.length > 0) {
 				const payload = {'email': requestQuery.email};
 				const token = jwt.sign(payload, verificationKey, {expiresIn: "3d"});
-				const link = "http://" + serverURL + "/api/verify?token=" + token;
+				const link = serverURL + "/verify?token=" + token;
 
 				const mailOptions = {
 					'to': requestQuery.email,
@@ -279,6 +270,7 @@ sendVerification = (request, response) => {
 
 verifyEmail = (request, response) => {
 	const token = request.query.token;
+	console.log(token);
 
 	jwt.verify(token, verificationKey, (error, decoded) => {
 		if (error) {
@@ -329,20 +321,22 @@ verifyEmail = (request, response) => {
 // Get user information controller
 getUserInfo = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
-
+	
 	const query = `
-		SELECT users.*, schools.name as school_name, COUNT(users_channels.*) as channel_count
-		FROM users
-		INNER JOIN schools ON users.user_id = $1
-		AND schools.school_id = users.school_id
-		INNER JOIN users_channels ON users.user_id = users_channels.user_id
-		GROUP BY users.user_id, schools.name
+		SELECT *, S.name AS school_name
+		FROM users,
+		     schools AS S,
+			 (SELECT COUNT(*) AS channel_count
+			 FROM users_channels
+			 WHERE users_channels.user_id = $1) AS C
+		WHERE users.user_id = $1 AND users.school_id = S.school_id
 	`;
 
 	db.client
 		.query(query, [payload.user_id])
 		.then(result => {
 			const user = result.rows[0];
+
 			response.status(200).json({
 				'success': true,
 				'email': user.email,
@@ -370,6 +364,7 @@ getUsers = (request, response) => {
 	const query = `
 		SELECT user_id, email, first_name, last_name, display_name, last_logged_in, created_on, verified, access_level, school_id, photo, active
 		FROM users
+		WHERE active = true
 	`;
 
 	db.client
@@ -390,7 +385,7 @@ getAdminUsers = (request, response) => {
 	const query = `
 		SELECT user_id, email, first_name, last_name, display_name, last_logged_in, created_on, verified, access_level, school_id, photo, active
 		FROM users
-		WHERE access_level = 10
+		WHERE access_level = 10 AND active = true
 	`;
 
 	db.client
@@ -552,26 +547,6 @@ updateUser = (request, response) => {
 	}
 };
 
-searchUser = (request, response) => {
-	const requestQuery = request.query;
-	console.log(requestQuery.query);
-
-	const query = `
-		SELECT user_id, first_name, last_name, display_name
-		FROM users
-		WHERE display_name ILIKE $1
-	`;
-
-	db.client
-		.query(query, [requestQuery.query + "%"])
-		.then(result => {
-			response.status(200).json({'success': true, 'users': result.rows});
-		})
-		.catch(error => {
-			response.status(400).json({'success': false, 'message': error.toString()});
-		});
-}
-
 const resetKey = process.env['PASSWORD_RESET_JWT_KEY'];
 
 resetPasswordRequest = (request, response) => {
@@ -589,7 +564,7 @@ resetPasswordRequest = (request, response) => {
 			if (result.rows.length > 0) {
 				const payload = {'email': requestQuery.email};
 				const token = jwt.sign(payload, resetKey, {expiresIn: "3d"});
-				const link = "http://" + serverURL + "/resetpassword?token=" + token;
+				const link = serverURL + "/resetpassword?token=" + token;
 
 				const mailOptions = {
 					'to': requestQuery.email,
@@ -648,9 +623,9 @@ searchUser = (request, response) => {
 	console.log(requestQuery.query);
 
 	const query = `
-		SELECT user_id, first_name, last_name, display_name, created_on
+		SELECT user_id, first_name, last_name, display_name, created_on, photo, access_level
 		FROM users
-		WHERE display_name ILIKE $1
+		WHERE display_name ILIKE $1 AND active = true
 	`;
 
 	db.client

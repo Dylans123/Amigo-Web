@@ -17,7 +17,7 @@
             <div class="form-group">
               <label for="groupPhoto">Group Image</label>
               <div class="custom-file">
-                <label class="custom-file-label" for="groupPhoto"></label>
+                <label class="custom-file-label" for="groupPhoto">{{ this.groupPhoto !== null ? this.groupPhoto.name : "Choose image here" }}</label>
                 <input type="file" class="custom-file-input" id="groupPhoto" @change="fileChange($event.target.files)" />
               </div>
             </div>
@@ -50,7 +50,7 @@
               </div>
             </div>
             <div class="form-group">
-              <button type="submit" class="btn btn-block btn-primary">Create User</button>
+              <button type="submit" class="btn btn-block btn-primary">Create Group</button>
             </div>
           </form>
         </div>

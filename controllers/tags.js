@@ -89,7 +89,7 @@ getTags = (request, response) => {
 	// All
 	if (requestQuery.school_id === undefined && requestQuery.query === undefined && requestQuery.exact === undefined) {
 		query = `
-			SELECT tag_id, name, created_on
+			SELECT tag_id, name, created_on, photo
 			FROM tags
 		`;
 
@@ -106,7 +106,7 @@ getTags = (request, response) => {
 	else if (requestQuery.school_id === undefined && !(requestQuery.query === undefined)) {
 		if (requestQuery.exact === undefined || requestQuery.exact === "false") {
 			query = `
-				SELECT tag_id, name
+				SELECT tag_id, name, photo
 				FROM tags
 				WHERE tags.name ILIKE $1
 			`;
@@ -115,7 +115,7 @@ getTags = (request, response) => {
 		}
 		else {
 			query = `
-				SELECT tags.tag_id, tags.name
+				SELECT tags.tag_id, tags.name, tags.photo
 				FROM tags
 				WHERE LOWER(tags.name) = LOWER($1)
 			`;
@@ -135,7 +135,7 @@ getTags = (request, response) => {
 	// By school_id
 	else if (!(requestQuery.school_id === undefined) && requestQuery.query === undefined) {
 		query = `
-			SELECT DISTINCT tags.tag_id, tags.name
+			SELECT DISTINCT tags.tag_id, tags.name, tags.photo
 			FROM tags, channels
 			WHERE channels.school_id = $1 AND channels.tag_id = tags.tag_id
 		`;
@@ -153,7 +153,7 @@ getTags = (request, response) => {
 	else if (!(requestQuery.school_id === undefined) && !(requestQuery.query === undefined)) {
 		if (requestQuery.exact === undefined || requestQuery.exact === "false") {
 			query = `
-				SELECT DISTINCT tags.tag_id, tags.name
+				SELECT DISTINCT tags.tag_id, tags.name, tags.photo
 				FROM tags, channels
 				WHERE tags.tag_id = channels.tag_id AND channels.school_id = $1 AND tags.name ILIKE $2
 			`;
@@ -162,7 +162,7 @@ getTags = (request, response) => {
 		}
 		else {
 			query = `
-				SELECT DISTINCT tags.tag_id, tags.name
+				SELECT DISTINCT tags.tag_id, tags.name, tags.photo
 				FROM tags, channels
 				WHERE tags.tag_id = channels.tag_id AND channels.school_id = $1 AND LOWER(tags.name) = LOWER($2)
 			`;
@@ -266,9 +266,39 @@ updateTags = (request, response) => {
 	}
 };
 
+// Get popular tags controller
+getPopularTags = (request, response) => {
+	const requestQuery = request.query;
+
+	if (requestQuery.limit === undefined)
+		requestQuery.limit = 100;
+
+	const query = `
+		SELECT tags.tag_id, tags.name, P.member_count
+		FROM tags,
+		     (SELECT channels.tag_id, COUNT(*) AS member_count
+		     FROM users_channels, channels
+		     WHERE users_channels.channel_id = channels.channel_id
+		     GROUP BY channels.tag_id) AS P
+		WHERE tags.tag_id = P.tag_id
+		ORDER BY P.member_count DESC
+		LIMIT $1
+	`;
+
+	db.client
+		.query(query, [requestQuery.limit])
+		.then(result => {
+			response.status(200).json({'success': true, 'tags': result.rows});
+		})
+		.catch(error => {
+			response.status(400).json({'success': false, 'message': error.toString()});
+		});
+};
+
 module.exports = {
 	createTag,
 	getTags,
 	getUserTags,
-	updateTags
+	updateTags,
+	getPopularTags
 };

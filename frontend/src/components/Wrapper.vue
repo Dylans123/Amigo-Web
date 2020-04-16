@@ -29,6 +29,11 @@
                   Create Users
                 </div>
               </md-list-item>
+              <md-list-item to="/admin/users/delete" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/admin/users/delete' ? '#F65D62' : 'black' }">
+                  Delete Users
+                </div>
+              </md-list-item>
             </md-list>
           </md-list-item>
           <md-list-item class="admin-drawer-item my-2" md-expand>
@@ -75,6 +80,11 @@
               <md-list-item to="/admin/administrators/view" exact class="md-inset">
                 <div v-bind:style="{ color: getWindow() === '/admin/administrators/view' ? '#F65D62' : 'black' }">  
                   View Admins
+                </div>
+              </md-list-item>
+              <md-list-item to="/admin/administrators/create" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/admin/administrators/create' ? '#F65D62' : 'black' }">  
+                  Create Admins
                 </div>
               </md-list-item>
             </md-list>
