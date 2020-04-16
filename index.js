@@ -212,6 +212,13 @@ app.get('/api/schools', schools.getSchools);
 app.get('/api/admin/dashboard/metrics', users.validateUser, admin.getDashboardMetrics);
 app.get('/api/admin/dashboard/messages', users.validateUser, admin.getMessageInfo);
 
+// Swagger
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./amigoapi.yaml');
+
+app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 // Code to generate frontend build directory
 app.use(express.static(path.join(__dirname, "frontend/dist")));
 app.get("/*", (req, res) => {
