@@ -76,6 +76,15 @@
                 <div v-bind:style="{ color: getWindow() === '/admin/administrators/view' ? '#F65D62' : 'black' }">  
                   View Admins
                 </div>
+                
+                
+              </md-list-item>
+              <md-list-item to="/admin/administrators/create" exact class="md-inset">
+                <div v-bind:style="{ color: getWindow() === '/admin/administrators/create' ? '#F65D62' : 'black' }">  
+                  Create Admins
+                </div>
+                
+                
               </md-list-item>
             </md-list>
           </md-list-item>
