@@ -12,7 +12,7 @@
         <div class="form-group">
           <label for="groupPhoto">Group Image</label>
           <div class="custom-file">
-            <label class="custom-file-label" for="groupPhoto"></label>
+            <label class="custom-file-label" for="groupPhoto">{{ this.curGroupPhoto !== null ? this.curGroupPhoto.name : "Choose image here" }}</label>
             <input type="file" class="custom-file-input" id="groupPhoto" @change="fileChange($event.target.files)" />
           </div>
         </div>
@@ -161,6 +161,7 @@ export default {
         }
       ).then((res) => {
         console.log(res);
+        this.errors = null;
         this.showCompleteDialog = true
       })
       .catch((err) => {

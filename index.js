@@ -110,6 +110,7 @@ app.post(
 					});
 				});
 			}),
+		check('school_id').isAlphanumeric().withMessage('School is invalid'),
 		check('password').isLength({min: 6}).withMessage('Password must be at least 6 characters.'),
 		check('confirmation_password').custom((value, {req}) => (value === req.body.password)).withMessage('Passwords do not match.'),
 		check('first_name').isAlpha().withMessage('First name is invalid.'),
