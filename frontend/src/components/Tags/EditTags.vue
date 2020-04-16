@@ -12,7 +12,7 @@
         <div class="form-group">
           <label for="tagPhoto">Tag Image</label>
           <div class="custom-file">
-            <label class="custom-file-label" for="tagPhoto"></label>
+            <label class="custom-file-label" for="tagPhoto">{{ this.curTagPhoto !== null ? this.curTagPhoto.name : "Choose image here" }}</label>
             <input type="file" class="custom-file-input" id="tagPhoto" @change="fileChange($event.target.files)" />
           </div>
         </div>
@@ -136,6 +136,7 @@ export default {
         }
       ).then((res) => {
         console.log(res);
+        this.errors = null;
         this.showCompleteDialog = true
       })
       .catch((err) => {
@@ -158,6 +159,7 @@ export default {
       tags: null,
       curTag: null,
       curTagPhoto: null,
+      errors: null,
       showEditDialog: false,
       showCompleteDialog: false,
       searched: [],

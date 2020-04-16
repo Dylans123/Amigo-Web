@@ -482,6 +482,28 @@ paths:
                     type: boolean
                   message:
                     type: string
+  /api/users/admins:
+    get:
+      summary: Get all of the users that are admins
+      tags:
+        - Users
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type:
+                      boolean
+                    
   /api/users/makeadmin:
     post:
       summary: Make a user an admin (Admin)
@@ -1331,6 +1353,18 @@ paths:
                     type: boolean
                   message:
                     type: string
+  /api/channel:
+    get:
+      summary: Get a channel's information
+      tags:
+        - Channels
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: channel_id
   /api/resetpasswordrequest:
     get:
       summary: Send password reset email

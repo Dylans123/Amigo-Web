@@ -143,7 +143,7 @@ getUserChannels = (request, response) => {
 	const payload = jwt.decode(request.headers['x-access-token']);
 
 	const query = `
-		SELECT channels.channel_id, channels.name, channels.description, channels.school_id
+		SELECT channels.channel_id, channels.name, channels.description, channels.school_id, channels.photo
 		FROM users_channels, channels
 		WHERE users_channels.user_id = $1 AND users_channels.channel_id = channels.channel_id
 	`;

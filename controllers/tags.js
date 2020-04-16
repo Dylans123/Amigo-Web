@@ -89,7 +89,7 @@ getTags = (request, response) => {
 	// All
 	if (requestQuery.school_id === undefined && requestQuery.query === undefined && requestQuery.exact === undefined) {
 		query = `
-			SELECT tag_id, name, created_on
+			SELECT tag_id, name, created_on, photo
 			FROM tags
 		`;
 
@@ -106,7 +106,7 @@ getTags = (request, response) => {
 	else if (requestQuery.school_id === undefined && !(requestQuery.query === undefined)) {
 		if (requestQuery.exact === undefined || requestQuery.exact === "false") {
 			query = `
-				SELECT tag_id, name
+				SELECT tag_id, name, photo
 				FROM tags
 				WHERE tags.name ILIKE $1
 			`;
@@ -115,7 +115,7 @@ getTags = (request, response) => {
 		}
 		else {
 			query = `
-				SELECT tags.tag_id, tags.name
+				SELECT tags.tag_id, tags.name, tags.photo
 				FROM tags
 				WHERE LOWER(tags.name) = LOWER($1)
 			`;
@@ -135,7 +135,7 @@ getTags = (request, response) => {
 	// By school_id
 	else if (!(requestQuery.school_id === undefined) && requestQuery.query === undefined) {
 		query = `
-			SELECT DISTINCT tags.tag_id, tags.name
+			SELECT DISTINCT tags.tag_id, tags.name, tags.photo
 			FROM tags, channels
 			WHERE channels.school_id = $1 AND channels.tag_id = tags.tag_id
 		`;
@@ -153,7 +153,7 @@ getTags = (request, response) => {
 	else if (!(requestQuery.school_id === undefined) && !(requestQuery.query === undefined)) {
 		if (requestQuery.exact === undefined || requestQuery.exact === "false") {
 			query = `
-				SELECT DISTINCT tags.tag_id, tags.name
+				SELECT DISTINCT tags.tag_id, tags.name, tags.photo
 				FROM tags, channels
 				WHERE tags.tag_id = channels.tag_id AND channels.school_id = $1 AND tags.name ILIKE $2
 			`;
@@ -162,7 +162,7 @@ getTags = (request, response) => {
 		}
 		else {
 			query = `
-				SELECT DISTINCT tags.tag_id, tags.name
+				SELECT DISTINCT tags.tag_id, tags.name, tags.photo
 				FROM tags, channels
 				WHERE tags.tag_id = channels.tag_id AND channels.school_id = $1 AND LOWER(tags.name) = LOWER($2)
 			`;
