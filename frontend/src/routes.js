@@ -16,6 +16,8 @@ import CreateAdmins from './components/Admins/CreateAdmins.vue';
 import EditGroups from './components/Groups/EditGroups.vue';
 import Dashboard from './components/Dashboard.vue';
 import PageNotFound from './components/PageNotFound.vue';
+import Privacy from './components/Privacy.vue';
+import Terms from './components/Terms.vue';
 
 const cookie = document.cookie;
 const jwt = cookie.split("jwt=")[1];
@@ -27,6 +29,8 @@ const routes = [
   { path: '/login', component: Login },
   { path: '/resetpassword', component: Resetpassword },
   { path: '/verify', component: Verify },
+  { path: '/privacy', component: Privacy },
+  { path: '/terms', component: Terms },
   { path: '/admin', component: Wrapper, props: { jwt: jwt },
     children: [
       {path: '/', component: Dashboard, props: { jwt: jwt }},
